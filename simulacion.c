@@ -6,6 +6,7 @@ Primer Bosquejo. 1D con método de fourier.
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <fftw3.h>
 
 //Constantes de la simulación.
 #define PI 3.14159265359
@@ -24,7 +25,7 @@ Primer Bosquejo. 1D con método de fourier.
 
 //Arreglos
 double phase[Nx][Nv];
-double density[Nx];
+double *density;
 
 //Variables
 int i;
@@ -43,10 +44,12 @@ double gaussD1(double x, double v, double sx, double sv);
 double calDensity();
 void printDensity(char *name);
 void printConstant(char *name, double value);
+double giveDensity(int l);
 
 
 int main()
 {
+    density = malloc((sizeof(double)*Nx));
 	constantes = fopen("constants.dat","w+");
 	printConstant("Xmin",Xmin);
 	printConstant("Xmax",Xmax);
@@ -134,8 +137,28 @@ double calDensity()
 	return mass;
 }
 
+double vFourier()
+{
+    double * densityIN= malloc(sizeof(double)*Nx);
+    for(i = 0;i<Nx;i+=1){
+        densityIN[i] = giveDensity(i);
+    }
+    fftw_complex *in;
+    in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    for(i=0;i<Nx;i+=1){
+        in[i] = densityIN[i];
+    }
+ //   for(i = 0;i<Nx;i+=1){
+   //     in[i]=sin(i*dx)+3*sin(i*dx);
+    //}
 
 
+}
+
+
+double giveDensity(int l){
+    return density[l];
+}
 
 
 

@@ -2,7 +2,7 @@ all: grid.dat .PHONY
 
 grid.dat: simulacion.c
 	@echo corriendo la simulación
-	gcc -o heh.a simulacion.c -lm
+	gcc -o heh.a -I/usr/include -L/usr/lib/x86_64-linux-gnu simulacion.c -lfftw3 -lm
 	./heh.a
 	python simPlots.py
 
