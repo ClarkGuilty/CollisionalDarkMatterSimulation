@@ -1,0 +1,5 @@
+all: limpiar
+
+limpiar:
+	@echo Borrando los archivos varios de compilar con el IDE.
+	-rm simulacion simulacion.o phase.png densidad.png grid.dat constants.dat density.dat
