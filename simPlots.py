@@ -53,10 +53,10 @@ x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 
 #plt.plot(x,np.sin(x))
 #plt.plot(x,outF1)
-plt.plot(x,outF)
-h = plt.figure()
 plt.plot(x,density)
-outM = np.sqrt(outF1*outF1+outF*outF)
+h = plt.figure()
+plt.plot(x,oR)
 #plt.plot(x,outM)
+diferencia = oR-density
 
 #simps(simps(z, y), x)
