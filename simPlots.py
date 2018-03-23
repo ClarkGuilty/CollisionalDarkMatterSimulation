@@ -40,8 +40,8 @@ oR = np.loadtxt("oR.dat")
 
 x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 #plt.plot(x,inF)
-plt.plot(x,oR, color = 'black')
-plt.savefig("potencial.png")
+#plt.plot(x,oR, color = 'black')
+#plt.savefig("potencial.png")
 #plt.scatter(x,density, color ='g')
 
 #Verifica que el arreglo final luego de un loop sea igual al inicial.
@@ -53,7 +53,9 @@ plt.savefig("potencial.png")
 
 #plt.plot(x,np.sin(x))
 #plt.plot(x,outF1)
-#plt.plot(x,outF1)
+plt.plot(x,outF)
+h = plt.figure()
+plt.plot(x,density)
 outM = np.sqrt(outF1*outF1+outF*outF)
 #plt.plot(x,outM)
 
