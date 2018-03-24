@@ -13,27 +13,27 @@ Primer Bosquejo. 1D con método de fourier.
 #define PI 3.14159265359
 
 //Valores límites para la posición.
-#define Xmin -4
-#define Xmax 4
+#define Xmin -1
+#define Xmax 1
 
 //Valores límites para la velocidad
-#define Vmin -2
-#define Vmax 2
+#define Vmin -1
+#define Vmax 1
 
 //Tamaño del espacio
 #define Nx 1024
 #define Nv 1024
 
 //Constantes de unidades
-#define alpha 6.171
-#define aMetros 22
-#define aSegundos 15
-#define aMasasSol 6
-#define aKilogramo 36
+#define alpha 5.402
+#define aMetros 24
+#define aSegundos 18
+#define aMasasSol 11
 
 //Arreglos
 double phase[Nx][Nv];
 double *density;
+double *pot;
 double *acce;
 
 //Variables
@@ -61,6 +61,8 @@ double convertir(double valor, int unidad);
 int main()
 {
     density = malloc((sizeof(double)*Nx));
+    acce = malloc((sizeof(double)*Nx));
+    pot = malloc((sizeof(double)*Nx));
 	constantes = fopen("constants.dat","w+");
 	printConstant("Xmin",Xmin);
 	printConstant("Xmax",Xmax);
@@ -74,7 +76,7 @@ int main()
 		for(j=0;j<Nv;j+=1){
 			x = Xmin*1.0+dx*i;
 			v = Vmin*1.0+dv*j;
-			phase[i][j] = gaussD(x,v,1,2, 0100); //0.1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
+			phase[i][j] = gaussD(x,v,1,10,1 ); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
 				}
 			}
 	printPhase("grid.dat");
@@ -217,8 +219,8 @@ double vFourier()
     //out2[0] = mem[0];
     out[0] = mem[0];
     for(i=1;i<Nx;i+=1){
-      //out[i] = -mem[i]/calcK2((double)i);
-    out[i] = mem[i];
+      out[i] = -mem[i]/calcK2((double)i);
+    //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
     //out2[i] = mem[i];
 
 
@@ -237,6 +239,7 @@ double vFourier()
 //    }
 
     for(i=0;i<Nx;i+=1){
+        pot[i] = creal(inR[i]/Nx);
         fprintf(oR, "%f\n",creal(inR[i])/Nx);
         fprintf(oI, "%f\n",cimag(inR[i])/Nx);
     }
@@ -256,7 +259,7 @@ double vFourier()
 //Calcula el k**2 de mis notas.
 double calcK2(double j2)
 {
-    if((j2 == Nx/2.0 || j2 == 0)){
+    if((j2 == Nx/2.0)){
         return 1.0;
     }
     double k2= 2.0*sin(dx*PI*j2)/dx;
@@ -275,19 +278,14 @@ double giveDensity(int l)
 double convertir(double valor, int unidad )
 {
     if(unidad == aMasasSol){
-        return 1.988*4*PI*alpha*pow(10,aMasasSol)*valor;
+        return valor/(1.988*4*PI*alpha*(6.674)*pow(10,-aMasasSol));
     }
     if(unidad == aMetros){
-        return alpha * pow(10,aMetros)*valor;
+        return valor/(alpha * pow(10,-aMetros));
     }
     if( unidad == aSegundos){
-        return alpha*pow(10,aSegundos)*valor;
+        return valor/(alpha*pow(10,-aSegundos));
     }
-    else {
-        return 4*PI*alpha*pow(10,aSegundos)*valor;
-    }
-
-
 }
 
 

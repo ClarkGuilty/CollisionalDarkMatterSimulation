@@ -9,4 +9,4 @@ grid.dat: simulacion.c
 .PHONY: clean
 clean:
 	@echo eliminando archivos temporales
-	rm density.dat grid.dat heh.a
+	rm density.dat grid.dat heh.a oI.dat oR.dat outF0.dat outF1.dat inF.dat

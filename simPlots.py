@@ -11,7 +11,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy as sc
 
-dat = np.loadtxt("grid.dat")
+#dat = np.loadtxt("grid.dat")
 density = np.loadtxt("density.dat")
 constantes = np.loadtxt("constants.dat", usecols = 1)
 inF = np.loadtxt("inF.dat")
@@ -53,9 +53,14 @@ x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 
 #plt.plot(x,np.sin(x))
 #plt.plot(x,outF1)
-plt.plot(x,density)
+plt.plot(density)
+plt.savefig("density.png")
+h = plt.figure()
+plt.plot(outF)
+plt.savefig("Fourier.png")
 h = plt.figure()
 plt.plot(x,oR)
+plt.savefig("Potencial.png")
 #plt.plot(x,outM)
 diferencia = oR-density
 

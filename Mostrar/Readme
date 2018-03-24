@@ -1,0 +1,17 @@
+El makefile "make" corre el C, realiza los plots en python y borra los archivos temporales. Solo quedan las imagenes de densidad, su transformada de fourier y el potencial. 
+
+Actualmente las unidades son:
+
+5.402 x 10 ^-24 = m
+5.402 x 10 ^-18 = s
+9.052 x 10 ^-9  = Masas solares
+
+Y se tomó como referencia:
+
+4*pi*G = 1
+1000 km/s = 1
+12MPc = 2 (para que -1 y 1 representen los extremos de un cluster de 12 MPc)0000
+
+Con estas condiciones y con una gaussiana de sx = 0.3 (Así el cluster va de -1 a 1 con un tamaño equivalente a 12 MPc) , sv = 1 (equivale a una dispersión de velocidad de 1000 km/s) y amplitud A = 1000, la masa total del cluster es del orden de 10^14 masas solares.
+
+Parece ser que con las correcciones del código, la transformada de fourier siempre se realiza exitosamente. Se puede observar una imágen del error en la carpeta "Mostar"
