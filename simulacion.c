@@ -21,8 +21,8 @@ Primer Bosquejo. 1D con método de fourier.
 #define Vmax 1
 
 //Tamaño del espacio
-#define Nx 1024
-#define Nv 1024
+#define Nx 2048
+#define Nv 2048
 
 //Constantes de unidades
 #define alpha 5.402
@@ -30,8 +30,11 @@ Primer Bosquejo. 1D con método de fourier.
 #define aSegundos 18
 #define aMasasSol 11
 
+
 //Arreglos
 double phase[Nx][Nv];
+double phaseOld[Nx][Nv];
+double phaseTemp[Nx][Nv];
 double *density;
 double *pot;
 double *acce;
@@ -40,10 +43,14 @@ double *acce;
 int i;
 int j;
 int k;
+int l;
+int i2;
+int j2;
 
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
-
+double dt = 0.05; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+int Nt = 5;
 FILE *constantes;
 
 //Métodos
@@ -53,9 +60,14 @@ double calDensity();
 void printDensity(char *name);
 void printConstant(char *name, double value);
 double giveDensity(int l);
-double vFourier();
+double potencial();
 double calcK2(double j2);
 double convertir(double valor, int unidad);
+void calAcce();
+void printAcce(char *name);
+double newij(int iin, int jin);
+void step();
+int mod(int p, int q);
 
 
 int main()
@@ -76,17 +88,28 @@ int main()
 		for(j=0;j<Nv;j+=1){
 			x = Xmin*1.0+dx*i;
 			v = Vmin*1.0+dv*j;
-			phase[i][j] = gaussD(x,v,1,10,1 ); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
+			phase[i][j] = gaussD(x,v,0.1,0.1,4); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
+			phaseOld[i][j] = 0;
+			phaseTemp[i][j] = 0;
 				}
 			}
-	printPhase("grid.dat");
+	printPhase("grid1.dat");
 	double mass = convertir(calDensity(),aMasasSol)/pow(10,14); // lo divido entre 10**14 para comparar con el coma cluster. En el cual se basó el sistema de unidades.
 	printf("%f\n",mass);
 	printDensity("density.dat");
 
-    vFourier();
+    potencial();
 
-// TODO (clarko#1#): Añadir método para calcular la aceleración.
+    calAcce();
+    printAcce("acce.dat");
+    step();
+	for(int suprai = 0; suprai<Nt;suprai+=1){
+		calDensity();
+		potencial();
+		calAcce();
+		step();
+	}
+    printPhase("grid2.dat");
 
 
 	fclose(constantes);
@@ -96,6 +119,7 @@ int main()
 
 
 
+//Imprime el espacio de fase con el String name como nombre.
 void printPhase(char *name)
 {
 	FILE *output = fopen(name, "w+");
@@ -108,7 +132,7 @@ void printPhase(char *name)
 	fclose(output);
 
 }
-
+//Imprime el arreglo density con el String name como nombre.
 void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
@@ -118,6 +142,7 @@ void printDensity(char *name)
 	fclose(output);
 }
 
+//Imprime las constantes de la simulación para referencia fuera del C.
 void printConstant(char *name, double value)
 {
     fprintf(constantes, "%s", name);
@@ -125,7 +150,7 @@ void printConstant(char *name, double value)
 
 }
 
-
+//Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
 double gaussD(double x, double v, double sx, double sv, double amplitude)
 {
 	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
@@ -133,6 +158,7 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 
 }
 
+//Calcula la densidad. Actualiza el arreglo density
 double calDensity()
 {
 	double mass = 0;
@@ -146,7 +172,8 @@ double calDensity()
 	return mass;
 }
 
-double vFourier()
+//Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
+double potencial()
 {
 //    double * densityIN= malloc(sizeof(double)*Nx);
 //    for(i = 0;i<Nx;i+=1){
@@ -274,7 +301,6 @@ double giveDensity(int l)
 }
 
 
-
 double convertir(double valor, int unidad )
 {
     if(unidad == aMasasSol){
@@ -288,6 +314,78 @@ double convertir(double valor, int unidad )
     }
 }
 
+void calAcce()
+{
+    for(i = 0; i<Nx ; i +=1){
+    acce[i] =  (pot[(i+1) % Nx] - pot[i])/dx;
+    }
+}
+
+void printAcce(char *name)
+{
+	FILE *output = fopen(name, "w+");
+	for(i=0;i<Nx;i+=1) {
+            fprintf(output, "%f\n",acce[i]);
+			}
+	fclose(output);
+}
+
+
+//Calcula la posición del bloque i,j en el instante actual+dt. Retorna -1 si se sale del tablero
+double newij(int iin, int jin)
+{
+        double x = Xmin*1.0+dx*iin; //Conversión estandar usada en el main durante la inicialización del phase.
+        double v = Vmin*1.0+dv*jin;
+
+
+        v += acce[iin]*dt;
+        x += v*dt;
+
+
+
+        j2 = (v-Vmin*1.0)/dx;
+        if(j2 <0 || j2 > Nv) return -1;
+        i2 = (x-Xmin*1.0)/dv;
+
+        i2 = mod((int) i2,Nx);
+
+	j2 = (int) j2;
+//	printf("%d\n",j2);
+    return 1;
+}
+
+//Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. k,i son x. j,l son v.
+void step()
+{
+	for(k = 0; k<Nx; k++){
+		for(l= 0; l<Nv; l++){
+			if(newij(k,l) >0){
+				phaseOld[k][l] = phase[k][l];
+				phaseTemp[i2][j2] += phase[k][l];
+			}
+		}
+	}
+
+	for(i = 0; i<Nx; i++){
+		for(j= 0; j<Nv; j++){
+			phase[i][j] = phaseTemp[i][j];
+		}
+	}
+
+
+
+}
+
+//Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo.
+int mod(int p, int q)
+{
+	p = p%q;
+	if(p<0){
+		 return p+q;
+	}
+	return p;
+
+}
 
 
 

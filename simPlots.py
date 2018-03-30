@@ -7,11 +7,11 @@ Script de Python para la visualización de la simulación.
 
 """
 import numpy as np
-import seaborn as sns
+#import seaborn as sns
 import matplotlib.pyplot as plt
 import scipy as sc
 
-#dat = np.loadtxt("grid.dat")
+dat = np.loadtxt("grid2.dat")
 density = np.loadtxt("density.dat")
 constantes = np.loadtxt("constants.dat", usecols = 1)
 inF = np.loadtxt("inF.dat")
@@ -19,18 +19,19 @@ outF = np.loadtxt("outF0.dat")
 outF1 = np.loadtxt("outF1.dat")
 oI = np.loadtxt("oI.dat")
 oR = np.loadtxt("oR.dat")
-
+acce = np.loadtxt("acce.dat")
 
   
 #        
 #plt.pcolormesh(dat)
-#plt.savefig("phase.png")
-#plt.figure()
-#xf = np.linspace(0,1-1/constantes[4],int(constantes[4])) //Espacio de frecuencias senoidal
-#x = np.linspace(0,2*np.pi, int(constantes[4]))           //Espacio x senoidal.
-#plt.plot(x,density)
-#plt.savefig("densidad.png")
-#plt.figure()
+plt.imshow(dat, extent=[-1,1,-1,1])
+plt.savefig("phase.png")
+plt.figure()
+xf = np.linspace(0,1-1/constantes[4],int(constantes[4])) #Espacio de frecuencias senoidal
+x = np.linspace(0,2*np.pi, int(constantes[4]))           #Espacio x senoidal.
+plt.plot(x,density)
+plt.savefig("densidad.png")
+plt.figure()
 #sns.distplot(density, kde=False, rug=True);
 
 
@@ -53,8 +54,6 @@ x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 
 #plt.plot(x,np.sin(x))
 #plt.plot(x,outF1)
-plt.plot(density)
-plt.savefig("density.png")
 h = plt.figure()
 plt.plot(outF)
 plt.savefig("Fourier.png")
@@ -62,6 +61,10 @@ h = plt.figure()
 plt.plot(x,oR)
 plt.savefig("Potencial.png")
 #plt.plot(x,outM)
+h = plt.figure()
+plt.plot(x,acce)
+plt.savefig("Aceleracion.png")
+
 diferencia = oR-density
 
 #simps(simps(z, y), x)
