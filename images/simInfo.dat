@@ -1,0 +1,5 @@
+Para la simulación se utilizó las siguientes condiciones:
+x va de -1.00 a 1.00 , v va de -1.00 a 1.00
+Una distribución gaussiana centrada en 0 para el espacio de fase con (sx sv A)=
+(0.100 0.100 4.000)
+Se simuló 30 instantes con dt = 0.100

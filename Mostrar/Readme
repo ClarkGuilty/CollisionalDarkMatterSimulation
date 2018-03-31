@@ -1,4 +1,4 @@
-El makefile "make" corre el C, realiza los plots en python y borra los archivos temporales. Solo quedan las imagenes de densidad, su transformada de fourier y el potencial. 
+El makefile "makefile" corre el C, realiza los plots en python y borra los archivos temporales. Solo quedan las imagenes de densidad, su transformada de fourier y el potencial de las condiciones iniciales, y el espacio de fase de acuerdo al instante de la simulación dado. En la carpeta se anexan imágenes de los instantes 2 a 6. 
 
 Actualmente las unidades son:
 
@@ -15,3 +15,5 @@ Y se tomó como referencia:
 Con estas condiciones y con una gaussiana de sx = 0.3 (Así el cluster va de -1 a 1 con un tamaño equivalente a 12 MPc) , sv = 1 (equivale a una dispersión de velocidad de 1000 km/s) y amplitud A = 1000, la masa total del cluster es del orden de 10^14 masas solares.
 
 Parece ser que con las correcciones del código, la transformada de fourier siempre se realiza exitosamente. Se puede observar una imágen del error en la carpeta "Mostar"
+
+Sin embargo, el valor de una unidad temporar es del orden de los 5mil millones de años, notando que la edad del universo actual no supera los 14 mil millones de años, hay que reconsiderar las unidades, en partícular 1000km/s = 1, cambiarla tal vez por 1000km/s = 0.01. 

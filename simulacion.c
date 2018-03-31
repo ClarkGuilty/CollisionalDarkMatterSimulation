@@ -13,12 +13,12 @@ Primer Bosquejo. 1D con método de fourier.
 #define PI 3.14159265359
 
 //Valores límites para la posición.
-#define Xmin -1
-#define Xmax 1
+#define Xmin -1.0
+#define Xmax 1.0
 
 //Valores límites para la velocidad
-#define Vmin -1
-#define Vmax 1
+#define Vmin -1.0
+#define Vmax 1.0
 
 //Tamaño del espacio
 #define Nx 2048
@@ -49,10 +49,10 @@ int j2;
 
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
-double dt = 0.05; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
-int Nt = 5;
+double dt = 0.1; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+int Nt = 30;
 FILE *constantes;
-
+	
 //Métodos
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -82,37 +82,56 @@ int main()
 	printConstant("Vmax",Vmax);
 	printConstant("Nx",Nx);
 	printConstant("Nv",Nv);
+	printConstant("Nt", Nt);
 	double x;
 	double v;
+	double vSx = 0.1;
+	double vSv = 0.1;
+	double ampl = 4;
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
 			x = Xmin*1.0+dx*i;
 			v = Vmin*1.0+dv*j;
-			phase[i][j] = gaussD(x,v,0.1,0.1,4); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
+			phase[i][j] = gaussD(x,v,vSx,vSv,ampl); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
 			phaseOld[i][j] = 0;
 			phaseTemp[i][j] = 0;
 				}
 			}
 	printPhase("grid1.dat");
-	double mass = convertir(calDensity(),aMasasSol)/pow(10,14); // lo divido entre 10**14 para comparar con el coma cluster. En el cual se basó el sistema de unidades.
-	printf("%f\n",mass);
+	double mass = calDensity();
+	double mass0 = convertir(calDensity(),aMasasSol)/pow(10,14); // lo divido entre 10**14 para comparar con el coma cluster. En el cual se basó el sistema de unidades.
+	printf("%f\n",mass0);
 	printDensity("density.dat");
+	FILE *simInfo = fopen("./images/simInfo.dat","w+");
+	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
+	fprintf(simInfo,"x va de %.2f a %.2f , v va de %.2f a %.2f\n", Xmin,Xmax,Vmin,Vmax);
+	fprintf(simInfo,"Una distribución gaussiana centrada en 0 para el espacio de fase con (sx sv A)=\n");
+	fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);
+	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
 
     potencial();
 
     calAcce();
     printAcce("acce.dat");
-    step();
+	char *grid = (char*) malloc(40* sizeof(char));
+
 	for(int suprai = 0; suprai<Nt;suprai+=1){
-		calDensity();
+		sprintf(grid, "./datFiles/grid%d.dat", suprai);
+		printPhase(grid);
+		step();
+		//calDensity();
+		printf("%d %f\n",suprai,calDensity()*100/mass);
+		sprintf(grid, "./datFiles/density%d.dat", suprai);
+		printDensity(grid);
 		potencial();
 		calAcce();
-		step();
+
 	}
-    printPhase("grid2.dat");
+//    printPhase("grid2.dat");
 
 
 	fclose(constantes);
+	fclose(simInfo);
 	return 0;
 
 }
@@ -153,8 +172,9 @@ void printConstant(char *name, double value)
 //Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
 double gaussD(double x, double v, double sx, double sv, double amplitude)
 {
-	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
-	return amplitude*exp(ex)/(sx*sv);
+//	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
+	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
+	return amplitude*exp(ex);
 
 }
 
@@ -343,15 +363,14 @@ double newij(int iin, int jin)
 
 
 
-        j2 = (v-Vmin*1.0)/dx;
-        if(j2 <0 || j2 > Nv) return -1;
-        i2 = (x-Xmin*1.0)/dv;
+        j2 = (v-Vmin*1.0)*Nv/(Vmax-Vmin);
+	j2 = (int) round(j2);
+        if(j2 < 0 || j2 > Nv) return -1;
+        i2 = (x-Xmin*1.0)/dx;
 
-        i2 = mod((int) i2,Nx);
-
-	j2 = (int) j2;
+        i2 = mod((int) round(i2),Nx);
 //	printf("%d\n",j2);
-    return 1;
+    return 0;
 }
 
 //Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. k,i son x. j,l son v.
@@ -359,7 +378,7 @@ void step()
 {
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
-			if(newij(k,l) >0){
+			if(newij(k,l) ==0){
 				phaseOld[k][l] = phase[k][l];
 				phaseTemp[i2][j2] += phase[k][l];
 			}
@@ -369,6 +388,7 @@ void step()
 	for(i = 0; i<Nx; i++){
 		for(j= 0; j<Nv; j++){
 			phase[i][j] = phaseTemp[i][j];
+			phaseTemp[i][j] = 0;
 		}
 	}
 

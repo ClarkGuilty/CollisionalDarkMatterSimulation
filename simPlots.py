@@ -11,27 +11,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sc
 
-dat = np.loadtxt("grid2.dat")
-density = np.loadtxt("density.dat")
+dat = np.loadtxt("./datFiles/grid0.dat")
+#density = np.loadtxt("density.dat")
 constantes = np.loadtxt("constants.dat", usecols = 1)
-inF = np.loadtxt("inF.dat")
-outF = np.loadtxt("outF0.dat")
-outF1 = np.loadtxt("outF1.dat")
-oI = np.loadtxt("oI.dat")
-oR = np.loadtxt("oR.dat")
-acce = np.loadtxt("acce.dat")
+#inF = np.loadtxt("inF.dat")
+#outF = np.loadtxt("outF0.dat")
+#outF1 = np.loadtxt("outF1.dat")
+#oI = np.loadtxt("oI.dat")
+#oR = np.loadtxt("oR.dat")
+#acce = np.loadtxt("acce.dat")
 
-  
+x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 #        
 #plt.pcolormesh(dat)
-plt.imshow(dat, extent=[-1,1,-1,1])
-plt.savefig("phase.png")
-plt.figure()
+for i in range(int(constantes[6])):
+    dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i))
+    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]])
+    plt.savefig("./images/phase{:d}.png".format(i))
+    plt.clf()
+    dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))
+    plt.plot(x,dens)
+    plt.savefig("./images/density{:d}.png".format(i))
+    plt.clf()
+    
 xf = np.linspace(0,1-1/constantes[4],int(constantes[4])) #Espacio de frecuencias senoidal
-x = np.linspace(0,2*np.pi, int(constantes[4]))           #Espacio x senoidal.
-plt.plot(x,density)
-plt.savefig("densidad.png")
-plt.figure()
+#plt.plot(x,density)
+#plt.savefig("densidad.png")
+#plt.figure()
 #sns.distplot(density, kde=False, rug=True);
 
 
@@ -51,20 +57,14 @@ x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 #print "La diferencia porcentual entre el arreglo original y el arreglo un loop de fourier después es: "+ str(np.floor(diffPorc*10000)/10000)+"%"
 
 
-
-#plt.plot(x,np.sin(x))
-#plt.plot(x,outF1)
-h = plt.figure()
-plt.plot(outF)
-plt.savefig("Fourier.png")
-h = plt.figure()
-plt.plot(x,oR)
-plt.savefig("Potencial.png")
-#plt.plot(x,outM)
-h = plt.figure()
-plt.plot(x,acce)
-plt.savefig("Aceleracion.png")
-
-diferencia = oR-density
+#h = plt.figure()
+#plt.plot(outF)
+#plt.savefig("Fourier.png")
+#h = plt.figure()
+#plt.plot(x,oR)
+#plt.savefig("Potencial.png")
+#h = plt.figure()
+#plt.plot(x,acce)
+#plt.savefig("Aceleracion.png")
 
 #simps(simps(z, y), x)
