@@ -19,8 +19,8 @@ Primer Bosquejo. 1D con método de fourier.
 #define Vmax 1.0
 
 //Tamaño del espacio
-#define Nx 2048
-#define Nv 2048
+#define Nx 4096
+#define Nv 4096
 
 //Constantes de unidades
 #define alpha 5.402
@@ -50,7 +50,7 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
-double dt = 0.05; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+double dt = 0.5; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
 int Nt = 30;
 FILE *constantes;
 
@@ -88,10 +88,9 @@ int main()
 	printConstant("Nt", Nt);
 	double x;
 	double v;
-
 	double vSx = 0.1;
 	double vSv = 0.1;
-	double ampl = 400;
+	double ampl = 40;
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
 			x = Xmin*1.0+dx*i;
@@ -103,11 +102,12 @@ int main()
 			}
 	//printPhase("grid1.dat");
 	double mass = calDensity();
-	double mass0 = convertir(calDensity(),aMasasSol)/pow(10,14); // lo divido entre 10**14 para comparar con el coma cluster. En el cual se basó el sistema de unidades.
+
+	double mass0 = convertir(mass,aMasasSol)/pow(10,14); // lo divido entre 10**14 para comparar con el coma cluster. En el cual se basó el sistema de unidades.
 	printf("%f\n",mass0);
 
-
 	printDensity("density.dat");
+
 	FILE *simInfo = fopen("./images/simInfo.dat","w+");
 	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
 	fprintf(simInfo,"x va de %.2f a %.2f , v va de %.2f a %.2f\n", Xmin,Xmax,Vmin,Vmax);
@@ -118,7 +118,6 @@ int main()
     potencial();
 
     calAcce();
-
     printAcce("acce.dat");
 
 
@@ -129,7 +128,6 @@ int main()
 
         //printf("Error Mesage00\n");
 		printPhase(grid);
-        //printf("Error Mesage123\n");
 		step();
 
 		//calDensity();
@@ -282,7 +280,7 @@ double potencial()
     }
 
     fftw_execute(pIda);
-    pVuelta = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
+    pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
     double memDo;
 
     //pVuelta2 = fftw_plan_dft_c2r_1d(Nx, out2, inR, FFTW_MEASURE);
@@ -303,7 +301,7 @@ double potencial()
 
 
 
-    fftw_execute(pVuelta);
+    fftw_execute(pIda);
     //fftw_execute(pVuelta2);
 
 //        for(i=0;i<Nx;i+=1){
@@ -323,7 +321,7 @@ double potencial()
     fclose(oR);
     fclose(oI);
 
-    fftw_destroy_plan(pVuelta);
+    //fftw_destroy_plan(pVuelta);
 
 
 
@@ -361,6 +359,7 @@ double convertir(double valor, int unidad )
 }
 
 //Calcula la aceleración a partir del arreglo pot actual.
+
 //void calAcce()
 //{
 //    for(i = 0; i<Nx ; i +=1){
@@ -370,10 +369,17 @@ double convertir(double valor, int unidad )
 
 void calAcce()
 {
-    for(i = 1; i<Nx+1 ; i +=1){
-    acce[i] =  (pot[(i+1) % Nx] - pot[i-1])/(2*dx);
+    for(i = 0; i<Nx ; i +=1){
+    acce[i] =  (-pot[mod(i+1,Nx)] + pot[mod(i-1,Nx)])/(2*dx);
     }
 }
+
+//void calAcce()
+//{
+//    for(i = 0; i<Nx ; i +=1){
+//    acce[i] =  (-pot[mod(i-2,Nx)] + 8*pot[mod(i-1,Nx)]-8*pot[mod(i+1,Nx)]+pot[mod(i+2,Nx)])/(-12*dx);
+//    }
+//}
 
 //Imprime el arreglo Acce.
 void printAcce(char *name)
@@ -411,13 +417,37 @@ double newij(int iin, int jin)
         j2 = (v-Vmin*1.0)*Nv/Lv;
         j2 = round(j2);
         j2 = (int) j2;
-        if(j2 < 0 || j2 > Nv) return -1;
+        if(j2 < 0 || j2 >= Nv) return -1;
         i2 = (x-Xmin*1.0)*Nx/Lx;
         i2 = round(i2);
         i2 = mod((int) i2,Nx);
 //	printf("%d\n",j2);
     return 0;
 }
+
+
+//double newij(int iin, int jin)
+//{
+//        double x = Xmin*1.0+dx*iin; //Conversión estandar usada en el main durante la inicialización del phase.
+//        double nv = acce[iin]*dt;
+//
+//
+//        nv = (int) nv;
+//        double v = Vmin*1.0+dv*jin+nv;
+//        x += (int) (v*dt);
+//
+//
+//
+//        j2 = (v-Vmin*1.0)*Nv/Lv;
+//        j2 = round(j2);
+//        j2 = (int) j2;
+//        if(j2 < 0 || j2 >= Nv) return -1;
+//        i2 = (x-Xmin*1.0)*Nx/Lx;
+//        i2 = round(i2);
+//        i2 = mod((int) i2,Nx);
+////	printf("%d\n",j2);
+//    return 0;
+//}
 
 //Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. k,i son x. j,l son v.
 void step()
@@ -442,7 +472,7 @@ void step()
 
 }
 
-//Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo.
+//Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo con rango de 0 a q-1.
 int mod(int p, int q)
 {
 	p = p%q;

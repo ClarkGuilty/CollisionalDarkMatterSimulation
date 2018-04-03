@@ -48,12 +48,6 @@ xf = np.linspace(0,1-1/constantes[4],int(constantes[4])) #Espacio de frecuencias
 #plt.figure()
 #sns.distplot(density, kde=False, rug=True);
 
-
-
-
-
-
-x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 #plt.plot(x,inF)
 #plt.plot(x,oR, color = 'black')
 #plt.savefig("potencial.png")

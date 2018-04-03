@@ -1,5 +1,8 @@
 # Tesis
 Tesis
 
-# Thesis
-A lattice simulation of the phase space of a collisional dark matter fluid.
+Para correr la simulación se debe ejecutar en la terminal:
+make -f clean
+make
+
+
