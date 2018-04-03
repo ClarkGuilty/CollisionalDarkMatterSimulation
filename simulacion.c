@@ -12,11 +12,9 @@ Primer Bosquejo. 1D con método de fourier.
 //Constantes de la simulación.
 #define PI 3.14159265359
 
-//Valores límites para la posición.
+//Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-
-//Valores límites para la velocidad
 #define Vmin -1.0
 #define Vmax 1.0
 
@@ -32,9 +30,10 @@ Primer Bosquejo. 1D con método de fourier.
 
 
 //Arreglos
-double phase[Nx][Nv];
-double phaseOld[Nx][Nv];
-double phaseTemp[Nx][Nv];
+double phase[Nx][Nv] = {0};
+
+double phaseOld[Nx][Nv] = {0};
+double phaseTemp[Nx][Nv] = {0};
 double *density;
 double *pot;
 double *acce;
@@ -46,13 +45,15 @@ int k;
 int l;
 int i2;
 int j2;
-
+double Lx = Xmax- Xmin;
+double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
-double dt = 0.1; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+
+double dt = 0.05; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
 int Nt = 30;
 FILE *constantes;
-	
+
 //Métodos
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -68,6 +69,7 @@ void printAcce(char *name);
 double newij(int iin, int jin);
 void step();
 int mod(int p, int q);
+void printPot(char *name);
 
 
 int main()
@@ -75,6 +77,7 @@ int main()
     density = malloc((sizeof(double)*Nx));
     acce = malloc((sizeof(double)*Nx));
     pot = malloc((sizeof(double)*Nx));
+
 	constantes = fopen("constants.dat","w+");
 	printConstant("Xmin",Xmin);
 	printConstant("Xmax",Xmax);
@@ -85,9 +88,10 @@ int main()
 	printConstant("Nt", Nt);
 	double x;
 	double v;
+
 	double vSx = 0.1;
 	double vSv = 0.1;
-	double ampl = 4;
+	double ampl = 400;
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
 			x = Xmin*1.0+dx*i;
@@ -97,10 +101,12 @@ int main()
 			phaseTemp[i][j] = 0;
 				}
 			}
-	printPhase("grid1.dat");
+	//printPhase("grid1.dat");
 	double mass = calDensity();
 	double mass0 = convertir(calDensity(),aMasasSol)/pow(10,14); // lo divido entre 10**14 para comparar con el coma cluster. En el cual se basó el sistema de unidades.
 	printf("%f\n",mass0);
+
+
 	printDensity("density.dat");
 	FILE *simInfo = fopen("./images/simInfo.dat","w+");
 	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
@@ -112,19 +118,32 @@ int main()
     potencial();
 
     calAcce();
+
     printAcce("acce.dat");
-	char *grid = (char*) malloc(40* sizeof(char));
+
+
 
 	for(int suprai = 0; suprai<Nt;suprai+=1){
+        char *grid = (char*) malloc(200* sizeof(char));
 		sprintf(grid, "./datFiles/grid%d.dat", suprai);
+
+        //printf("Error Mesage00\n");
 		printPhase(grid);
+        //printf("Error Mesage123\n");
 		step();
+
 		//calDensity();
 		printf("%d %f\n",suprai,calDensity()*100/mass);
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
+
 		potencial();
+		sprintf(grid, "./datFiles/potential%d.dat", suprai);
+		printPot(grid);
 		calAcce();
+		sprintf(grid, "./datFiles/acce%d.dat", suprai);
+		printAcce(grid);
+		free(grid);
 
 	}
 //    printPhase("grid2.dat");
@@ -142,12 +161,17 @@ int main()
 void printPhase(char *name)
 {
 	FILE *output = fopen(name, "w+");
+
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
+          //      printf("ignorarPrimero\n");
 			fprintf(output,"%f ", phase[i][j]);
-				}
+        //printf("Error MesagenoIgno\n");
+        }
 		fprintf(output,"\n");
+		//printf("%d\n", i);
 			}
+
 	fclose(output);
 
 }
@@ -172,8 +196,9 @@ void printConstant(char *name, double value)
 //Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
 double gaussD(double x, double v, double sx, double sv, double amplitude)
 {
-//	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
-	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
+	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
+//	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
+
 	return amplitude*exp(ex);
 
 }
@@ -256,7 +281,8 @@ double potencial()
 
     }
 
-    pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
+    fftw_execute(pIda);
+    pVuelta = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
     double memDo;
 
     //pVuelta2 = fftw_plan_dft_c2r_1d(Nx, out2, inR, FFTW_MEASURE);
@@ -277,7 +303,7 @@ double potencial()
 
 
 
-    fftw_execute(pIda);
+    fftw_execute(pVuelta);
     //fftw_execute(pVuelta2);
 
 //        for(i=0;i<Nx;i+=1){
@@ -297,7 +323,7 @@ double potencial()
     fclose(oR);
     fclose(oI);
 
-
+    fftw_destroy_plan(pVuelta);
 
 
 
@@ -313,14 +339,14 @@ double calcK2(double j2)
     return pow(k2,2);
 }
 
-//Método para evitar efectos misticos relacionado a pointers.
+//Método para evitar efectos misticos en la memoria.
 double giveDensity(int l)
 {
     double rta = density[l];
     return rta;
 }
 
-
+//Convierte unidades de la simulación a masas solares, metros, o segundos.
 double convertir(double valor, int unidad )
 {
     if(unidad == aMasasSol){
@@ -334,18 +360,37 @@ double convertir(double valor, int unidad )
     }
 }
 
+//Calcula la aceleración a partir del arreglo pot actual.
+//void calAcce()
+//{
+//    for(i = 0; i<Nx ; i +=1){
+//    acce[i] =  (pot[(i+1) % Nx] - pot[i])/dx;
+//    }
+//}
+
 void calAcce()
 {
-    for(i = 0; i<Nx ; i +=1){
-    acce[i] =  (pot[(i+1) % Nx] - pot[i])/dx;
+    for(i = 1; i<Nx+1 ; i +=1){
+    acce[i] =  (pot[(i+1) % Nx] - pot[i-1])/(2*dx);
     }
 }
 
+//Imprime el arreglo Acce.
 void printAcce(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
             fprintf(output, "%f\n",acce[i]);
+			}
+	fclose(output);
+}
+
+//Imprime el arreglo Pot
+void printPot(char *name)
+{
+	FILE *output = fopen(name, "w+");
+	for(i=0;i<Nx;i+=1) {
+            fprintf(output, "%f\n",pot[i]);
 			}
 	fclose(output);
 }
@@ -363,12 +408,13 @@ double newij(int iin, int jin)
 
 
 
-        j2 = (v-Vmin*1.0)*Nv/(Vmax-Vmin);
-	j2 = (int) round(j2);
+        j2 = (v-Vmin*1.0)*Nv/Lv;
+        j2 = round(j2);
+        j2 = (int) j2;
         if(j2 < 0 || j2 > Nv) return -1;
-        i2 = (x-Xmin*1.0)/dx;
-
-        i2 = mod((int) round(i2),Nx);
+        i2 = (x-Xmin*1.0)*Nx/Lx;
+        i2 = round(i2);
+        i2 = mod((int) i2,Nx);
 //	printf("%d\n",j2);
     return 0;
 }

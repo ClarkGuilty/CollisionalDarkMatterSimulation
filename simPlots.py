@@ -33,6 +33,14 @@ for i in range(int(constantes[6])):
     plt.plot(x,dens)
     plt.savefig("./images/density{:d}.png".format(i))
     plt.clf()
+    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
+    plt.plot(x,potential)
+    plt.savefig("./images/potential{:d}.png".format(i))
+    plt.clf()
+    acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
+    plt.plot(x,acce)
+    plt.savefig("./images/acce{:d}.png".format(i))
+    plt.clf()
     
 xf = np.linspace(0,1-1/constantes[4],int(constantes[4])) #Espacio de frecuencias senoidal
 #plt.plot(x,density)

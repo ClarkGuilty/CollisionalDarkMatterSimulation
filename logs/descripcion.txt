@@ -1,0 +1,1 @@
+A lattice Boltzmann simulation of the phase space of a dark matter collisional fluid. In order to simulate the phase space of galaxy clusters, the simulation uses a gaussian distribution as initial conditions. Based on the results of the simulation some margins for the cross section of a hypothetical dark matter can be produced.
