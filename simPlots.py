@@ -26,7 +26,9 @@ x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 #plt.pcolormesh(dat)
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i))
-    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]])
+    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
+    #plt.pcolormesh(dat)
+    #plt.pcolor(dat) Nunca usar para grandes grillas	
     plt.savefig("./images/phase{:d}.png".format(i))
     plt.clf()
     dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))

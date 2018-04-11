@@ -22,11 +22,12 @@ Primer Bosquejo. 1D con método de fourier.
 #define Nx 4096
 #define Nv 4096
 
-//Constantes de unidades
-#define alpha 5.402
-#define aMetros 24
-#define aSegundos 18
-#define aMasasSol 11
+//Constantes de unidades - Procurar que los a* sean diferentes
+#define aMetros 18
+#define aSegundos 14
+#define aByear 4
+#define aMasasSol 5
+#define G 0.859148
 
 
 //Arreglos
@@ -51,10 +52,8 @@ double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
 double dt = 0.5; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
-int Nt = 30;
+int Nt = 50;
 FILE *constantes;
-
-//Métodos
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
 double calDensity();
@@ -74,6 +73,7 @@ void printPot(char *name);
 
 int main()
 {
+    dt = dt*dx/dv;
     density = malloc((sizeof(double)*Nx));
     acce = malloc((sizeof(double)*Nx));
     pot = malloc((sizeof(double)*Nx));
@@ -90,7 +90,7 @@ int main()
 	double v;
 	double vSx = 0.1;
 	double vSv = 0.1;
-	double ampl = 40;
+	double ampl = 4;
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
 			x = Xmin*1.0+dx*i;
@@ -103,8 +103,8 @@ int main()
 	//printPhase("grid1.dat");
 	double mass = calDensity();
 
-	double mass0 = convertir(mass,aMasasSol)/pow(10,14); // lo divido entre 10**14 para comparar con el coma cluster. En el cual se basó el sistema de unidades.
-	printf("%f\n",mass0);
+	printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt,aByear),Nt, convertir(dt,aByear));
+	printf("La masa fue %f masas coma\n",convertir(mass, aMasasSol)/1e14);
 
 	printDensity("density.dat");
 
@@ -119,7 +119,7 @@ int main()
 
     calAcce();
     printAcce("acce.dat");
-
+    printf("G es %f\n", G*1.0);
 
 
 	for(int suprai = 0; suprai<Nt;suprai+=1){
@@ -197,6 +197,7 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
 //	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
 
+	//return amplitude*exp(ex)/(2*PI*sx*sv);
 	return amplitude*exp(ex);
 
 }
@@ -288,9 +289,9 @@ double potencial()
 
     //Devuelve carga a out Î(Chi).
     //out2[0] = mem[0];
-    out[0] = mem[0];
+    out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
-      out[i] = -mem[i]/calcK2((double)i);
+      out[i] = -4*PI*G*mem[i]/calcK2((double)i);
     //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
     //out2[i] = mem[i];
 
@@ -347,14 +348,19 @@ double giveDensity(int l)
 //Convierte unidades de la simulación a masas solares, metros, o segundos.
 double convertir(double valor, int unidad )
 {
+    double cSeg = 2.2930;
+    double cMet = 3.2407;
     if(unidad == aMasasSol){
-        return valor/(1.988*4*PI*alpha*(6.674)*pow(10,-aMasasSol));
+        return valor * pow(10, aMasasSol);
     }
     if(unidad == aMetros){
-        return valor/(alpha * pow(10,-aMetros));
+        return valor/(cMet * pow(10, -aMetros));
+    }
+    if( unidad == aByear){
+        return valor* 13820* pow(10, -aByear);
     }
     if( unidad == aSegundos){
-        return valor/(alpha*pow(10,-aSegundos));
+        return valor/(cSeg*pow(10,-aSegundos));
     }
 }
 
@@ -362,24 +368,26 @@ double convertir(double valor, int unidad )
 
 //void calAcce()
 //{
-//    for(i = 0; i<Nx ; i +=1){
-//    acce[i] =  (pot[(i+1) % Nx] - pot[i])/dx;
+//    for(i=1;i<Nx-1;i++){
+//        acce[i]=(-pot[i]+pot[i-1])/(dx);
+//  }
+//    acce[0]=-(pot[0]-pot[Nx-1])/(dx);
+//    acce[Nx-1]=-(pot[Nx-1]-pot[Nx-2])/(dx);
+//}
+
+//void calAcce()
+//{
+//    for(i = 0; i<Nx ; i    +=1){
+//    acce[i] =  (-pot[mod(i+1,Nx)] + pot[mod(i-1,Nx)])/(2*dx);
 //    }
 //}
 
 void calAcce()
 {
     for(i = 0; i<Nx ; i +=1){
-    acce[i] =  (-pot[mod(i+1,Nx)] + pot[mod(i-1,Nx)])/(2*dx);
+    acce[i] =  (-pot[mod(i-2,Nx)] + 8*pot[mod(i-1,Nx)]-8*pot[mod(i+1,Nx)]+pot[mod(i+2,Nx)])/(12*dx);
     }
 }
-
-//void calAcce()
-//{
-//    for(i = 0; i<Nx ; i +=1){
-//    acce[i] =  (-pot[mod(i-2,Nx)] + 8*pot[mod(i-1,Nx)]-8*pot[mod(i+1,Nx)]+pot[mod(i+2,Nx)])/(-12*dx);
-//    }
-//}
 
 //Imprime el arreglo Acce.
 void printAcce(char *name)
@@ -403,51 +411,61 @@ void printPot(char *name)
 
 
 //Calcula la posición del bloque i,j en el instante actual+dt. Retorna -1 si se sale del tablero
-double newij(int iin, int jin)
-{
-        double x = Xmin*1.0+dx*iin; //Conversión estandar usada en el main durante la inicialización del phase.
-        double v = Vmin*1.0+dv*jin;
-
-
-        v += acce[iin]*dt;
-        x += v*dt;
-
-
-
-        j2 = (v-Vmin*1.0)*Nv/Lv;
-        j2 = round(j2);
-        j2 = (int) j2;
-        if(j2 < 0 || j2 >= Nv) return -1;
-        i2 = (x-Xmin*1.0)*Nx/Lx;
-        i2 = round(i2);
-        i2 = mod((int) i2,Nx);
-//	printf("%d\n",j2);
-    return 0;
-}
-
-
 //double newij(int iin, int jin)
 //{
 //        double x = Xmin*1.0+dx*iin; //Conversión estandar usada en el main durante la inicialización del phase.
-//        double nv = acce[iin]*dt;
+//        double v = Vmin*1.0+dv*jin;
 //
 //
-//        nv = (int) nv;
-//        double v = Vmin*1.0+dv*jin+nv;
-//        x += (int) (v*dt);
+//        v += acce[iin]*dt;
+//        x += v*dt;
 //
 //
 //
 //        j2 = (v-Vmin*1.0)*Nv/Lv;
 //        j2 = round(j2);
 //        j2 = (int) j2;
-//        if(j2 < 0 || j2 >= Nv) return -1;
+//        if(j2 <= 0 || j2 > Nv) return -1;
 //        i2 = (x-Xmin*1.0)*Nx/Lx;
 //        i2 = round(i2);
+////        if(i2 >= Nx){
+////            printf("i = %d\n", i2);
+////        }
 //        i2 = mod((int) i2,Nx);
 ////	printf("%d\n",j2);
 //    return 0;
 //}
+
+
+//Version que discretiza los cambios y no el nuevo valor.
+double newij(int iin, int jin)
+{
+        double x = Xmin*1.0+dx*iin; //Inicialización
+
+
+        double v = acce[iin]*dt;
+        double dj = v/dv;
+        dj = (int)dj;
+        j2 = jin+dj;
+
+
+
+
+
+        if(j2 < 0 || j2 >= Nv) return -1;
+//        if(i2 >= Nx){
+//            printf("i = %d\n", i2);
+//        }
+        v = Vmin*1.0+dv*j2;
+        x = v*dt;
+        double di = x/dx;
+        di = (int) di;
+
+        i2 = iin + di;
+        i2 = mod(i2,Nx);
+//	printf("%d\n",j2);
+    return 0;
+}
 
 //Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. k,i son x. j,l son v.
 void step()

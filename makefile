@@ -1,7 +1,9 @@
 all: images .PHONY
 
-images: simulacion.c
+
+images: 
 	@echo Preparando y corriendo la simulación:
+	#@make -f clean >/dev/null; true
 	mkdir datFiles
 	mkdir images
 	gcc -o heh.a -I/usr/include -L/usr/lib/x86_64-linux-gnu simulacion.c -lfftw3 -lm
