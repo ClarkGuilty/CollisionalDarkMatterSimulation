@@ -1,0 +1,192 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage[spanish]{babel}
+
+
+\usepackage[spanish]{babel} % silabea palabras castellanas <- Puedo poner comentarios para explicar de que va este comando en la misma línea
+
+%Encoding
+\usepackage[utf8]{inputenc} % Acepta caracteres en castellano
+\usepackage[T1]{fontenc} % Encoding de salida al pdf
+
+%Triunfó el mal
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+\usepackage{textcomp}
+\usepackage{gensymb}
+
+
+%Hipertexto
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue]{hyperref} % navega por el doc: hipertexto y links
+
+%Aquello de las urls
+\usepackage{url} 
+
+%simbolos matemáticos
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{physics} %Best pack
+
+% permite insertar gráficos, imágenes y figuras, en pdf o en eps
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[export]{adjustbox}
+% geometría del documento, encabezados y pies de páginas, márgenes
+\usepackage{geometry}
+\usepackage{comment}
+
+%\usepackage[english]{babel}
+%\usepackage[latin5]{inputenc}
+% \usepackage{hyperref}
+%\newdate{date}{10}{05}{2013}
+%\date{\displaydate{date}}
+\begin{document}
+
+\begin{center}
+\Huge
+Simulación de materia oscura colisional con métodos de Lattice-Boltzmann
+
+\vspace{3mm}
+\Large Javier Alejandro Acevedo Barroso
+
+\large
+201422995
+
+
+\vspace{2mm}
+\Large
+Director: Jaime Ernesto Forero Romero
+
+\normalsize
+\vspace{2mm}
+
+\today
+\end{center}
+
+
+\normalsize
+\newpage
+\section{Introduccion}
+La cosmología moderna y los datos más recientes del satélite Planck indican que la materia ordinaria (materia bariónica) representa solo el 5 \% de la energía del universo, la energía oscura representa el 69 \% y la materia oscura el 26 \% \cite{planckCitetion}.
+
+Tradicionalmente, las simulaciones de materia oscura asumen que esta interactua solo gravitacionalmente. Este paradigma ha sido bastante exitoso explicando el universo a larga escala, sin embargo se observan inconsistencias para el universo a pequeña escala. En primer lugar, las mediciones más precisas de galaxias enanas muestran distribuciones de materia oscura con nucleos en lugar de cuspides, que es lo predicho por el paradigma no colisional. Así mismo, se ha observado que los subhalos más masivos en las simulaciones no colisionales de la Vía Láctea son demasiado densos pasa albergar las galaxias satélite más brillantes\cite{beyondColl}. Por lo anterior, hay razones para considerar simulaciones de materia oscura colisional. Adicionalmente, la física de partículas tiene límites para la sección transversal de la partícula de materia oscura que pueden ser utilizados en la simulación.
+
+Para el operador colisional, se asume que hay equilibrio dinámico, por lo tanto, la distribución de equilibrio es una distribución de Fermi-Dirac o de Bose-Einstein. Usando la definición estándar de la sección transversal de dispersión y la velocidad relativa entre las partículas, se obtiene para el término colisional\cite{mariangela}:
+\begin{equation}
+\dot{n} = \expval{v \sigma} (n_{eq}^2 - n^2)
+\label{colision}
+\end{equation}
+%Introducción a la propuesta de Monografía. Debe incluir un breve resumen del estado del arte del problema a tratar. También deben aparecer citadas todas las referencias de la bibliografía (a menos de que se citen más adelante, en los objetivos o metodología, por ejemplo)
+
+El método de Lattice-Boltzmann es un método computacional en el cual se discretiza el espacio de fase y se resuelve numéricamente la ecuación de Lattice-Boltzmann. Esta ecuación no es más que la versión discreta de la ecuación de Boltzmann y converge a esta para una resolución lo suficientemente alta. Existen numerosos métodos para simular el espacio de fase como los métodos de N-cuerpos con Particle Mesh o los esquemas de integración directa con Volumenes Finitos. Se elige usar el método de Lattice-Boltzmann porque; además de ser un método conservativo, lagrangiano, no difusivo y reversible; la literatura respecto a su uso en materia oscura es escasa.
+
+Las principales ventajas del algoritmo es que es lagrangiano, conservativo y completamente reversible.\cite{integerLatticeDynamics} Adicionalmente, la reversibilidad del algoritmo permite reducir el costo de memoria a cambio de aumentar el costo computacional. La principal desventaja del algoritmo es el costo en memoria al aumentar las dimensiones de la simulación, pues este es proporcional a $N^{2d}$ donde $N$ es la resolución por dimensión lineal del espacio de fase y $d$ es el número de dimensiones espaciales.
+
+\section{Objetivo General}
+
+
+Simular el espacio de fase de un fluido de materia oscura colisional con un método de Lattice-Boltzmann.
+%Objetivo general del trabajo. Empieza con un verbo en infinitivo.
+
+
+
+\section{Objetivos Específicos}
+
+%Objetivos específicos del trabajo. Empiezan con un verbo en infinitivo.
+
+\begin{itemize}
+	\item Implementar una simulación de lattice-Boltzmann en 2D con término colisional.
+	\item Implementar una simulación de lattice-Boltzmann en 3D con término colisional
+	\item Estudiar el comportamiento dinámico de la materia oscura con diferentes distribuciones de equilibrio para el término colisional.
+	\item Comparar la evolución del espacio de fase para el fluido colisional, con su versión no colisional.
+\end{itemize}
+
+\section{Metodología}
+
+%Exponer DETALLADAMENTE la metodología que se usará en la Monografía. 
+Partiendo de la naturaleza computacional de la monografía, esta se realizará en un computador de escritorio comercial. No se requiere el uso de un cluster ni de recursos computacionales especiales.
+
+
+La implementación comienza discretizando el espacio de fase y definiendo los límites a usar. El espacio de fase se convierte en un arreglo $2d$ dimensional, donde $d$ es el número de dimensiones espaciales a simular.
+
+Tras la discretización del espacio se procede a inicializar la distribución, en este caso se utiliza por simplicidad una distribución gaussiana. Para esto, cada punto del arreglo $(i,j)$ equivale a una velocidad, una posición y una densidad de masa. Acto seguido, se integra respecto a la velocidad para obtener la densidad espacial de masa.
+
+Con la distribución de masa, se resuelve la ecuación de Poisson a través del método de transformada de Fourier para calcular el potencial gravitacional, esto se hace con ayuda de la librería FFTW3 (Fastest Fourier Transform in the West) debido a    su fácil uso y alta velocidad\cite{franco}
+
+Una vez se tiene el potencial, se deriva numéricamente para calcular la aceleración y luego se procede a actualizar el espacio de fase. Primero, se calcula el cambio de velocidad en un tiempo $\dd t$, luego, usando el operador ''entero más cercano'' $\left\lfloor{.}\right\rceil$, se calcula el traslado en el arreglo del espacio de fase. Por último, se repite el proceso para el cambio de posición.
+
+Adicionalmente, cuando la posición de una partícula sale del arreglo, se considera que una partícula idéntica entra al arreglo con la misma velocidad por el extremo opuesto. Cuando la velocidad de una partícula sale del arreglo se considera que la partícula se perdió.
+%Monografía teórica o computacional: ¿Cómo se harán los cálculos teóricos? ¿Cómo se harán las simulaciones? ¿Qué requerimientos computacionales se necesitan? ¿Qué espacios físicos o virtuales se van a utilizar?
+
+Una vez actualizado el espacio de fase, se procede al cálculo del término colisional. De la introducción tenemos \ref{colision}:
+
+\begin{equation}
+\dv{n}{t} = \expval{v \sigma} (n_{eq}^2 - n^2)
+\end{equation}
+
+Utilizando distribuciones de Fermi-Dirac y de Bose-Einstein como distribución de equilibrio, se resuelve para $n_{t+\dd t}$
+\begin{equation}
+n_{t+\dd t} = n_t + \expval{v \sigma} (n_{eq}^2 - n_t^2) \dd t
+\end{equation}
+
+\section{Consideraciones Éticas}
+
+%Esta sección debe incluir los detalles relacionados con aspectos éticos involucrados en el proyecto. Por ejemplo, se puede describir el protocolo establecido para el manejo de datos de manera que se asegure que no habrá manipulación de la información, ni habrá plagio de los mismos. También se puede tener en cuenta si hay algún conflicto de intereses involucrado en el desarrollo del proyecto o se puede detallar si el trabajo está relacionado con las actividades y poblaciones humanas mencionadas en el siguiente link https://ciencias.uniandes.edu.co/investigacion/comite-de-etica. Es importante tener en cuenta que esta sección debe incluir una frase explícita sobre si el proyecto debe pasar o no a estudio del comité de ética de la Facultad de Ciencias.
+Dada la naturaleza computacional de la monografía, el proyecto no debe pasar a estudio por el comité de ética de la Facultad de Ciencias. 
+
+\section{Cronograma}
+
+\begin{table}[htb]
+	\begin{tabular}{|c|cccccccccccccccc| }
+	\hline
+	Tareas $\backslash$ Semanas & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16  \\
+	\hline
+	1 & X & X & X  &   &   &   &   &  &  &   &   &   &   &   &   &   \\
+	2 &   &  & X & X & X &  &  &   &   &  &  &  &   &  &  &   \\
+	3 &   &   &   &  & X  & X  & X  & X &   &   &   &  &   &   &  &   \\
+	4 &  &  &  &  &  &  &  & X & X & X & X &   &   &   &   &   \\
+    5 &  &  &  &  &  &  & X & X &  &  &  &   &   &   &   &   \\
+	6 &   &   &   &   &  &   &  X & X  &  &   &  X & X &  X & X  & X &   \\
+	\hline
+	\end{tabular}
+\end{table}
+\vspace{1mm}
+
+\begin{itemize}
+	\item Tarea 1: implementar la simulación en 2D sin término colisional.
+	\item Tarea 2: implementar el término colisional en 2D.
+	\item Tarea 3: implementar la simulación en 3D sin término colisional.
+    \item Tarea 4: implementar el término colisional en 3D.
+    \item Tarea 5: preparar y presentar el avance del 30\%.
+    \item Tarea 6: escribir el documento de monografía.
+    
+\end{itemize}
+
+\section{Personas Conocedoras del Tema}
+
+%Nombres de por lo menos 3 profesores que conozcan del tema. Uno de ellos debe ser profesor de planta de la Universidad de los Andes.
+
+\begin{itemize}
+	\item Jaime Ernesto Forero Romero (Universidad de los Andes)
+	\item Carlos Andrés Flórez Bustos (Universidad de los Andes)
+	\item Juan Carlos Sanabria Arenas (Universidad de los Andes)
+\end{itemize}
+
+
+\bibliography{bibTes}{}
+\bibliographystyle{plain}
+
+\section*{Firma del Director}
+\vspace{1.5cm}
+
+
+
+
+\end{document} 
