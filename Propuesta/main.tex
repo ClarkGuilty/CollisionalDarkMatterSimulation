@@ -78,38 +78,71 @@ La cosmología moderna infiere que la materia ordinaria (materia
 bariónica) representa s\'olo el 5 \% de la energía del universo, la
 energía oscura representa el 69 \% y la materia oscura el 26 \%
 \cite{planckCitetion}.   
+La presencia de la materia oscura se infiera a trav\'es de los efectos
+gravitacionales que produce, pero a\'un no es claro a que tipo de
+part\'icula fundamental por fuera del modelo est\'andar debe
+corresponder. 
 
-El principal problema a la hora de estudiar la materia oscura es que al día de hoy solo se ha podido observar su interacción gravitacional. Afortunadamente, gracias al desarrollo de la cosmología moderna y la computación, se ha podido simular numéricamente diferentes tipos posibles de materia oscura. En particular, las simulaciones numéricas permitieron estudiar candidatos relativistas (calientes) y no relativistas (fríos) de materia oscura y, comparando las estructuras generadas en la simulación con los surveys galácticos disponibles, se concluyó que la materia oscura debía ser no relativista. Tras este éxito inicial, nace el campo de las simulaciones numéricas de materia oscura.\cite{aHistory}
+Sin embargo es posible simular numéricamente la evoluci\'on temporal
+de un distribuci\'on arbitraria de diferentes tipos posibles de
+materia oscura. 
+Por ejemplo,  simulaciones numéricas permitieron estudiar candidatos
+relativistas (calientes) y no relativistas (fríos) de materia oscura
+y, comparando las estructuras generadas en la simulación con los
+surveys galácticos disponibles, se concluyó que la materia oscura
+debía ser no relativista. Tras este éxito inicial, nace el campo de
+las simulaciones numéricas de materia oscura.\cite{aHistory}  
 
-Tradicionalmente, las simulaciones de materia oscura asumen que esta
-interactua solo gravitacionalmente. Tal paradigma ha sido bastante
-exitoso explicando el universo a larga escala, sin embargo se observan
-inconsistencias para el universo a pequeña escala. En primer lugar,
-las mediciones más precisas de galaxias enanas muestran distribuciones
-de materia oscura con nucleos en lugar de cuspides, que es lo predicho
-por el paradigma no colisional. Así mismo, se ha observado que los
-subhalos más masivos en las simulaciones no colisionales de la Vía
-Láctea son demasiado densos pasa albergar las galaxias satélite más
-brillantes\cite{beyondColl}. Por lo anterior, hay razones para
-considerar simulaciones de materia oscura colisional. Adicionalmente,
-la física de partículas tiene límites para la sección transversal de
-la partícula de materia oscura que pueden ser utilizados en la
-simulación. 
+Actualmente las simulaciones de materia oscura la modelan 
+como un fluido \emph{no colisional} que interact\'ua solo gravitacionalmente. 
+Esta aproximaci\'on ha sido exitosa explicando el universo a larga
+escala, sin embargo se observan inconsistencias para el universo a
+escalas menores. 
+Por ejemplo, observaciones precisas de galaxias enanas muestran distribuciones
+de materia oscura menos densas de lo que predice la aproximaci\'on no
+colisional \cite{beyondColl}.
+Estos indicios motivan la consideraci\'on de la materia oscura
+colisional. 
+Por otro lado,  diferentes modelos de materia oscura en física de
+partículas tiene límites para la sección transversal de la partícula
+de materia oscura lo que implica que a nivel fundamental la materia
+oscura debe ser colisional.
 
-Para el operador colisional, se asume que hay equilibrio dinámico, por
-lo tanto, la distribución de equilibrio es una distribución de
-Fermi-Dirac o de Bose-Einstein. Usando la definición estándar de la
-sección transversal de dispersión y la velocidad relativa entre las
-partículas, se obtiene para el término colisional\cite{mariangela}: 
-\begin{equation}
-\dot{n} = \expval{v \sigma} (n_{eq}^2 - n^2)
-\label{colision}
-\end{equation}
+El objetivo principal de esta tesis es dejar atr\'as la aproximaci\'on
+no colisional para simular materia oscura \emph{colisional} en tres
+dimensiones espaciales.
+Para esto utilizaremos el m\'etodo de Lattice-Boltzmann 
+que  discretiza el espacio de fase de la materia oscura y se
+resuelve numéricamente la ecuación de Boltzmann. 
+
+
+Aunque existen numerosos métodos para simular el espacio de fase como
+los métodos de N-cuerpos con Particle Mesh o los esquemas de
+integración directa con Volumenes Finitos, elegimos el m\'etodo de
+Lattice-Boltzmann porque permite introducir de manera expl\'icita el
+t\'ermino colisional.
+Otras ventajas del m\'etodos es que es lagrangiano,
+conservativo y completamente reversible.\cite{integerLatticeDynamics}
+La reversibilidad del algoritmo permite reducir el
+costo de memoria a cambio de aumentar el costo computacional. 
+
+Esta tesis es una continuaci\'on directa de la tesis de Sebasti\'an
+Franco \cite{franco} quien resolvi\'o la ecuaci\'on de Boltzmann en
+una dimensi\'on espacial en el caso no colisional.
+
+
+
+%Para el operador colisional, se asume que hay equilibrio dinámico, por
+%lo tanto, la distribución de equilibrio es una distribución de
+%Fermi-Dirac o de Bose-Einstein. Usando la definición estándar de la
+%sección transversal de dispersión y la velocidad relativa entre las
+%partículas, se obtiene para el término colisional\cite{mariangela}: 
+%\begin{equation}
+%\dot{n} = \expval{v \sigma} (n_{eq}^2 - n^2)
+%\label{colision}
+%\end{equation}
 %Introducción a la propuesta de Monografía. Debe incluir un breve resumen del estado del arte del problema a tratar. También deben aparecer citadas todas las referencias de la bibliografía (a menos de que se citen más adelante, en los objetivos o metodología, por ejemplo)
 
-El método de Lattice-Boltzmann es un método computacional en el cual se discretiza el espacio de fase y se resuelve numéricamente la ecuación de Lattice-Boltzmann. Esta ecuación no es más que la versión discreta de la ecuación de Boltzmann y converge a esta para una resolución lo suficientemente alta. Existen numerosos métodos para simular el espacio de fase como los métodos de N-cuerpos con Particle Mesh o los esquemas de integración directa con Volumenes Finitos. Se elige usar el método de Lattice-Boltzmann porque; además de ser un método conservativo, lagrangiano, no difusivo y reversible; la literatura respecto a su uso en materia oscura es escasa.
-
-Las principales ventajas del algoritmo es que es lagrangiano, conservativo y completamente reversible.\cite{integerLatticeDynamics} Adicionalmente, la reversibilidad del algoritmo permite reducir el costo de memoria a cambio de aumentar el costo computacional. La principal desventaja del algoritmo es el costo en memoria al aumentar las dimensiones de la simulación, pues este es proporcional a $N^{2d}$ donde $N$ es la resolución por dimensión lineal del espacio de fase y $d$ es el número de dimensiones espaciales.
 
 \section{Objetivo General}
 
@@ -126,8 +159,10 @@ Simular el espacio de fase de un fluido de materia oscura colisional con un mét
 \begin{itemize}
 	\item Implementar una simulación de lattice-Boltzmann en 2D con término colisional.
 	\item Implementar una simulación de lattice-Boltzmann en 3D con término colisional
-	\item Estudiar el comportamiento dinámico de la materia oscura con diferentes distribuciones de equilibrio para el término colisional.
-	\item Comparar la evolución del espacio de fase para el fluido colisional, con su versión no colisional.
+	\item Estudiar el comportamiento dinámico de la materia oscura
+          con diferentes aproximaciones para el t\'ermino colisional. 
+	\item Comparar la evolución del espacio de fase para el fluido
+          colisional con su versión no colisional. 
 \end{itemize}
 
 \section{Metodología}
@@ -136,32 +171,63 @@ Simular el espacio de fase de un fluido de materia oscura colisional con un mét
 Partiendo de la naturaleza computacional de la monografía, esta se realizará en un computador de escritorio comercial. No se requiere el uso de un cluster ni de recursos computacionales especiales.
 
 
-La implementación comienza discretizando el espacio de fase y definiendo los límites a usar. El espacio de fase se convierte en un arreglo $2d$ dimensional, donde $d$ es el número de dimensiones espaciales a simular.
+La implementación comienza discretizando el espacio de fase y
+definiendo los límites a usar. El espacio de fase se convierte en un
+arreglo $2d$ dimensional, donde $d$ es el número de dimensiones
+espaciales a simular. 
 
-Tras la discretización del espacio se procede a inicializar la distribución, en este caso se utiliza por simplicidad una distribución gaussiana. Para esto, cada punto del arreglo $(i,j)$ equivale a una velocidad, una posición y una densidad de masa. Acto seguido, se integra respecto a la velocidad para obtener la densidad espacial de masa.
+Tras la discretización del espacio se procede a inicializar la
+distribución.
+Para esto, cada punto del arreglo $(i,j)$ equivale a una
+velocidad, una posición y una densidad de masa. Acto seguido, se
+integra respecto a la velocidad para obtener la densidad espacial de
+masa. 
+ 
+Con la distribución de masa, se resuelve la ecuación de Poisson a
+través del método de transformada de Fourier para calcular el
+potencial gravitacional, esto se hace con ayuda de la librería FFTW3
+(Fastest Fourier Transform in the West) debido a    su fácil uso y
+alta velocidad.
 
-Con la distribución de masa, se resuelve la ecuación de Poisson a través del método de transformada de Fourier para calcular el potencial gravitacional, esto se hace con ayuda de la librería FFTW3 (Fastest Fourier Transform in the West) debido a    su fácil uso y alta velocidad\cite{franco}
+Una vez se tiene el potencial, se deriva numéricamente para calcular
+la aceleración y luego se procede a actualizar el espacio de
+fase. Primero, se calcula el cambio de velocidad en un tiempo $\dd t$,
+luego, usando el operador ''entero más cercano''
+$\left\lfloor{.}\right\rceil$, se calcula el traslado en el arreglo
+del espacio de fase. Por último, se repite el proceso para el cambio
+de posición. 
 
-Una vez se tiene el potencial, se deriva numéricamente para calcular la aceleración y luego se procede a actualizar el espacio de fase. Primero, se calcula el cambio de velocidad en un tiempo $\dd t$, luego, usando el operador ''entero más cercano'' $\left\lfloor{.}\right\rceil$, se calcula el traslado en el arreglo del espacio de fase. Por último, se repite el proceso para el cambio de posición.
-
-Adicionalmente, cuando la posición de una partícula sale del arreglo, se considera que una partícula idéntica entra al arreglo con la misma velocidad por el extremo opuesto. Cuando la velocidad de una partícula sale del arreglo se considera que la partícula se perdió.
+Adicionalmente, cuando la posición de una partícula sale del arreglo,
+se considera que una partícula idéntica entra al arreglo con la misma
+velocidad por el extremo opuesto. Cuando la velocidad de una partícula
+sale del arreglo se considera que la partícula se perdió. 
 %Monografía teórica o computacional: ¿Cómo se harán los cálculos teóricos? ¿Cómo se harán las simulaciones? ¿Qué requerimientos computacionales se necesitan? ¿Qué espacios físicos o virtuales se van a utilizar?
 
-Una vez actualizado el espacio de fase, se procede al cálculo del término colisional. De la introducción tenemos \ref{colision}:
+
+
+Luego se procede al cálculo del efecto del término colisional sobre la
+densidad de n\'umero, $n$, con el siguiente ansatz:
 
 \begin{equation}
 \dv{n}{t} = \expval{v \sigma} (n_{eq}^2 - n^2)
 \end{equation}
 
-Utilizando distribuciones de Fermi-Dirac y de Bose-Einstein como distribución de equilibrio, se resuelve para $n_{t+\dd t}$
+Utilizando distribuciones de Fermi-Dirac y de Bose-Einstein como
+distribución de equilibrio, se resuelve para $n_{t+\dd t}$ 
 \begin{equation}
 n_{t+\dd t} = n_t + \expval{v \sigma} (n_{eq}^2 - n_t^2) \dd t
 \end{equation}
 
+Empezaremos primero implementando esta l\'ogica para dos dimensiones
+espaciales para luego pasar a tres dimensiones espaciales.
+
 \section{Consideraciones Éticas}
 
 %Esta sección debe incluir los detalles relacionados con aspectos éticos involucrados en el proyecto. Por ejemplo, se puede describir el protocolo establecido para el manejo de datos de manera que se asegure que no habrá manipulación de la información, ni habrá plagio de los mismos. También se puede tener en cuenta si hay algún conflicto de intereses involucrado en el desarrollo del proyecto o se puede detallar si el trabajo está relacionado con las actividades y poblaciones humanas mencionadas en el siguiente link https://ciencias.uniandes.edu.co/investigacion/comite-de-etica. Es importante tener en cuenta que esta sección debe incluir una frase explícita sobre si el proyecto debe pasar o no a estudio del comité de ética de la Facultad de Ciencias.
-Dada la naturaleza computacional de la monografía, el proyecto no debe pasar a estudio por el comité de ética de la Facultad de Ciencias. 
+Dada la naturaleza computacional de la monografía, el proyecto no debe
+pasar a estudio por el comité de ética de la Facultad de Ciencias.  
+Guardaremos el comportamiento adecuado al citar adecuadamente trabajo
+de otras personas.  
 
 \section{Cronograma}
 
