@@ -51,7 +51,7 @@
 
 \begin{center}
 \Huge
-Simulación de materia oscura colisional con métodos de Lattice-Boltzmann
+Simulación de materia oscura colisional con un método Lattice-Boltzmann
 
 \vspace{3mm}
 \Large Javier Alejandro Acevedo Barroso
@@ -74,11 +74,31 @@ Director: Jaime Ernesto Forero Romero
 \normalsize
 \newpage
 \section{Introduccion}
-La cosmología moderna y los datos más recientes del satélite Planck indican que la materia ordinaria (materia bariónica) representa solo el 5 \% de la energía del universo, la energía oscura representa el 69 \% y la materia oscura el 26 \% \cite{planckCitetion}.
+La cosmología moderna infiere que la materia ordinaria (materia
+bariónica) representa s\'olo el 5 \% de la energía del universo, la
+energía oscura representa el 69 \% y la materia oscura el 26 \%
+\cite{planckCitetion}.   
 
-Tradicionalmente, las simulaciones de materia oscura asumen que esta interactua solo gravitacionalmente. Este paradigma ha sido bastante exitoso explicando el universo a larga escala, sin embargo se observan inconsistencias para el universo a pequeña escala. En primer lugar, las mediciones más precisas de galaxias enanas muestran distribuciones de materia oscura con nucleos en lugar de cuspides, que es lo predicho por el paradigma no colisional. Así mismo, se ha observado que los subhalos más masivos en las simulaciones no colisionales de la Vía Láctea son demasiado densos pasa albergar las galaxias satélite más brillantes\cite{beyondColl}. Por lo anterior, hay razones para considerar simulaciones de materia oscura colisional. Adicionalmente, la física de partículas tiene límites para la sección transversal de la partícula de materia oscura que pueden ser utilizados en la simulación.
+Tradicionalmente, las simulaciones de materia oscura asumen que esta
+interactua solo gravitacionalmente. Este paradigma ha sido bastante
+exitoso explicando el universo a larga escala, sin embargo se observan
+inconsistencias para el universo a pequeña escala. En primer lugar,
+las mediciones más precisas de galaxias enanas muestran distribuciones
+de materia oscura con nucleos en lugar de cuspides, que es lo predicho
+por el paradigma no colisional. Así mismo, se ha observado que los
+subhalos más masivos en las simulaciones no colisionales de la Vía
+Láctea son demasiado densos pasa albergar las galaxias satélite más
+brillantes\cite{beyondColl}. Por lo anterior, hay razones para
+considerar simulaciones de materia oscura colisional. Adicionalmente,
+la física de partículas tiene límites para la sección transversal de
+la partícula de materia oscura que pueden ser utilizados en la
+simulación. 
 
-Para el operador colisional, se asume que hay equilibrio dinámico, por lo tanto, la distribución de equilibrio es una distribución de Fermi-Dirac o de Bose-Einstein. Usando la definición estándar de la sección transversal de dispersión y la velocidad relativa entre las partículas, se obtiene para el término colisional\cite{mariangela}:
+Para el operador colisional, se asume que hay equilibrio dinámico, por
+lo tanto, la distribución de equilibrio es una distribución de
+Fermi-Dirac o de Bose-Einstein. Usando la definición estándar de la
+sección transversal de dispersión y la velocidad relativa entre las
+partículas, se obtiene para el término colisional\cite{mariangela}: 
 \begin{equation}
 \dot{n} = \expval{v \sigma} (n_{eq}^2 - n^2)
 \label{colision}
