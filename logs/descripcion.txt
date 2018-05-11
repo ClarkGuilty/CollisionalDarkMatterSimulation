@@ -1,1 +1,25 @@
-Traditionally, dark matter has been simulated as a collisionless fluid, this approximation has been successful at explaining the universe on a large scale, however, when it comes to smaller scales some inconsistencies are observed, thus motivating a collisional approach. In this work we did a 1D numerical simulation of the phase space of a colisional dark matter fluid. We solve the Boltzmann equation in a integer lattice phase space. The use of an integer lattice allows for a conservative, Lagrangian and time-reversable algorithm, also reducing the phase space to an integer lattice simplifies the computational complexity of the simulation. In the limit of high resolution, the lattice converges to the real and continuous phase space. Here, we simulate the phase space of large scale structures like the Coma Cluster, and the Bullet Cluster. The system to simulate is defined by the initial conditions, a single galaxy cluster has a gaussian distribution as initial conditions. A system of two colliding clusters (such as the Bullet Cluster) has two gaussian distributions with their means separeted a given distance as initial conditions. The collisional term is modelled using the thermally averaged scattering cross section and an equilibrium distribution. Given the unknown nature of the dark matter particle, we make use of the Fermi-Dirac distribution or the Bose-Einstein distribution as an equilibrium distribution. 
+
+[Empezar con una motivacion de fisica de particulas] Traditionally, dark matter has been simulated as a collisionless fluid, this approximation has been successful at explaining the universe on a large scale, however, when it comes to smaller scales some inconsistencies are observed, thus motivating a collisional approach. 
+
+[Pero yo tengo un codigo que permite simular el fluido colisional]
+The collisional term is modelled using the thermally averaged scattering cross section and an equilibrium distribution. 
+
+In this work we did a 1D numerical simulation of the phase space of a colisional dark matter fluid. 
+
+//We solve the Boltzmann equation in a integer lattice phase space. 
+
+//The use of an integer lattice allows for a conservative, Lagrangian and time-reversable algorithm, also reducing the phase space to an //integer lattice simplifies the computational complexity of the simulation. 
+
+//In the limit of high resolution, the lattice converges to the real and continuous phase space. 
+
+[Y ademas simulamos la version simplificada de un sistema astrofisico de interes: el bullet cluster] Here, we simulate the phase space of large scale structures like the Coma Cluster, and the Bullet Cluster. 
+
+// The system to simulate is defined by the initial conditions, a single galaxy cluster has a gaussian distribution as initial conditions. 
+
+// A system of two colliding clusters (such as the Bullet Cluster) has two gaussian distributions with their means separeted a given distance as initial conditions. 
+
+[Y se puede obtener la evolucion explicita de la distribucion en el espacio de fase, y esto de informacion sobre la distribucion de velocidades, algo relevante para estudios de detecion directa de materia oscura.]
+
+//Given the unknown nature of the dark matter particle, we make use of the Fermi-Dirac distribution or the Bose-Einstein distribution as an equilibrium distribution. 
+
+[Que viene en el futuro? 3D y condiciones iniciales mas realistas.]
