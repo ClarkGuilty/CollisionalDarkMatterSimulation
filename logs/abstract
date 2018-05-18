@@ -8,6 +8,6 @@ But when it comes to smaller scales some inconsistencies are observed, provindin
 In this talk, I will present the first results of a simulation that takes explicitly into account the collisional nature of dark matter.
 We do this with an integer lattice method to solve the Boltzmann equation, this allows us to simulate the phase space of a 
 collisional dark matter fluid. 
-We report results from a 1D numerical simulations that model a simplified version of the Bullet Cluster.
+We report results from 1D numerical simulations that model a simplified version of the Bullet Cluster.
 This allows us to obtain information about the velocity distribution, which is also of interest to dark matter direct detection efforts.
-We finalize by describing the extension of this work to develop 3D simulations that also recreate more realistic initial conditions.
+We finalize by describing the extension of this work to develop 3D simulations that will also recreate more realistic initial conditions.
