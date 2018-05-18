@@ -4,7 +4,7 @@ Nevertheless, the dark matter particle should have well defined particle propert
 This means that dark matter must be collissional to some degree.
 However, dark matter has been simulated as a collisionless fluid.
 This approximation has been successful at explaining large scale properties of the Universe. 
-But when it comes to smaller scales some inconsistencies are observed, provinding evidence that dark matter should be collisional.
+But when it comes to smaller scales some inconsistencies are observed, provinding further evidence that dark matter should be collisional.
 In this talk, I will present the first results of a simulation that takes explicitly into account the collisional nature of dark matter.
 We do this with an integer lattice method to solve the Boltzmann equation, this allows us to simulate the phase space of a 
 collisional dark matter fluid. 
