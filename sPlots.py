@@ -11,11 +11,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy as sc
 
-dat = np.loadtxt("grid.dat")
-plt.imshow(dat)
-density = np.loadtxt("density.dat")
-h = plt.figure()
-plt.scatter(range(len(density)),density)
+
+def unidades(x, mass, times):# X en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
+    x0 = 3.0857e+22 #un megaparsec en metros
+    m0 = 1.988e30  #Masa solar
+    t0 = 13.772*1000000000 #Edad del universo 
+    t0 = t0*365.24*24*60*60
+    G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2)
+#    G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(2.2930e-14,-2)
+    print 0.01*x0*x/(10*t0*times)
+    return G
+    
+    
+print unidades(5,1e14,5e-2)
+
 #constantes = np.loadtxt("constants.dat", usecols = 1)
 #inF = np.loadtxt("inF.dat")
 #outF = np.loadtxt("outF0.dat")

@@ -6,7 +6,7 @@ images:
 	#@make -f clean >/dev/null; true
 	mkdir datFiles
 	mkdir images
-	gcc -o heh.a -I/usr/include -L/usr/lib/x86_64-linux-gnu simulacion.c -lfftw3 -lm
+	gcc -o heh.a -I/usr/include -L/usr/lib/x86_64-linux-gnu simulacion.c -lfftw3 -lfftw3l -lm
 	./heh.a
 	python simPlots.py
 

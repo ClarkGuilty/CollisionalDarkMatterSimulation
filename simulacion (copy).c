@@ -13,10 +13,10 @@ Primer Bosquejo. 1D con método de fourier.
 #define PI 3.14159265359
 
 //Valores límites para la posición y velocidad.
-#define Xmin -2.0
-#define Xmax 2.0
-#define Vmin -2.0
-#define Vmax 2.0
+#define Xmin -1.0
+#define Xmax 1.0
+#define Vmin -1.0
+#define Vmax 1.0
 
 //Tamaño del espacio
 #define Nx 2048
@@ -28,23 +28,21 @@ Primer Bosquejo. 1D con método de fourier.
 #define aByear 4
 #define aMasasSol 5
 //#define G 8.5295e-06
-//#define G 0.000213238135515
-#define G 0.00170590508412
-
-
+#define G 0.000213238135515
 
 #define solarMases 1e14
 #define fracT0 5e-2
-#define mParsecs 5
+#define mParsecs 10
+
 
 //Arreglos
-long double phase[Nx][Nv] = {0};
+double phase[Nx][Nv] = {0};
 
-long double phaseOld[Nx][Nv] = {0};
-long double phaseTemp[Nx][Nv] = {0};
-long double *density;
-long double *pot;
-long double *acce;
+double phaseOld[Nx][Nv] = {0};
+double phaseTemp[Nx][Nv] = {0};
+double *density;
+double *pot;
+double *acce;
 
 //Variables
 int i;
@@ -53,26 +51,26 @@ int k;
 int l;
 int i2;
 int j2;
-long double Lx = Xmax- Xmin;
-long double Lv = Vmax- Vmin;
-long double dx = (Xmax-Xmin)*1.0/Nx;
-long double dv = (Vmax-Vmin)*1.0/Nv;
+double Lx = Xmax- Xmin;
+double Lv = Vmax- Vmin;
+double dx = (Xmax-Xmin)*1.0/Nx;
+double dv = (Vmax-Vmin)*1.0/Nv;
 
-long double dt = 0.5; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+double dt = 0.5; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
 int Nt = 25;
 FILE *constantes;
 void printPhase(char *name);
-long double gaussD(long double x, long double v, long double sx, long double sv, long double amplitude);
-long double calDensity();
+double gaussD(double x, double v, double sx, double sv, double amplitude);
+double calDensity();
 void printDensity(char *name);
-void printConstant(char *name, long double value);
-long double giveDensity(int l);
-long double potencial();
-long double calcK2(long double j2);
-long double convertir(long double valor, int unidad);
+void printConstant(char *name, double value);
+double giveDensity(int l);
+double potencial();
+double calcK2(double j2);
+double convertir(double valor, int unidad);
 void calAcce();
 void printAcce(char *name);
-long double newij(int iin, int jin);
+double newij(int iin, int jin);
 void step();
 int mod(int p, int q);
 void printPot(char *name);
@@ -81,9 +79,9 @@ void printPot(char *name);
 int main()
 {
     dt = dt*dx/dv;
-    density = malloc((sizeof(long double)*Nx));
-    acce = malloc((sizeof(long double)*Nx));
-    pot = malloc((sizeof(long double)*Nx));
+    density = malloc((sizeof(double)*Nx));
+    acce = malloc((sizeof(double)*Nx));
+    pot = malloc((sizeof(double)*Nx));
 
 	constantes = fopen("constants.dat","w+");
 	printConstant("Xmin",Xmin);
@@ -93,11 +91,11 @@ int main()
 	printConstant("Nx",Nx);
 	printConstant("Nv",Nv);
 	printConstant("Nt", Nt);
-	long double x;
-	long double v;
-	long double vSx = 0.04;
-	long double vSv = 0.04;
-	long double ampl = 4;
+	double x;
+	double v;
+	double vSx = 0.1;
+	double vSv = 0.05;
+	double ampl = 1;
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
 			x = Xmin*1.0+dx*i;
@@ -108,10 +106,10 @@ int main()
 				}
 			}
 	//printPhase("grid1.dat");
-	long double mass = calDensity();
+	double mass = calDensity();
 
-	printf("Se simuló %Lf millones de años con %d pasos de %Lf millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
-	printf("La masa fue %Lf masas coma\n",convertir(mass, aMasasSol)/1e14);
+	printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt,aByear),Nt, convertir(dt,aByear));
+	printf("La masa fue %f masas coma\n",convertir(mass, aMasasSol)/1e14);
 
 	printDensity("density.dat");
 
@@ -119,14 +117,14 @@ int main()
 	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
 	fprintf(simInfo,"x va de %.2f a %.2f , v va de %.2f a %.2f\n", Xmin,Xmax,Vmin,Vmax);
 	fprintf(simInfo,"Una distribución gaussiana centrada en 0 para el espacio de fase con (sx sv A)=\n");
-	fprintf(simInfo,"(%.3Lf %.3Lf %.3Lf)\n", vSx, vSv, ampl);
-	fprintf(simInfo,"Se simuló %d instantes con dt = %.3Lf\n", Nt,dt);
+	fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);
+	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
 
     potencial();
 
     calAcce();
     printAcce("acce.dat");
-    printf("G es %f\n", G*1.0);
+    printf("G es %lf\n", G*1.0);
 
 
 	for(int suprai = 0; suprai<Nt;suprai+=1){
@@ -138,7 +136,7 @@ int main()
 		step();
 
 		//calDensity();
-		printf("%d %Lf\n",suprai,calDensity()*100/mass);
+		printf("%d %f\n",suprai,calDensity()*100/mass);
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
 
@@ -170,7 +168,7 @@ void printPhase(char *name)
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
           //      printf("ignorarPrimero\n");
-			fprintf(output,"%Lf ", phase[i][j]);
+			fprintf(output,"%f ", phase[i][j]);
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -185,24 +183,24 @@ void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%Lf\n",density[i]);
+            fprintf(output, "%f\n",density[i]);
 			}
 	fclose(output);
 }
 
 //Imprime las constantes de la simulación para referencia fuera del C.
-void printConstant(char *name, long double value)
+void printConstant(char *name, double value)
 {
     fprintf(constantes, "%s", name);
-    fprintf(constantes, " %Lf\n", value);
+    fprintf(constantes, " %f\n", value);
 
 }
 
 //Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
-long double gaussD(long double x, long double v, long double sx, long double sv, long double amplitude)
+double gaussD(double x, double v, double sx, double sv, double amplitude)
 {
-	long double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
-//	long double ex = -x*x/(sx*sx)-v*v/(sv*sv);
+	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
+//	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
 
 	//return amplitude*exp(ex)/(2*PI*sx*sv);
 	return amplitude*exp(ex);
@@ -210,9 +208,9 @@ long double gaussD(long double x, long double v, long double sx, long double sv,
 }
 
 //Calcula la densidad. Actualiza el arreglo density
-long double calDensity()
+double calDensity()
 {
-	long double mass = 0;
+	double mass = 0;
 	for(i = 0;i<Nx;i+=1){
 		density[i]=0;
 		for(j=0;j<Nv;j+=1){
@@ -224,31 +222,31 @@ long double calDensity()
 }
 
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
-long double potencial()
+double potencial()
 {
-//    long double * densityIN= malloc(sizeof(long double)*Nx);
+//    double * densityIN= malloc(sizeof(double)*Nx);
 //    for(i = 0;i<Nx;i+=1){
 //        densityIN[i] = giveDensity(i);
 //    }
 
 
-    fftwl_complex *in, *out, *inR, *mem, *out2;
-    in=(fftwl_complex*) fftwl_malloc(sizeof(fftwl_complex)*Nx);
-    out=(fftwl_complex*) fftwl_malloc(sizeof(fftwl_complex)*Nx);
-    inR=(fftwl_complex*) fftwl_malloc(sizeof(fftwl_complex)*Nx);
-    mem=(fftwl_complex*) fftwl_malloc(sizeof(fftwl_complex)*Nx);
+    fftw_complex *in, *out, *inR, *mem, *out2;
+    in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    mem=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
 
 
-    //fftwl_complex *out2;
-   // out2=(fftwl_complex*) fftwl_malloc(sizeof(fftwl_complex)*Nx);
-    //long double *in2;
-    //in2 = (long double*) malloc((sizeof(long double)*Nx));
+    //fftw_complex *out2;
+   // out2=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    //double *in2;
+    //in2 = (double*) malloc((sizeof(double)*Nx));
 
-    fftwl_plan pIda, pVuelta;
-    pIda = fftwl_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
+    fftw_plan pIda, pVuelta;
+    pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
 
-    //fftwl_plan pIda2, pVuelta2;
-    //pIda2 = fftwl_plan_dft_r2c_1d(Nx, in2, out2, FFTW_MEASURE);
+    //fftw_plan pIda2, pVuelta2;
+    //pIda2 = fftw_plan_dft_r2c_1d(Nx, in2, out2, FFTW_MEASURE);
 
     FILE *input = fopen("inF.dat", "w+");
     FILE *output0 = fopen("outF0.dat", "w+");
@@ -264,15 +262,15 @@ long double potencial()
         inR[i] = -1.0;
       //  in2[i] = giveDensity(i);
         //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
-        //printf("%Lf, %d,%d\n", in[0][i], i,Nx);
+        //printf("%f, %d,%d\n", in[0][i], i,Nx);
         fprintf(input, "%f\n",creal(in[i]));
     }
 //    printf("Press enter to continue...\n");
 //    getchar();
 
 
-    fftwl_execute(pIda);
-//    fftwl_execute(pIda2);
+    fftw_execute(pIda);
+//    fftw_execute(pIda2);
 
     //Guarda out en mem. Imprime a archivo.
     for(i=0;i<Nx;i+=1){
@@ -282,39 +280,39 @@ long double potencial()
 
 
 //        mem[i] = out2[i];
-//        fprintf(output0, "%Lf\n",creal(out2[i]));
-//        fprintf(output1, "%Lf\n",cimag(out2[i]));
+//        fprintf(output0, "%f\n",creal(out2[i]));
+//        fprintf(output1, "%f\n",cimag(out2[i]));
 
     }
 
-    fftwl_execute(pIda);
-    pIda = fftwl_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
-    long double memDo;
+    fftw_execute(pIda);
+    pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
+    double memDo;
 
-    //pVuelta2 = fftwl_plan_dft_c2r_1d(Nx, out2, inR, FFTW_MEASURE);
+    //pVuelta2 = fftw_plan_dft_c2r_1d(Nx, out2, inR, FFTW_MEASURE);
 
 
     //Devuelve carga a out Î(Chi).
     //out2[0] = mem[0];
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
-      out[i] = -4*PI*G*mem[i]/calcK2((long double)i);
+      out[i] = -4*PI*G*mem[i]/calcK2((double)i);
     //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
     //out2[i] = mem[i];
 
 
       //  memDo = out[i];//Evita problemas de casting.
-        //printf("%Lf %Lf %d \n",memDo, calcK2((long double) i), i);
+        //printf("%f %f %d \n",memDo, calcK2((double) i), i);
     }
 
 
 
-    fftwl_execute(pIda);
-    //fftwl_execute(pVuelta2);
+    fftw_execute(pIda);
+    //fftw_execute(pVuelta2);
 
 //        for(i=0;i<Nx;i+=1){
-//        fprintf(oR, "%Lf\n",inR[i]/Nx);
-//        fprintf(oI, "%Lf\n",cimag(inR[i])/Nx);
+//        fprintf(oR, "%f\n",inR[i]/Nx);
+//        fprintf(oI, "%f\n",cimag(inR[i])/Nx);
 //    }
 
     for(i=0;i<Nx;i+=1){
@@ -329,35 +327,35 @@ long double potencial()
     fclose(oR);
     fclose(oI);
 
-    //fftwl_destroy_plan(pVuelta);
+    //fftw_destroy_plan(pVuelta);
 
 
 
 }
 
 //Calcula el k**2 de mis notas.
-long double calcK2(long double j2)
+double calcK2(double j2)
 {
     if((j2 == Nx/2.0)){
         return 1.0;
     }
-    long double k2= 2.0*sin(dx*PI*j2)/dx;
+    double k2= 2.0*sin(dx*PI*j2)/dx;
     return pow(k2,2);
 }
 
 //Método para evitar efectos misticos en la memoria.
-long double giveDensity(int l)
+double giveDensity(int l)
 {
-    long double rta = density[l];
+    double rta = density[l];
     return rta;
 }
 
 //Convierte unidades de la simulación a masas solares, metros, o segundos.
-long double convertir(long double valor, int unidad )
+double convertir(double valor, int unidad )
 {
-    long double conx0 = 3.0857e+22; //un megaparsec en metros
-    long double cont0 = 13.772*1000000000; //Edad del universo
-    long double cont0s = cont0*365.24*24*60*60;
+    double conx0 = 3.0857e+22; //un megaparsec en metros
+    double cont0 = 13.772*1000000000; //Edad del universo
+    double cont0s = cont0*365.24*24*60*60;
 
     if(unidad == aMasasSol){
         return valor * solarMases;
@@ -404,7 +402,7 @@ void printAcce(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%Lf\n",acce[i]);
+            fprintf(output, "%f\n",acce[i]);
 			}
 	fclose(output);
 }
@@ -414,7 +412,7 @@ void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%Lf\n",pot[i]);
+            fprintf(output, "%f\n",pot[i]);
 			}
 	fclose(output);
 }
@@ -422,13 +420,13 @@ void printPot(char *name)
 
 
 //Version que discretiza los cambios y no el nuevo valor.
-long double newij(int iin, int jin)
+double newij(int iin, int jin)
 {
-        long double x = Xmin*1.0+dx*iin; //Inicialización
+        double x = Xmin*1.0+dx*iin; //Inicialización
 
 
-        long double v = acce[iin]*dt;
-        long double dj = v/dv;
+        double v = acce[iin]*dt;
+        double dj = v/dv;
         dj = (int)dj;
         j2 = jin+dj;
 
@@ -442,7 +440,7 @@ long double newij(int iin, int jin)
 //        }
         v = Vmin*1.0+dv*j2;
         x = v*dt;
-        long double di = x/dx;
+        double di = x/dx;
         di = (int) di;
 
         i2 = iin + di;
