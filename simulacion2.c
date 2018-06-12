@@ -28,11 +28,12 @@ Primer Bosquejo. 1D con método de fourier.
 #define aByear 4
 #define aMasasSol 5
 //#define G 8.5295e-06
-#define G 0.000213238135515
+#define G 0.2729448134597113
 
-#define solarMases 1e14
-#define fracT0 5e-2
-#define mParsecs 10
+#define mParsecs 5
+#define solarMases 1e15
+#define fracT0 2e-1
+
 
 
 //Arreglos
@@ -56,8 +57,8 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
-double dt = 0.5; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
-int Nt = 25;
+double dt = 0.2; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+int Nt = 20;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -93,8 +94,8 @@ int main()
 	printConstant("Nt", Nt);
 	double x;
 	double v;
-	double vSx = 0.1;
-	double vSv = 0.05;
+	double vSx = 0.2;
+	double vSv = 0.1;
 	double ampl = 1;
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nv;j+=1){
@@ -108,12 +109,13 @@ int main()
 	//printPhase("grid1.dat");
 	double mass = calDensity();
 
-	printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt,aByear),Nt, convertir(dt,aByear));
+	printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
 	printf("La masa fue %f masas coma\n",convertir(mass, aMasasSol)/1e14);
-
-	printDensity("density.dat");
+        printPhase("./datFiles/grid0.dat");
+	printDensity("./datFiles/density0.dat");
 
 	FILE *simInfo = fopen("./images/simInfo.dat","w+");
+	printf("heh\n");
 	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
 	fprintf(simInfo,"x va de %.2f a %.2f , v va de %.2f a %.2f\n", Xmin,Xmax,Vmin,Vmax);
 	fprintf(simInfo,"Una distribución gaussiana centrada en 0 para el espacio de fase con (sx sv A)=\n");
@@ -121,21 +123,18 @@ int main()
 	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
 
     potencial();
-
+    printPot("./datFiles/potential0.dat");
     calAcce();
-    printAcce("acce.dat");
+    printAcce("./datFiles/acce0.dat");
     printf("G es %lf\n", G*1.0);
 
 
-	for(int suprai = 0; suprai<Nt;suprai+=1){
+	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *grid = (char*) malloc(200* sizeof(char));
-		sprintf(grid, "./datFiles/grid%d.dat", suprai);
-
         //printf("Error Mesage00\n");
-		printPhase(grid);
+		
 		step();
-
-		//calDensity();
+		//calDensity(); 
 		printf("%d %f\n",suprai,calDensity()*100/mass);
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
@@ -146,8 +145,10 @@ int main()
 		calAcce();
 		sprintf(grid, "./datFiles/acce%d.dat", suprai);
 		printAcce(grid);
-		free(grid);
-
+                sprintf(grid, "./datFiles/grid%d.dat", suprai);
+                printPhase(grid);
+                free(grid);
+                
 	}
 //    printPhase("grid2.dat");
 
@@ -166,9 +167,9 @@ void printPhase(char *name)
 	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=0;j<Nv;j+=1){
+		for(j=1;j<Nv-1;j+=1){ 
           //      printf("ignorarPrimero\n");
-			fprintf(output,"%f ", phase[i][j]);
+			fprintf(output,"%f ", phase[i][Nv-j]);
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -285,7 +286,7 @@ double potencial()
 
     }
 
-    fftw_execute(pIda);
+    //fftw_execute(pIda);
     pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
     double memDo;
 

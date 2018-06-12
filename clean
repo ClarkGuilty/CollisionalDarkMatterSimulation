@@ -1,7 +1,7 @@
 all: limpiar
 
 limpiar:
-	@echo Borrando los archivos varios de compilar con el IDE.
-	-rm simulacion simulacion.o phase.png densidad.png grid.dat constants.dat density.dat outF0.dat outF1.dat oI.dat oR.dat inF.dat grid*.dat
+	@echo Borrando los archivos de ejecuciones anteriores.
+	-rm phase.png densidad.png grid.dat constants.dat density.dat outF0.dat outF1.dat oI.dat oR.dat inF.dat grid*.dat
 	rm -rf ./datFiles
 	rm -rf ./images

@@ -3,7 +3,7 @@
 
 
 @author: Javier Alejandro Acevedo Barroso
-Script de Python para la visualización de la simulación.
+Script de Python para cálculos auxiliares.
 
 """
 import numpy as np
@@ -12,20 +12,20 @@ import matplotlib.pyplot as plt
 import scipy as sc
 
 
-def unidades(x, mass, times):# X en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
-    x0 = 3.0857e+22 #un megaparsec en metros
-    m0 = 1.988e30  #Masa solar
-    t0 = 13.772*1000000000 #Edad del universo 
-    t0 = t0*365.24*24*60*60
-    G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2)
-#    G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(2.2930e-14,-2)
-    print 0.01*x0*x/(10*t0*times)
+def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
+    x0 = 3.0857e+22 #un megaparsec en metros.
+    m0 = 1.988e30  #Masa solar en kg.
+    t0 = 13.772*1000000000 #Edad del universo en años.
+    t0 = t0*365.24*24*60*60 #Ahora en segundos.
+    G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2) #G en mis unidades.
     return G
     
-    
-print unidades(5,1e14,5e-2)
+newG = unidades(5,1e15,2e-1)
+print(newG)
+print("El 4*Pi*G = %f" % (4*np.pi*newG))
 
-#constantes = np.loadtxt("constants.dat", usecols = 1)
+constantes = np.loadtxt("constants.dat", usecols = 1)
+x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 #inF = np.loadtxt("inF.dat")
 #outF = np.loadtxt("outF0.dat")
 #outF1 = np.loadtxt("outF1.dat")
@@ -33,7 +33,7 @@ print unidades(5,1e14,5e-2)
 #oR = np.loadtxt("oR.dat")
 #acce = np.loadtxt("acce.dat")
 
-#x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
+
 #        
 #plt.pcolormesh(dat)
 
@@ -46,8 +46,8 @@ print unidades(5,1e14,5e-2)
 #    #plt.pcolor(dat) Nunca usar para grandes grillas	
 #    plt.savefig("./images/phase{:d}.png".format(i))
 #    plt.clf()
-#    dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))
-#    plt.plot(x,dens)
+#dens = np.loadtxt("density.dat")
+#plt.plot(x,dens)
 #    plt.savefig("./images/density{:d}.png".format(i))
 #    plt.clf()
 #    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
