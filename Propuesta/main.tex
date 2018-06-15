@@ -21,7 +21,7 @@
 
 
 %Hipertexto
-\usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue]{hyperref} % navega por el doc: hipertexto y links
+\usepackage[colorlinks=false,urlcolor=blue,linkcolor=blue]{hyperref} % navega por el doc: hipertexto y links
 
 %Aquello de las urls
 \usepackage{url} 
@@ -76,7 +76,7 @@ Director: Jaime Ernesto Forero Romero
 \section{Introduccion}
 La cosmología moderna infiere que la materia ordinaria (materia
 bariónica) representa s\'olo el 5 \% de la energía del universo, la
-energía oscura representa el 69 \% y la materia oscura el 26 \%
+energía oscura representa el 68 \% y la materia oscura el 27 \%
 \cite{planckCitetion}.   
 La presencia de la materia oscura se infiere a trav\'es de los efectos
 gravitacionales que produce, pero a\'un no es claro a que tipo de
@@ -91,7 +91,7 @@ relativistas (calientes) y no relativistas (fríos) de materia oscura
 y, comparando las estructuras generadas en la simulación con los
 surveys galácticos disponibles, se concluyó que la materia oscura
 debía ser no relativista. Tras este éxito inicial, nace el campo de
-las simulaciones numéricas de materia oscura.\cite{aHistory}  
+las simulaciones numéricas de materia oscura\cite{aHistory}.
 
 Actualmente las simulaciones de materia oscura la modelan 
 como un fluido \emph{no colisional} que interact\'ua solo gravitacionalmente. 
@@ -108,7 +108,7 @@ partículas tiene límites para la sección transversal de la partícula
 de materia oscura lo que implica que a nivel fundamental la materia
 oscura debe ser colisional.
 
-El objetivo principal de esta tesis es dejar atr\'as la aproximaci\'on
+El objetivo principal de esta monografía es dejar atr\'as la aproximaci\'on
 no colisional para simular materia oscura \emph{colisional} en tres
 dimensiones espaciales.
 Para esto utilizaremos el m\'etodo de Lattice-Boltzmann 
@@ -122,11 +122,11 @@ integración directa con Volumenes Finitos, elegimos el m\'etodo de
 Lattice-Boltzmann porque permite introducir de manera expl\'icita el
 t\'ermino colisional.
 Otras ventajas del m\'etodo es que es lagrangiano,
-conservativo y completamente reversible.\cite{integerLatticeDynamics}
+conservativo y completamente reversible\cite{integerLatticeDynamics}.
 La reversibilidad del algoritmo permite reducir el
 costo de memoria a cambio de aumentar el costo computacional. 
 
-Esta tesis es una continuaci\'on directa de la tesis de Sebasti\'an
+Esta monografía es una continuaci\'on directa de la monografía de Sebasti\'an
 Franco \cite{franco} quien resolvi\'o la ecuaci\'on de Boltzmann en
 una dimensi\'on espacial en el caso no colisional.
 
@@ -212,6 +212,11 @@ densidad de n\'umero, $n$, con el siguiente ansatz:
 \dv{n}{t} = \expval{v \sigma} (n_{eq}^2 - n^2)
 \end{equation}
 
+Es importante resaltar que en esta simulación no se va a tener en cuenta
+la expansión del universo, esto permite ignorar el término $3 H n$ de la 
+expresión clásica para materia oscura térmica. Adicionalmente, se simulará
+sistemas en donde la expansión del universo sea insignificante, como la Vía Láctea.
+
 Utilizando distribuciones de Fermi-Dirac y de Bose-Einstein como
 distribución de equilibrio, se resuelve para $n_{t+\dd t}$ 
 \begin{equation}
@@ -227,7 +232,7 @@ espaciales para luego pasar a tres dimensiones espaciales.
 Dada la naturaleza computacional de la monografía, el proyecto no debe
 pasar a estudio por el comité de ética de la Facultad de Ciencias.  
 Guardaremos el comportamiento adecuado al citar adecuadamente trabajo
-de otras personas.  
+de otras personas. Adicionalmente, todo el software utilizado para la realización de la monografía es de código abierto y está disponible bajo licencia GNU GPL.
 
 \section{Cronograma}
 
@@ -242,6 +247,7 @@ de otras personas.
 	4 &  &  &  &  &  &  &  & X & X & X & X &   &   &   &   &   \\
     5 &  &  &  &  &  &  & X & X &  &  &  &   &   &   &   &   \\
 	6 &   &   &   &   &  &   &  X & X  &  &   &  X & X &  X & X  & X &   \\
+	7 &   &   &   &   &  &   &  &  &  &   &  & & &  & X & X  \\
 	\hline
 	\end{tabular}
 \end{table}
@@ -254,7 +260,7 @@ de otras personas.
     \item Tarea 4: implementar el término colisional en 3D.
     \item Tarea 5: preparar y presentar el avance del 30\%.
     \item Tarea 6: escribir el documento de monografía.
-    
+    \item Tarea 7: revisión bibliográfica.
 \end{itemize}
 
 \section{Personas Conocedoras del Tema}
@@ -269,7 +275,7 @@ de otras personas.
 
 
 \bibliography{bibTes}{}
-\bibliographystyle{plain}
+\bibliographystyle{unsrt}
 
 \section*{Firma del Director}
 \vspace{1.5cm}
@@ -278,3 +284,5 @@ de otras personas.
 
 
 \end{document} 
+\grid
+\grid
