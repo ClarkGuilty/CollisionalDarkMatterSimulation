@@ -1,6 +1,6 @@
 /*
 Javier Alejandro Acevedo Barroso
-Primer Bosquejo. 1D con método de fourier.
+Primer Bosquejo. 2D con método de fourier.
 */
 
 #include <stdio.h>
@@ -15,12 +15,19 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -1.0
-#define Vmax 1.0
+#define Ymin -1.0
+#define Ymax 1.0
+#define Vxmin -1.0
+#define Vxmax 1.0
+#define Vymin -1.0
+#define Vxmax 1.0
+
 
 //Tamaño del espacio.
-#define Nx 2048
-#define Nv 2048
+#define Nx 1024
+#define Ny 1024
+#define Nvx 1024
+#define Nvy 1024
 
 //Constantes de unidades.
 #define aMetros 18
@@ -44,10 +51,10 @@ Primer Bosquejo. 1D con método de fourier.
 
 
 //Arreglos
-double phase[Nx][Nv] = {0};
+double phase*;
 
-double phaseOld[Nx][Nv] = {0};
-double phaseTemp[Nx][Nv] = {0};
+double phaseOld*;
+double phaseTemp*;
 double *density;
 double *pot;
 double *acce;
@@ -60,29 +67,34 @@ int l;
 int i2;
 int j2;
 double Lx = Xmax- Xmin;
-double Lv = Vmax- Vmin;
+double Ly = Ymax- Ymin;
+double Lvx = Vxmax- Vxmin;
+double Lvy = Vymax- Vymin;
 double dx = (Xmax-Xmin)*1.0/Nx;
-double dv = (Vmax-Vmin)*1.0/Nv;
+double dy = (Ymax-Ymin)*1.0/Nx;
+double dvx = (Vxmax-Vxmin)*1.0/Nvx;
+double dvy = (Vymax-Vymin)*1.0/Nvy;
 
-double dt = 0.5; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+double dt = 0.5;
 int Nt = 60;
 FILE *constantes;
-void printPhase(char *name);
-double gaussD(double x, double v, double sx, double sv, double amplitude);
-double calDensity();
-void printDensity(char *name);
+void printPhase(char *name); //TODO: debe replantearse lo que se va a imprimir.
+double gaussD(double x, double v, double sx, double sv, double amplitude); //TODO
+double calDensity(); //TODO
+void printDensity(char *name); //TODO 
 void printConstant(char *name, double value);
-double giveDensity(int l);
-double potencial();
-double calcK2(double j2);
+double giveDensity(int l); 
+double potencial(); //super TODO.
+double calcK2(double j2); //TODO: estudiar la aproximación ahora bidimensionalmente.
 double convertir(double valor, int unidad);
-void calAcce();
-void printAcce(char *name);
-double newij(int iin, int jin);
-void step();
+void calAcce(); //TODO: implementar derivada bidimensional.
+void printAcce(char *name); //TODO
+double newij(int iin, int jin); //TODO
+void step(); //TODO
 int mod(int p, int q);
-void printPot(char *name);
-double einasto(double x, double v, double sx, double sv, double amplitude);
+void printPot(char *name); //TODO
+double einasto(double x, double v, double sx, double sv, double amplitude); 
+int ind(int i1, int i2, int i3, int i4);
 
 
 int main()
@@ -93,18 +105,27 @@ int main()
     pot = malloc((sizeof(double)*Nx));
 
 	constantes = fopen("constants.dat","w+");
-	printConstant("Xmin",Xmin);
+	printConstant("Xmin",Xmin);}
+	printConstant("Ymin",Ymin);
 	printConstant("Xmax",Xmax);
-	printConstant("Vmin",Vmin);
-	printConstant("Vmax",Vmax);
+        printConstant("Ymax",Ymax);
+	printConstant("Vxmin",Vxmin);
+        printConstant("Vymin",Vymin);
+	printConstant("Vxmax",Vxmax);
+        printConstant("Vymax",Vymax);
 	printConstant("Nx",Nx);
-	printConstant("Nv",Nv);
+        printConstant("Ny",Ny);
+	printConstant("Nvx",Nvx);
+	printConstant("Nvy",Nvy);
 	printConstant("Nt", Nt);
 	double x;
-	double v;
+	double vx;
+        double y;
+	double vy;
 	double vSx = 0.1;
 	double vSv = 0.1;
 	double ampl = 100;
+        //TODO Inicializar un espacio de fase 4D.
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
                 //printf("x es %f en %d\n", x,i);
@@ -117,55 +138,7 @@ int main()
                     }
 			}
 
-		
-	//printPhase("grid1.dat");
-	double mass = calDensity();
-
-	printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
-	printf("La masa fue %f masas coma\n",convertir(mass, aMasasSol)/1e14);
-        printPhase("./datFiles/grid0.dat");
-	printDensity("./datFiles/density0.dat");
-
-	FILE *simInfo = fopen("./images/simInfo.dat","w+");
-	printf("heh\n");
-	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
-	fprintf(simInfo,"x va de %.2f a %.2f , v va de %.2f a %.2f\n", Xmin,Xmax,Vmin,Vmax);
-	fprintf(simInfo,"Una distribución gaussiana centrada en 0 para el espacio de fase con (sx sv A)=\n");
-	fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);
-	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
-
-    potencial();
-    printPot("./datFiles/potential0.dat");
-    calAcce();
-    printAcce("./datFiles/acce0.dat");
-    printf("G es %lf\n", G*1.0);
-
-
-	for(int suprai = 1; suprai<Nt;suprai+=1){
-        char *grid = (char*) malloc(200* sizeof(char));
-        //printf("Error Mesage00\n");
-		
-		step();
-		//calDensity(); 
-		printf("%d %f\n",suprai,calDensity()*100/mass);
-		sprintf(grid, "./datFiles/density%d.dat", suprai);
-		printDensity(grid);
-
-		potencial();
-		sprintf(grid, "./datFiles/potential%d.dat", suprai);
-		printPot(grid);
-		calAcce();
-		sprintf(grid, "./datFiles/acce%d.dat", suprai);
-		printAcce(grid);
-                sprintf(grid, "./datFiles/grid%d.dat", suprai);
-                printPhase(grid);
-                free(grid);
-                
-	}
-//    printPhase("grid2.dat");
-
-
-	fclose(constantes);
+			fclose(constantes);
 	fclose(simInfo);
 	return 0;
 
@@ -399,24 +372,6 @@ double convertir(double valor, int unidad )
     }
 }
 
-//Calcula la aceleración a partir del arreglo pot actual.
-
-//void calAcce()
-//{
-//    for(i=1;i<Nx-1;i++){
-//        acce[i]=(-pot[i]+pot[i-1])/(dx);
-//  }
-//    acce[0]=-(pot[0]-pot[Nx-1])/(dx);
-//    acce[Nx-1]=-(pot[Nx-1]-pot[Nx-2])/(dx);
-//}
-
-//void calAcce()
-//{
-//    for(i = 0; i<Nx ; i    +=1){
-//    acce[i] =  (-pot[mod(i+1,Nx)] + pot[mod(i-1,Nx)])/(2*dx);
-//    }
-//}
-
 //Deriva el potencial y carga la aceleración en el arreglo acce.
 void calAcce()
 {
@@ -498,6 +453,13 @@ void step()
 
 
 
+}
+
+//Calcula la posición del elemento (in1,in2,in3,in4) del espacio de fase (x,y,vx,vy).
+int ind(int in1, int in2, int in3, int in4)
+{
+    return in4 + Nvy*(in3 + Nvx*(in2 + Ny*in1))
+    
 }
 
 //Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo con rango de 0 a q-1.

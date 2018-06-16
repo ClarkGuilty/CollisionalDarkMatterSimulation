@@ -7,10 +7,12 @@ Script de Python para cálculos auxiliares.
 
 """
 import numpy as np
-#import seaborn as sns
+#import pyqtgraph as pg
 import matplotlib.pyplot as plt
 import scipy as sc
 
+
+    
 
 def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
     x0 = 3.0857e+22 #un megaparsec en metros.
@@ -18,14 +20,17 @@ def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times e
     t0 = 13.772*1000000000 #Edad del universo en años.
     t0 = t0*365.24*24*60*60 #Ahora en segundos.
     G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2) #G en mis unidades.
+    hubble = 70/(x*x0*1e-3)*(times*t0)*x #La constante de hubble en las unidades.
+    print("La constante de Hubble es: %f" % hubble)
     return G
     
 newG = unidades(5,1e15,2e-1)
+#newG = unidades(20e-3,1e11,3e-3)
 print(newG)
 print("El 4*Pi*G = %f" % (4*np.pi*newG))
 
-constantes = np.loadtxt("constants.dat", usecols = 1)
-x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
+#constantes = np.loadtxt("constants.dat", usecols = 1)
+#x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 #inF = np.loadtxt("inF.dat")
 #outF = np.loadtxt("outF0.dat")
 #outF1 = np.loadtxt("outF1.dat")
