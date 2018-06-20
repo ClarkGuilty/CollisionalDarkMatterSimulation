@@ -64,7 +64,7 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
-double dt = 0.5; //Se toma 0.5 para repetir los resultados de Franco. 0.5 en mis unidades equivale a ~3mil millones de años. Hay que repensar dispersion de vel.
+double dt = 0.5; 
 int Nt = 60;
 FILE *constantes;
 void printPhase(char *name);

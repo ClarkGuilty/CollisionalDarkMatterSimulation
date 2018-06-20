@@ -1,0 +1,13 @@
+all: images .PHONY
+
+images: simulacion.c
+	@echo Preparando y corriendo la simulación:
+	mkdir datFiles
+	mkdir images
+	gcc -o heh.a -I/home/clark/local/include -L/home/clark/local/lib/ simulacion2D.c -lfftw3 -lm 
+	./heh.a
+
+.PHONY: clean
+clean:
+	@echo eliminando archivos temporales
+	rm heh.a oI.dat oR.dat outF0.dat outF1.dat inF.dat

@@ -20,14 +20,15 @@ Primer Bosquejo. 2D con método de fourier.
 #define Vxmin -1.0
 #define Vxmax 1.0
 #define Vymin -1.0
-#define Vxmax 1.0
+#define Vymax 1.0
 
 
 //Tamaño del espacio.
-#define Nx 1024
-#define Ny 1024
-#define Nvx 1024
-#define Nvy 1024
+#define Nx 512
+#define Ny 512
+#define Nvx 512
+#define Nvy 512
+#define Nv 1000
 
 //Constantes de unidades.
 #define aMetros 18
@@ -37,7 +38,7 @@ Primer Bosquejo. 2D con método de fourier.
 
 
 
-//Primer intento Via Láctea.
+
 #define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
 #define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 1e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
@@ -51,39 +52,43 @@ Primer Bosquejo. 2D con método de fourier.
 
 
 //Arreglos
-double phase*;
-
-double phaseOld*;
-double phaseTemp*;
+double phase[Nx][Ny][Nvx][Nvy] = {0};
+double phaseOld[Nx][Ny][Nvx][Nvy] = {0};
+double phaseTemp[Nx][Ny][Nvx][Nvy] = {0};
 double *density;
 double *pot;
 double *acce;
 
-//Variables
+//Variables recurrentes
 int i;
 int j;
 int k;
 int l;
 int i2;
 int j2;
-double Lx = Xmax- Xmin;
-double Ly = Ymax- Ymin;
-double Lvx = Vxmax- Vxmin;
-double Lvy = Vymax- Vymin;
-double dx = (Xmax-Xmin)*1.0/Nx;
-double dy = (Ymax-Ymin)*1.0/Nx;
-double dvx = (Vxmax-Vxmin)*1.0/Nvx;
-double dvy = (Vymax-Vymin)*1.0/Nvy;
+int k1;
+int k2;
+int k3;
+int k4;
+
+double Lx = Xmax - Xmin;
+double Ly = Ymax - Ymin;
+double Lvx = Vxmax - Vxmin;
+double Lvy = Vymax - Vymin;
+double dx = (Xmax - Xmin)*1.0/Nx;
+double dy = (Ymax - Ymin)*1.0/Nx;
+double dvx = (Vxmax - Vxmin)*1.0/Nvx;
+double dvy = (Vymax - Vymin)*1.0/Nvy;
 
 double dt = 0.5;
-int Nt = 60;
+int Nt = 5;
 FILE *constantes;
 void printPhase(char *name); //TODO: debe replantearse lo que se va a imprimir.
-double gaussD(double x, double v, double sx, double sv, double amplitude); //TODO
-double calDensity(); //TODO
+double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude); 
+double calDensity();
 void printDensity(char *name); //TODO 
 void printConstant(char *name, double value);
-double giveDensity(int l); 
+double giveDensity(int in1,int in2);
 double potencial(); //super TODO.
 double calcK2(double j2); //TODO: estudiar la aproximación ahora bidimensionalmente.
 double convertir(double valor, int unidad);
@@ -94,18 +99,19 @@ void step(); //TODO
 int mod(int p, int q);
 void printPot(char *name); //TODO
 double einasto(double x, double v, double sx, double sv, double amplitude); 
-int ind(int i1, int i2, int i3, int i4);
+int ind(int in1, int in2, int in3, int in4);
+int in(int in1, int in2);
 
 
 int main()
 {
-    dt = dt*dx/dv;
-    density = malloc((sizeof(double)*Nx));
+    dt = dt*dx*dy/dvx/dvy;
+    density = malloc((sizeof(double)*Nx*Ny));
     acce = malloc((sizeof(double)*Nx));
     pot = malloc((sizeof(double)*Nx));
 
 	constantes = fopen("constants.dat","w+");
-	printConstant("Xmin",Xmin);}
+	printConstant("Xmin",Xmin);
 	printConstant("Ymin",Ymin);
 	printConstant("Xmax",Xmax);
         printConstant("Ymax",Ymax);
@@ -122,24 +128,31 @@ int main()
 	double vx;
         double y;
 	double vy;
-	double vSx = 0.1;
-	double vSv = 0.1;
-	double ampl = 100;
+	double sr = 0.1;
+        double sv = 0.1;
+	double ampl = 1;
+        printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
+        phase[0][0][0][1] = 1;
         //TODO Inicializar un espacio de fase 4D.
-	for(i=0;i<Nx;i+=1) {
-                x = Xmin*1.0+dx*i;
-                //printf("x es %f en %d\n", x,i);
-                x = fabs(x);
-                    for(j=0;j<Nv;j+=1){
-                        v = Vmin*1.0+dv*j;
-                        phase[i][j] = gaussD(x,v,vSx,vSv,ampl); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
-                        phaseOld[i][j] = 0;
-                        phaseTemp[i][j] = 0;
+	for(k1=0;k1<1;k1+=1) {
+            x = Xmin*1.0+dx*k1;
+            for(k2=0;k2<1;k2+=1) {
+                y = Ymin*1.0+ dy*k2;
+                for(k3=0;k3<1;k3+=1) {
+                    vx = Vxmin*1.0+ dvx*k3;
+                    for(k4=0;k4<1;k4+=1) {
+                        vy = Vymin*1-0 + dvy*k4;
+                        printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
+                        phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
+                        //phaseOld[ind(k1,k2,k3,k4)] = 0;
+                        //phaseTemp[ind(k1,k2,k3,k4)] = 0;
                     }
-			}
+                }
+            }
+        }
+//        calDensity();
 
 			fclose(constantes);
-	fclose(simInfo);
 	return 0;
 
 }
@@ -154,7 +167,7 @@ void printPhase(char *name)
 	for(i=0;i<Nx;i+=1) {
 		for(j=1;j<Nv-1;j+=1){ 
           //      printf("ignorarPrimero\n");
-			fprintf(output,"%f ", phase[i][Nv-j]);
+			//fprintf(output,"%f ", phase[i][Nv-j]);
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -168,9 +181,14 @@ void printPhase(char *name)
 void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
+
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",density[i]);
+		for(j=1;j<Nv-1;j+=1){
+			fprintf(output,"%f ", density[in(i,j)]);
+        }
+		fprintf(output,"\n");
 			}
+
 	fclose(output);
 }
 
@@ -183,9 +201,9 @@ void printConstant(char *name, double value)
 }
 
 //Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
-double gaussD(double x, double v, double sx, double sv, double amplitude)
+double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude)
 {
-	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
+	double ex = -x*x/(2.0*sr*sr)-y*y/(2.0*sr*sr)-vx*vx/(2.0*sv*sv)-vy*vy/(2.0*sv*sv);
 //	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
 
 	//return amplitude*exp(ex)/(2*PI*sx*sv);
@@ -212,14 +230,18 @@ double einasto(double x, double v, double sx, double sv, double amplitude)
 double calDensity()
 {
 	double mass = 0;
-	for(i = 0;i<Nx;i+=1){
-		density[i]=0;
-		for(j=0;j<Nv;j+=1){
-				density[i] += phase[i][j]*dv;
-			}
-		mass += density[i];
-		}
-	return mass;
+        for(k1; k1<Nx;k1+=1){
+            for(k2; k2< Ny; k2+=1){
+                density[in(k1,k2)] = 0;
+                for(k3; k3< Nvx; k3+=1){
+                    for(k4; k4< Nvy; k4+=1){
+                        density[in(k1,k2)] += phase[k1][k2][k3][k4]*dvx*dvy;
+                    }
+                }
+                mass += density[in(k1,k2)];
+            }
+        }
+        return mass;
 }
 
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
@@ -259,7 +281,7 @@ double potencial()
     //Cargar densidad en in:
     for(i=0;i<Nx;i+=1){
         //in[0][i] = densityIN[i];
-        in[i] = giveDensity(i);
+        in[i] = giveDensity(i,j);
         inR[i] = -1.0;
       //  in2[i] = giveDensity(i);
         //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
@@ -345,9 +367,9 @@ double calcK2(double j2)
 }
 
 //Método para evitar efectos misticos en la memoria.
-double giveDensity(int l)
+double giveDensity(int in1, int in2)
 {
-    double rta = density[l];
+    double rta = density[in(in1,in2)];
     return rta;
 }
 
@@ -402,64 +424,19 @@ void printPot(char *name)
 
 
 
-//Version que discretiza los cambios y no el nuevo valor.
-double newij(int iin, int jin)
-{
-        double x = Xmin*1.0+dx*iin; //Inicialización
 
-
-        double v = acce[iin]*dt;
-        double dj = v/dv;
-        dj = (int)dj;
-        j2 = jin+dj;
-
-
-
-
-
-        if(j2 < 0 || j2 >= Nv) return -1;
-//        if(i2 >= Nx){
-//            printf("i = %d\n", i2);
-//        }
-        v = Vmin*1.0+dv*j2;
-        x = v*dt;
-        double di = x/dx;
-        di = (int) di;
-
-        i2 = iin + di;
-        i2 = mod(i2,Nx);
-//	printf("%d\n",j2);
-    return 0;
-}
-
-//Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. k,i son x. j,l son v.
-void step()
-{
-	for(k = 0; k<Nx; k++){
-		for(l= 0; l<Nv; l++){
-			if(newij(k,l) ==0){
-				phaseOld[k][l] = phase[k][l];
-				phaseTemp[i2][j2] += phase[k][l];
-			}
-		}
-	}
-
-	for(i = 0; i<Nx; i++){
-		for(j= 0; j<Nv; j++){
-			phase[i][j] = phaseTemp[i][j];
-			phaseTemp[i][j] = 0;
-		}
-	}
-
-
-
-}
 
 //Calcula la posición del elemento (in1,in2,in3,in4) del espacio de fase (x,y,vx,vy).
 int ind(int in1, int in2, int in3, int in4)
 {
-    return in4 + Nvy*(in3 + Nvx*(in2 + Ny*in1))
+    return in4 + Nvy*(in3 + Nvx*(in2 + Ny*in1));
     
+}
+
+//Calcula la posición del elemento (in1, in2) en los arreglos bidimensionales.
+int in(int in1, int in2)
+{
+    return in2 * in1*Ny;
 }
 
 //Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo con rango de 0 a q-1.
