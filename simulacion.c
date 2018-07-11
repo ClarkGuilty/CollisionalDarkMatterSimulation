@@ -224,13 +224,13 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 //Interesante pero no tan útil de implementar en 1D.
 double einasto(double x, double v, double sx, double sv, double amplitude)
 {
-        double x0 = 1.0; //EN vía lactea 20kpc.
+        //double x0 = 1.0; //EN vía lactea 20kpc.
         double gamma = 0.17;
         double in = pow(x/sx,gamma)-1.0;
         double exx = -2.0*in/gamma;
-        double eina = amplitude*exp(exx);
-        double exv = -v*v/(2*sv*sv);
-        double max = sqrt(2/PI)*exp(exv); //Para la velocidad se una una gaussiana
+        //double eina = amplitude*exp(exx);
+        //double exv = -v*v/(2*sv*sv);
+        //double max = sqrt(2/PI)*exp(exv); //Para la velocidad se una una gaussiana
         return exx;
     
 }
@@ -258,7 +258,7 @@ double potencial()
 //    }
 
 
-    fftw_complex *in, *out, *inR, *mem, *out2;
+    fftw_complex *in, *out, *inR, *mem;
     in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
     out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
     inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
@@ -270,95 +270,44 @@ double potencial()
     //double *in2;
     //in2 = (double*) malloc((sizeof(double)*Nx));
 
-    fftw_plan pIda, pVuelta;
+    fftw_plan pIda;
     pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
 
     //fftw_plan pIda2, pVuelta2;
     //pIda2 = fftw_plan_dft_r2c_1d(Nx, in2, out2, FFTW_MEASURE);
 
-    FILE *input = fopen("inF.dat", "w+");
-    FILE *output0 = fopen("outF0.dat", "w+");
-    FILE *output1 = fopen("outF1.dat", "w+");
-    FILE *oR = fopen("oR.dat", "w+");
-    FILE *oI = fopen("oI.dat", "w+");
-
-
-    //Cargar densidad en in:
+    //Cargar densidad en in y borra out:
     for(i=0;i<Nx;i+=1){
         //in[0][i] = densityIN[i];
         in[i] = giveDensity(i);
         inR[i] = -1.0;
-      //  in2[i] = giveDensity(i);
+        out[i] = 0;
         //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
-        //printf("%f, %d,%d\n", in[0][i], i,Nx);
-        fprintf(input, "%f\n",creal(in[i]));
     }
-//    printf("Press enter to continue...\n");
-//    getchar();
-
-
     fftw_execute(pIda);
-//    fftw_execute(pIda2);
 
-    //Guarda out en mem. Imprime a archivo.
+    //Guarda out en mem.
     for(i=0;i<Nx;i+=1){
         mem[i] = out[i];
-        fprintf(output0, "%f\n",creal(out[i]));
-        fprintf(output1, "%f\n",cimag(out[i]));
-
-
-//        mem[i] = out2[i];
-//        fprintf(output0, "%f\n",creal(out2[i]));
-//        fprintf(output1, "%f\n",cimag(out2[i]));
-
     }
 
-    //fftw_execute(pIda);
     pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
-    double memDo;
-
-    //pVuelta2 = fftw_plan_dft_c2r_1d(Nx, out2, inR, FFTW_MEASURE);
-
-
+    
     //Devuelve carga a out Î(Chi).
     //out2[0] = mem[0];
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
       out[i] = -4*PI*G*mem[i]/calcK2((double)i);
     //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
-    //out2[i] = mem[i];
-
-
-      //  memDo = out[i];//Evita problemas de casting.
-        //printf("%f %f %d \n",memDo, calcK2((double) i), i);
     }
-
-
-
     fftw_execute(pIda);
-    //fftw_execute(pVuelta2);
 
-//        for(i=0;i<Nx;i+=1){
-//        fprintf(oR, "%f\n",inR[i]/Nx);
-//        fprintf(oI, "%f\n",cimag(inR[i])/Nx);
-//    }
-
+    
     for(i=0;i<Nx;i+=1){
         pot[i] = creal(inR[i]/Nx);
-        fprintf(oR, "%f\n",creal(inR[i])/Nx);
-        fprintf(oI, "%f\n",cimag(inR[i])/Nx);
+    //    fprintf(oR, "%f\n",creal(inR[i])/Nx);
+    //    fprintf(oI, "%f\n",cimag(inR[i])/Nx);
     }
-
-    fclose(input);
-    fclose(output0);
-    fclose(output1);
-    fclose(oR);
-    fclose(oI);
-
-    //fftw_destroy_plan(pVuelta);
-
-
-
 }
 
 //Calcula el k**2 de mis notas.

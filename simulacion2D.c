@@ -24,10 +24,10 @@ Primer Bosquejo. 2D con método de fourier.
 
 
 //Tamaño del espacio.
-#define Nx 512
-#define Ny 512
-#define Nvx 512
-#define Nvy 512
+#define Nx 128
+#define Ny 128
+#define Nvx 128
+#define Nvy 128
 #define Nv 1000
 
 //Constantes de unidades.
@@ -52,9 +52,8 @@ Primer Bosquejo. 2D con método de fourier.
 
 
 //Arreglos
-double phase[Nx][Ny][Nvx][Nvy] = {0};
-double phaseOld[Nx][Ny][Nvx][Nvy] = {0};
-double phaseTemp[Nx][Ny][Nvx][Nvy] = {0};
+//static double phase[Nx][Ny][Nvx][Nvy] = {0};
+double *phase;
 double *density;
 double *pot;
 double *acce;
@@ -106,9 +105,13 @@ int in(int in1, int in2);
 int main()
 {
     dt = dt*dx*dy/dvx/dvy;
+    phase = malloc((sizeof(double)*Nx*Ny*Nvx*Nvy));
+    if(phase == NULL){
+        printf("phase es Null\n");   
+        }
     density = malloc((sizeof(double)*Nx*Ny));
     acce = malloc((sizeof(double)*Nx));
-    pot = malloc((sizeof(double)*Nx));
+    pot = malloc((sizeof(double)*Nx*Ny));
 
 	constantes = fopen("constants.dat","w+");
 	printConstant("Xmin",Xmin);
@@ -130,27 +133,38 @@ int main()
 	double vy;
 	double sr = 0.1;
         double sv = 0.1;
-	double ampl = 1;
+	double ampl = 10;
+        //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
-        phase[0][0][0][1] = 1;
+        //phase[0][0][0][1] = 1;
         //TODO Inicializar un espacio de fase 4D.
-	for(k1=0;k1<1;k1+=1) {
+	for(k1=0;k1<Nx;k1+=1) {
             x = Xmin*1.0+dx*k1;
-            for(k2=0;k2<1;k2+=1) {
+            for(k2=0;k2<Ny;k2+=1) {
                 y = Ymin*1.0+ dy*k2;
-                for(k3=0;k3<1;k3+=1) {
+                density[in(k1,k2)] = 0;
+                for(k3=0;k3<Nvx;k3+=1) {
                     vx = Vxmin*1.0+ dvx*k3;
-                    for(k4=0;k4<1;k4+=1) {
+                    for(k4=0;k4<Nvy;k4+=1) {
                         vy = Vymin*1-0 + dvy*k4;
-                        printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
-                        phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
-                        //phaseOld[ind(k1,k2,k3,k4)] = 0;
+                        //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
+
+                        //phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
+                        phase[ind(k1,k2,k3,k4)] = gaussD(x,y,vx,vy,sr,sv,ampl);
+                        //printf("(%d,%d,%d,%d) %f\n", k1,k2,k3,k4,phase[ind(k1,k2,k3,k4)]);
                         //phaseTemp[ind(k1,k2,k3,k4)] = 0;
+                        
                     }
                 }
             }
+            //printf("%d\n",k1);
         }
-//        calDensity();
+        printf("Masa = %f\n", calDensity());
+        printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
+        printPhase("Density0.dat");
+        potencial();
+        printPot("potAft.dat");
+        
 
 			fclose(constantes);
 	return 0;
@@ -163,11 +177,11 @@ int main()
 void printPhase(char *name)
 {
 	FILE *output = fopen(name, "w+");
-
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nv-1;j+=1){ 
+		for(j=1;j<Ny+1;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
+                    fprintf(output,"%f ", giveDensity(i,Ny-j));
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -183,7 +197,7 @@ void printDensity(char *name)
 	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nv-1;j+=1){
+		for(j=1;j<Ny-1;j+=1){
 			fprintf(output,"%f ", density[in(i,j)]);
         }
 		fprintf(output,"\n");
@@ -203,11 +217,14 @@ void printConstant(char *name, double value)
 //Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
 double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude)
 {
-	double ex = -x*x/(2.0*sr*sr)-y*y/(2.0*sr*sr)-vx*vx/(2.0*sv*sv)-vy*vy/(2.0*sv*sv);
+	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
+    	double ex = -x*x/(2.0*sr*sr)-y*y/(2.0*sr*sr)-vx*vx/(2.0*sv*sv)-vy*vy/(2.0*sv*sv);
+        
 //	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
-
+        //printf("%f\n",ex);
 	//return amplitude*exp(ex)/(2*PI*sx*sv);
-	return amplitude*exp(ex);
+	//return amplitude*exp(-sqrt(fabs(ex)));
+        return amplitude*exp(ex);
 
 }
 
@@ -230,12 +247,13 @@ double einasto(double x, double v, double sx, double sv, double amplitude)
 double calDensity()
 {
 	double mass = 0;
-        for(k1; k1<Nx;k1+=1){
-            for(k2; k2< Ny; k2+=1){
+        for(k1=0; k1<Nx;k1+=1){
+            for(k2=0; k2< Ny; k2+=1){
                 density[in(k1,k2)] = 0;
-                for(k3; k3< Nvx; k3+=1){
-                    for(k4; k4< Nvy; k4+=1){
-                        density[in(k1,k2)] += phase[k1][k2][k3][k4]*dvx*dvy;
+                for(k3=0; k3< Nvx; k3+=1){
+                    for(k4=0; k4< Nvy; k4+=1){
+                        //density[in(k1,k2)] += phase[k1][k2][k3][k4]*dvx*dvy;
+                        density[in(k1,k2)] = giveDensity(k1,k2)+ phase[ind(k1,k2,k3,k4)];
                     }
                 }
                 mass += density[in(k1,k2)];
@@ -253,11 +271,11 @@ double potencial()
 //    }
 
 
-    fftw_complex *in, *out, *inR, *mem, *out2;
-    in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
-    out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
-    inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
-    mem=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    fftw_complex *inE, *out, *inR, *mem, *out2;
+    inE=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
+    out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
+    inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
+    mem=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
 
 
     //fftw_complex *out2;
@@ -266,40 +284,35 @@ double potencial()
     //in2 = (double*) malloc((sizeof(double)*Nx));
 
     fftw_plan pIda, pVuelta;
-    pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
+    pIda = fftw_plan_dft_2d(Nx, Ny, inE, out,FFTW_FORWARD, FFTW_MEASURE);
 
     //fftw_plan pIda2, pVuelta2;
     //pIda2 = fftw_plan_dft_r2c_1d(Nx, in2, out2, FFTW_MEASURE);
 
-    FILE *input = fopen("inF.dat", "w+");
-    FILE *output0 = fopen("outF0.dat", "w+");
-    FILE *output1 = fopen("outF1.dat", "w+");
-    FILE *oR = fopen("oR.dat", "w+");
-    FILE *oI = fopen("oI.dat", "w+");
+    //FILE *input = fopen("inF.dat", "w+");
+    //FILE *output0 = fopen("outF0.dat", "w+");
+    //FILE *output1 = fopen("outF1.dat", "w+");
+    //FILE *oR = fopen("oR.dat", "w+");
+    //FILE *oI = fopen("oI.dat", "w+");
 
 
     //Cargar densidad en in:
-    for(i=0;i<Nx;i+=1){
-        //in[0][i] = densityIN[i];
-        in[i] = giveDensity(i,j);
-        inR[i] = -1.0;
-      //  in2[i] = giveDensity(i);
-        //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
-        //printf("%f, %d,%d\n", in[0][i], i,Nx);
-        fprintf(input, "%f\n",creal(in[i]));
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2=0;k2<Ny;k2+=1){
+        inE[in(k1,k2)] = giveDensity(k1,k2);
+       //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
+//        fprintf(input, "%f\n",creal(inE[i]));
+        }
     }
-//    printf("Press enter to continue...\n");
-//    getchar();
-
 
     fftw_execute(pIda);
 //    fftw_execute(pIda2);
 
-    //Guarda out en mem. Imprime a archivo.
-    for(i=0;i<Nx;i+=1){
+    //Guarda out en mem. 
+    for(k1=0;i<Nx*Ny;i+=1){
         mem[i] = out[i];
-        fprintf(output0, "%f\n",creal(out[i]));
-        fprintf(output1, "%f\n",cimag(out[i]));
+     //   fprintf(output0, "%f\n",creal(out[i]));
+     //   fprintf(output1, "%f\n",cimag(out[i]));
 
 
 //        mem[i] = out2[i];
@@ -309,19 +322,20 @@ double potencial()
     }
 
     //fftw_execute(pIda);
-    pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
+    pIda = fftw_plan_dft_2d(Nx, Ny, out, inR,FFTW_BACKWARD, FFTW_MEASURE);
+    //Se debe usar el mismo plan sí o sí al parecer.
     double memDo;
 
     //pVuelta2 = fftw_plan_dft_c2r_1d(Nx, out2, inR, FFTW_MEASURE);
 
 
     //Devuelve carga a out Î(Chi).
-    //out2[0] = mem[0];
-    out[0] = -4*PI*G*mem[0];
-    for(i=1;i<Nx;i+=1){
-      out[i] = -4*PI*G*mem[i]/calcK2((double)i);
-    //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
-    //out2[i] = mem[i];
+    out[0] = mem[0];
+    //out[0] = -4*PI*G*mem[0];
+    for(i=1;i<Nx*Ny;i+=1){
+      //out[i] = -4*PI*G*mem[i]/calcK2((double)i);//TODO: cálculo en 2d.
+        out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
+    
 
 
       //  memDo = out[i];//Evita problemas de casting.
@@ -338,22 +352,19 @@ double potencial()
 //        fprintf(oI, "%f\n",cimag(inR[i])/Nx);
 //    }
 
-    for(i=0;i<Nx;i+=1){
+    for(i=0;i<Nx*Ny;i+=1){
         pot[i] = creal(inR[i]/Nx);
-        fprintf(oR, "%f\n",creal(inR[i])/Nx);
-        fprintf(oI, "%f\n",cimag(inR[i])/Nx);
+        //fprintf(oR, "%f\n",creal(inR[i])/(Nx*Ny));
+        //fprintf(oI, "%f\n",cimag(inR[i])/Nx/Ny);
     }
 
-    fclose(input);
-    fclose(output0);
-    fclose(output1);
-    fclose(oR);
-    fclose(oI);
+ //   fclose(input);
+ //   fclose(output0);
+ //   fclose(output1);
+ //   fclose(oR);
+ //   fclose(oI);
 
     //fftw_destroy_plan(pVuelta);
-
-
-
 }
 
 //Calcula el k**2 de mis notas.
@@ -417,8 +428,16 @@ void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",pot[i]);
+		for(j=1;j<Ny+1;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", phase[i][Nv-j]);
+                    fprintf(output,"%f ", pot[in(i,j)]);
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
 			}
+
 	fclose(output);
 }
 
@@ -436,7 +455,7 @@ int ind(int in1, int in2, int in3, int in4)
 //Calcula la posición del elemento (in1, in2) en los arreglos bidimensionales.
 int in(int in1, int in2)
 {
-    return in2 * in1*Ny;
+    return in2 + in1*Ny;
 }
 
 //Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo con rango de 0 a q-1.

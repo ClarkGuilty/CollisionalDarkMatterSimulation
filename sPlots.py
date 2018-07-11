@@ -10,8 +10,9 @@ import numpy as np
 #import pyqtgraph as pg
 import matplotlib.pyplot as plt
 import scipy as sc
+import decimal as dec
 
-
+D=dec.Decimal
     
 
 def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
@@ -21,12 +22,25 @@ def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times e
     t0 = t0*365.24*24*60*60 #Ahora en segundos.
     G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2) #G en mis unidades.
     hubble = 70/(x*x0*1e-3)*(times*t0)*x #La constante de hubble en las unidades.
+    sv = 3e-26* np.power(x*x0*0.01,-3) * times*t0 
     print("La constante de Hubble es: %f" % hubble)
+    print("La constante gravitacional es %f" % G)
     return G
     
-newG = unidades(5,1e15,2e-1)
-#newG = unidades(20e-3,1e11,3e-3)
-print(newG)
+def unidadesDec(x,mass,times):
+    x = D(x)
+    mass = D(mass)
+    times = D(times)
+    x0 = D('3.0857e+20' )
+    t0 = D('13.772e9') * D('365.24')*24*60*60
+    x = x*x0
+    sv = D('3e-26')*(x**(-3) ) *times*t0
+    return sv
+    
+print(unidadesDec(20e-3,1e11,3e-3))
+
+#newG = unidades(5,1e15,2e-1) #Clusters
+newG = unidades(20e-3,1e11,3e-3) #Galaxia 
 print("El 4*Pi*G = %f" % (4*np.pi*newG))
 
 #constantes = np.loadtxt("constants.dat", usecols = 1)
