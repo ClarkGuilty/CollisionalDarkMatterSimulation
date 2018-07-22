@@ -15,8 +15,8 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -1.0
-#define Vmax 1.0
+#define Vmin -0.5
+#define Vmax 0.5
 
 //Tamaño del espacio.
 #define Nx 2048
@@ -28,6 +28,8 @@ Primer Bosquejo. 1D con método de fourier.
 #define aByear 4
 #define aMasasSol 5
 
+#define GAUSS -127
+#define JEANS -137
 
 
 //Primer intento Via Láctea.
@@ -48,9 +50,12 @@ double phase[Nx][Nv] = {0};
 
 double phaseOld[Nx][Nv] = {0};
 double phaseTemp[Nx][Nv] = {0};
+double *energy;
+double *velocity;
 double *density;
 double *pot;
 double *acce;
+int initCon;
 
 //Variables
 int i;
@@ -64,8 +69,8 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
-double dt = 0.5; 
-int Nt = 60;
+double dt = 0.25; 
+int Nt = 50;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -73,7 +78,7 @@ double calDensity();
 void printDensity(char *name);
 void printConstant(char *name, double value);
 double giveDensity(int l);
-double potencial();
+void potencial();
 double calcK2(double j2);
 double convertir(double valor, int unidad);
 void calAcce();
@@ -83,14 +88,18 @@ void step();
 int mod(int p, int q);
 void printPot(char *name);
 double einasto(double x, double v, double sx, double sv, double amplitude);
+double jeans(double x, double v, double rho, double sigma, double A, double k);
 
 
 int main()
 {
-    dt = dt*dx/dv;
+    //dt = dt*dx/dv;
+    energy = malloc((sizeof(double)*Nx));
+    velocity = malloc((sizeof(double)*Nx));
     density = malloc((sizeof(double)*Nx));
     acce = malloc((sizeof(double)*Nx));
     pot = malloc((sizeof(double)*Nx));
+    
 
 	constantes = fopen("constants.dat","w+");
 	printConstant("Xmin",Xmin);
@@ -102,16 +111,36 @@ int main()
 	printConstant("Nt", Nt);
 	double x;
 	double v;
-	double vSx = 0.1;
-	double vSv = 0.1;
-	double ampl = 100;
+    
+    //Variable que elige condición a simular.
+    initCon = JEANS;
+    
+    //Gauss
+    double vSx = 0.1;
+    double vSv = 0.1;
+    double ampl = 100;
+    
+    //Jeans
+    double rho = 10.0;
+    double sigma = 0.1;
+    double A = 4.0;
+    double k = 2* PI;
+    
+    
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
                 //printf("x es %f en %d\n", x,i);
                 x = fabs(x);
                     for(j=0;j<Nv;j+=1){
                         v = Vmin*1.0+dv*j;
-                        phase[i][j] = gaussD(x,v,vSx,vSv,ampl); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
+                        if(initCon == GAUSS)
+                        {
+                            phase[i][j] = gaussD(x,v,vSx,vSv,ampl); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
+                        }
+                        if(initCon == JEANS)
+                        {
+                            phase[i][j] = jeans(x, v, rho, sigma, A, k);
+                        }
                         phaseOld[i][j] = 0;
                         phaseTemp[i][j] = 0;
                     }
@@ -130,8 +159,17 @@ int main()
 	printf("heh\n");
 	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
 	fprintf(simInfo,"x va de %.2f a %.2f , v va de %.2f a %.2f\n", Xmin,Xmax,Vmin,Vmax);
-	fprintf(simInfo,"Una distribución gaussiana centrada en 0 para el espacio de fase con (sx sv A)=\n");
-	fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);
+	if(initCon == GAUSS)
+    {
+        fprintf(simInfo,"Una distribución gaussiana centrada en 0 para el espacio de fase con (sx sv A)=\n");
+        fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);        
+    }
+    if(initCon == JEANS)
+    {
+        fprintf(simInfo,"Se simuló la inestabilidad de Jeans con (rho sigma A k)=\n");
+        fprintf(simInfo,"(%.3f %.3f %.3f %.3f)\n", rho, sigma, A, k);
+    }
+
 	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
 
     potencial();
@@ -220,6 +258,10 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 
 }
 
+double jeans(double x, double v, double rho, double sigma, double A, double k)
+{
+ return rho*pow(2*PI*sigma*sigma,-0.5)*exp(-v*v/(2*sigma*sigma))*(1+A*cos(k*x));
+}
 
 //Interesante pero no tan útil de implementar en 1D.
 double einasto(double x, double v, double sx, double sv, double amplitude)
@@ -235,7 +277,7 @@ double einasto(double x, double v, double sx, double sv, double amplitude)
     
 }
 
-//Calcula la densidad. Actualiza el arreglo density
+//Calcula la densidad y la velocidad macroscópica (u). Actualiza el arreglo density
 double calDensity()
 {
 	double mass = 0;
@@ -243,14 +285,18 @@ double calDensity()
 		density[i]=0;
 		for(j=0;j<Nv;j+=1){
 				density[i] += phase[i][j]*dv;
+                velocity[i] += phase[i][j]*dv*(Vmin*1.0+dv*j);
+                energy[i] += phase[i][j]*dv*pow(Vmin*1.0+dv*j - velocity[i], 2)/2;
 			}
+        velocity[i] = velocity[i] / density[i];
+        energy[i] = energy[i] / density[i];
 		mass += density[i];
 		}
 	return mass;
 }
 
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
-double potencial()
+void potencial()
 {
 //    double * densityIN= malloc(sizeof(double)*Nx);
 //    for(i = 0;i<Nx;i+=1){
@@ -347,24 +393,6 @@ double convertir(double valor, int unidad )
         return valor*cont0s*fracT0;
     }
 }
-
-//Calcula la aceleración a partir del arreglo pot actual.
-
-//void calAcce()
-//{
-//    for(i=1;i<Nx-1;i++){
-//        acce[i]=(-pot[i]+pot[i-1])/(dx);
-//  }
-//    acce[0]=-(pot[0]-pot[Nx-1])/(dx);
-//    acce[Nx-1]=-(pot[Nx-1]-pot[Nx-2])/(dx);
-//}
-
-//void calAcce()
-//{
-//    for(i = 0; i<Nx ; i    +=1){
-//    acce[i] =  (-pot[mod(i+1,Nx)] + pot[mod(i-1,Nx)])/(2*dx);
-//    }
-//}
 
 //Deriva el potencial y carga la aceleración en el arreglo acce.
 void calAcce()
