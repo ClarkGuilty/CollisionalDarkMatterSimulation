@@ -15,8 +15,8 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -0.5
-#define Vmax 0.5
+#define Vmin -1.0
+#define Vmax 1.0
 
 //Tamaño del espacio.
 #define Nx 2048
@@ -89,6 +89,9 @@ int mod(int p, int q);
 void printPot(char *name);
 double einasto(double x, double v, double sx, double sv, double amplitude);
 double jeans(double x, double v, double rho, double sigma, double A, double k);
+double feq(int ipos, int jvel);
+double givePos(int ito);
+double giveVel(int jto);
 
 
 int main()
@@ -113,7 +116,7 @@ int main()
 	double v;
     
     //Variable que elige condición a simular.
-    initCon = JEANS;
+    initCon = GAUSS;
     
     //Gauss
     double vSx = 0.1;
@@ -175,6 +178,7 @@ int main()
     potencial();
     printPot("./datFiles/potential0.dat");
     calAcce();
+    
     printAcce("./datFiles/acce0.dat");
     printf("G es %lf\n", G*1.0);
 
@@ -184,6 +188,7 @@ int main()
         //printf("Error Mesage00\n");
 		
 		step();
+        //collision(10.0);
 		//calDensity(); 
 		printf("%d %f\n",suprai,calDensity()*100/mass);
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
@@ -258,6 +263,7 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 
 }
 
+//Retorna el valor correspondiente para la inestabilidad de Jeans. Con una densidad, una dispersión, una amplitud y un k dados.
 double jeans(double x, double v, double rho, double sigma, double A, double k)
 {
  return rho*pow(2*PI*sigma*sigma,-0.5)*exp(-v*v/(2*sigma*sigma))*(1+A*cos(k*x));
@@ -277,7 +283,7 @@ double einasto(double x, double v, double sx, double sv, double amplitude)
     
 }
 
-//Calcula la densidad y la velocidad macroscópica (u). Actualiza el arreglo density
+//Calcula la densidad, la velocidad macroscópica (u) y la energía libre (e) y los carga en los correspondientes arreglos.
 double calDensity()
 {
 	double mass = 0;
@@ -298,11 +304,6 @@ double calDensity()
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
 void potencial()
 {
-//    double * densityIN= malloc(sizeof(double)*Nx);
-//    for(i = 0;i<Nx;i+=1){
-//        densityIN[i] = giveDensity(i);
-//    }
-
 
     fftw_complex *in, *out, *inR, *mem;
     in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
@@ -311,20 +312,12 @@ void potencial()
     mem=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
 
 
-    //fftw_complex *out2;
-   // out2=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
-    //double *in2;
-    //in2 = (double*) malloc((sizeof(double)*Nx));
-
     fftw_plan pIda;
     pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
 
-    //fftw_plan pIda2, pVuelta2;
-    //pIda2 = fftw_plan_dft_r2c_1d(Nx, in2, out2, FFTW_MEASURE);
-
     //Cargar densidad en in y borra out:
     for(i=0;i<Nx;i+=1){
-        //in[0][i] = densityIN[i];
+
         in[i] = giveDensity(i);
         inR[i] = -1.0;
         out[i] = 0;
@@ -340,7 +333,6 @@ void potencial()
     pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
     
     //Devuelve carga a out Î(Chi).
-    //out2[0] = mem[0];
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
       out[i] = -4*PI*G*mem[i]/calcK2((double)i);
@@ -475,6 +467,40 @@ void step()
 
 
 
+}
+
+void collision(double tau)
+{
+    double df = 0;
+    
+    
+    for(i = 0;i<Nx;i+=1){
+        for(j=0;j<Nv;j+=1){
+         df = dt*(feq(i,j) - phase[i][j])/tau;
+         phase[i][j] += df;
+        }
+    }
+    
+    
+}
+
+
+double feq(int ipos, int jvel)
+{
+    double ex = -1.0*pow(giveVel(jvel)-velocity[ipos],2)/(2.0*energy[ipos]);
+    double other = density[ipos] / sqrt(2*PI*energy[ipos]);
+    return other * exp(ex);
+    
+}
+
+double givePos(int ito)
+{
+    return Xmin*1.0+dx*ito;
+}
+
+double giveVel(int jto)
+{
+    return Vmin*1.0+dv*jto;
 }
 
 //Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo con rango de 0 a q-1.

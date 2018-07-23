@@ -1,4 +1,5 @@
-## Creating gif using imageio
+#Creating gif using imageio. 
+#All credits to Suresh Kumar at idiotinside.com
 #gif.py 
 import sys
 import datetime

@@ -27,6 +27,7 @@ def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times e
     print("La constante gravitacional es %f" % G)
     return G
     
+
 def unidadesDec(x,mass,times):
     x = D(x)
     mass = D(mass)
@@ -36,13 +37,24 @@ def unidadesDec(x,mass,times):
     x = x*x0
     sv = D('3e-26')*(x**(-3) ) *times*t0
     return sv
+
+#Calcula la masa de la materia oscura en mis unidades, massValue siendo la masa en eV.
+def unidadesMass(massValue, mass):
+    mass = D(mass)
+    massValue = D(massValue)
+    val = D('1.783e-36')
+    m0 = D('1.988e+30')
+    return massValue*val/(m0*mass)
+    
     
 print(unidadesDec(20e-3,1e11,3e-3))
 
 #newG = unidades(5,1e15,2e-1) #Clusters
 newG = unidades(20e-3,1e11,3e-3) #Galaxia 
+dmmass = 1000
 print("El 4*Pi*G = %f" % (4*np.pi*newG))
-
+#print("La masa a usar es %f eV = %f" % (dmmass, unidadesMass(dmmass, 1e11)))
+print(unidadesMass(dmmass, 1e11))
 #constantes = np.loadtxt("constants.dat", usecols = 1)
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 #inF = np.loadtxt("inF.dat")
