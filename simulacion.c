@@ -27,9 +27,10 @@ Primer Bosquejo. 1D con método de fourier.
 #define aSegundos 14
 #define aByear 4
 #define aMasasSol 5
-
+ 
 #define GAUSS -127
 #define JEANS -137
+#define TAU 100.0
 
 
 //Primer intento Via Láctea.
@@ -81,7 +82,7 @@ double giveDensity(int l);
 void potencial();
 double calcK2(double j2);
 double convertir(double valor, int unidad);
-void calAcce();
+void calAcceG();
 void printAcce(char *name);
 double newij(int iin, int jin);
 void step();
@@ -92,6 +93,8 @@ double jeans(double x, double v, double rho, double sigma, double A, double k);
 double feq(int ipos, int jvel);
 double givePos(int ito);
 double giveVel(int jto);
+double collision(int icol, int jcol, double tau);
+void collisionStep();
 
 
 int main()
@@ -177,7 +180,7 @@ int main()
 
     potencial();
     printPot("./datFiles/potential0.dat");
-    calAcce();
+    calAcceG();
     
     printAcce("./datFiles/acce0.dat");
     printf("G es %lf\n", G*1.0);
@@ -188,8 +191,9 @@ int main()
         //printf("Error Mesage00\n");
 		
 		step();
+        //collisionStep();
         //collision(10.0);
-		//calDensity(); 
+		//calDensity();  //La impresión calcula la densidad.
 		printf("%d %f\n",suprai,calDensity()*100/mass);
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
@@ -197,7 +201,7 @@ int main()
 		potencial();
 		sprintf(grid, "./datFiles/potential%d.dat", suprai);
 		printPot(grid);
-		calAcce();
+		calAcceG();
 		sprintf(grid, "./datFiles/acce%d.dat", suprai);
 		printAcce(grid);
                 sprintf(grid, "./datFiles/grid%d.dat", suprai);
@@ -205,7 +209,6 @@ int main()
                 free(grid);
                 
 	}
-//    printPhase("grid2.dat");
 
 
 	fclose(constantes);
@@ -222,7 +225,7 @@ void printPhase(char *name)
 	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nv-1;j+=1){ 
+		for(j=1;j<Nv+1;j+=1){ 
           //      printf("ignorarPrimero\n");
 			fprintf(output,"%f ", phase[i][Nv-j]);
         //printf("Error MesagenoIgno\n");
@@ -386,8 +389,8 @@ double convertir(double valor, int unidad )
     }
 }
 
-//Deriva el potencial y carga la aceleración en el arreglo acce.
-void calAcce()
+//Deriva el potencial y carga la aceleración gravitacional en el arreglo acce.
+void calAcceG()
 {
     for(i = 0; i<Nx ; i +=1){
     acce[i] =  (-pot[mod(i-2,Nx)] + 8*pot[mod(i-1,Nx)]-8*pot[mod(i+1,Nx)]+pot[mod(i+2,Nx)])/(12*dx);
@@ -436,6 +439,10 @@ double newij(int iin, int jin)
 //            printf("i = %d\n", i2);
 //        }
         v = Vmin*1.0+dv*j2;
+        
+        //parte colisional.
+//        v += collision(iin, jin, TAU);
+        //
         x = v*dt;
         double di = x/dx;
         di = (int) di;
@@ -454,6 +461,7 @@ void step()
 			if(newij(k,l) ==0){
 				phaseOld[k][l] = phase[k][l];
 				phaseTemp[i2][j2] += phase[k][l];
+              //      phaseTemp[i2][l] += collision(k,l,TAU);
 			}
 		}
 	}
@@ -464,26 +472,33 @@ void step()
 			phaseTemp[i][j] = 0;
 		}
 	}
-
-
-
 }
 
-void collision(double tau)
+//Probablemente innecesario. TODO:borrar cuando sea seguro
+void collisionStep()
 {
-    double df = 0;
-    
-    
-    for(i = 0;i<Nx;i+=1){
-        for(j=0;j<Nv;j+=1){
-         df = dt*(feq(i,j) - phase[i][j])/tau;
-         phase[i][j] += df;
-        }
-    }
-    
-    
+	for(k = 0; k<Nx; k++){
+		for(l= 0; l<Nv; l++){
+			if(newij(k,l) ==0){
+				//phaseOld[k][l] = phase[k][l];
+				phaseTemp[i2][j2] += collision(i2,j2,TAU);
+			}
+		}
+	}
+
+	for(i = 0; i<Nx; i++){
+		for(j= 0; j<Nv; j++){
+			phase[i][j] = phaseTemp[i][j];
+			phaseTemp[i][j] = 0;
+		}
+	}
 }
 
+double collision(int icol, int jcol, double tau)
+{
+    double df = (feq(icol,jcol) - phaseOld[icol][jcol])/tau;    
+    return df;
+}
 
 double feq(int ipos, int jvel)
 {

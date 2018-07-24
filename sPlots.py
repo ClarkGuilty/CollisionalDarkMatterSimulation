@@ -55,7 +55,10 @@ dmmass = 1000
 print("El 4*Pi*G = %f" % (4*np.pi*newG))
 #print("La masa a usar es %f eV = %f" % (dmmass, unidadesMass(dmmass, 1e11)))
 print(unidadesMass(dmmass, 1e11))
-#constantes = np.loadtxt("constants.dat", usecols = 1)
+
+
+
+constantes = np.loadtxt("constants.dat", usecols = 1)
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 #inF = np.loadtxt("inF.dat")
 #outF = np.loadtxt("outF0.dat")
@@ -70,13 +73,19 @@ print(unidadesMass(dmmass, 1e11))
 
 
 
-#for i in range(int(constantes[6])):
-#    dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i))
-#    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
-#    #plt.pcolormesh(dat)
+for i in range(int(constantes[6])):
+    col = np.loadtxt("./col/grid{:d}.dat".format(i))
+    nocol = np.loadtxt("./nocol/grid{:d}.dat".format(i))
+    diff = nocol - col
+    
+
+
+    plt.imshow(diff, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
+    plt.title("comparacion")
+#    plt.pcolormesh(dat)
 #    #plt.pcolor(dat) Nunca usar para grandes grillas	
-#    plt.savefig("./images/phase{:d}.png".format(i))
-#    plt.clf()
+    plt.savefig("./dif/phase{:d}.png".format(i))
+    plt.clf()
 #dens = np.loadtxt("density.dat")
 #plt.plot(x,dens)
 #    plt.savefig("./images/density{:d}.png".format(i))
