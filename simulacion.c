@@ -15,8 +15,8 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -1.0
-#define Vmax 1.0
+#define Vmin -0.5
+#define Vmax 0.5
 
 //Tamaño del espacio.
 #define Nx 2048
@@ -70,7 +70,7 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
-double dt = 0.25; 
+double dt = 0.4; 
 int Nt = 50;
 FILE *constantes;
 void printPhase(char *name);
@@ -387,6 +387,7 @@ double convertir(double valor, int unidad )
     if( unidad == aSegundos){
         return valor*cont0s*fracT0;
     }
+    return -1;
 }
 
 //Deriva el potencial y carga la aceleración gravitacional en el arreglo acce.
@@ -461,7 +462,7 @@ void step()
 			if(newij(k,l) ==0){
 				phaseOld[k][l] = phase[k][l];
 				phaseTemp[i2][j2] += phase[k][l];
-              //      phaseTemp[i2][l] += collision(k,l,TAU);
+                    phaseTemp[i2][l] += collision(k,l,TAU);
 			}
 		}
 	}
@@ -496,6 +497,7 @@ void collisionStep()
 
 double collision(int icol, int jcol, double tau)
 {
+    if(TAU==0) return 0;
     double df = (feq(icol,jcol) - phaseOld[icol][jcol])/tau;    
     return df;
 }

@@ -82,10 +82,14 @@ for i in range(int(constantes[6])):
 
     plt.imshow(diff, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
     plt.title("comparacion")
+    plt.colorbar()
 #    plt.pcolormesh(dat)
 #    #plt.pcolor(dat) Nunca usar para grandes grillas	
     plt.savefig("./dif/phase{:d}.png".format(i))
     plt.clf()
+    dcol = np.loadtxt("./col/density{:d}.dat".format(i))
+    dnocol = np.loadtxt("./nocol/density{:d}.dat".format(i))
+    ddiff = dnocol - dcol
 #dens = np.loadtxt("density.dat")
 #plt.plot(x,dens)
 #    plt.savefig("./images/density{:d}.png".format(i))
