@@ -15,8 +15,8 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -0.5
-#define Vmax 0.5
+#define Vmin -0.7
+#define Vmax 0.7
 
 //Tamaño del espacio.
 #define Nx 2048
@@ -30,7 +30,7 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 100.0
+#define TAU 300.0
 
 
 //Primer intento Via Láctea.
@@ -95,7 +95,7 @@ double givePos(int ito);
 double giveVel(int jto);
 double collision(int icol, int jcol, double tau);
 void collisionStep();
-
+double newijCol(int iin, int jin);
 
 int main()
 {
@@ -129,7 +129,7 @@ int main()
     //Jeans
     double rho = 10.0;
     double sigma = 0.1;
-    double A = 4.0;
+    double A = 0.9999;
     double k = 2* PI;
     
     
@@ -146,6 +146,7 @@ int main()
                         if(initCon == JEANS)
                         {
                             phase[i][j] = jeans(x, v, rho, sigma, A, k);
+                            //if(phase[i][j]<0) printf("(%d,%.2f) (%d,%.2f) = %.2f\n",i,j, givePos(i),giveVel(i), phase[i][j]);
                         }
                         phaseOld[i][j] = 0;
                         phaseTemp[i][j] = 0;
@@ -177,7 +178,11 @@ int main()
     }
 
 	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
-
+    
+    
+    collisionStep();
+    calDensity();
+    
     potencial();
     printPot("./datFiles/potential0.dat");
     calAcceG();
@@ -266,10 +271,10 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 
 }
 
-//Retorna el valor correspondiente para la inestabilidad de Jeans. Con una densidad, una dispersión, una amplitud y un k dados.
+//Retorna el valor correspondiente para la inestabilidad de Jeans. Con una densidad, una dispersión, una amplitud(0< A <=1) y un k dados.
 double jeans(double x, double v, double rho, double sigma, double A, double k)
 {
- return rho*pow(2*PI*sigma*sigma,-0.5)*exp(-v*v/(2*sigma*sigma))*(1+A*cos(k*x));
+ return rho*pow(2*PI*sigma*sigma,-0.5)*exp(-v*v/(2*sigma*sigma))*(1.0+A*cos(k*x));
 }
 
 //Interesante pero no tan útil de implementar en 1D.
@@ -418,22 +423,15 @@ void printPot(char *name)
 	fclose(output);
 }
 
-
-
 //Version que discretiza los cambios y no el nuevo valor.
 double newij(int iin, int jin)
 {
         double x = Xmin*1.0+dx*iin; //Inicialización
 
-
         double v = acce[iin]*dt;
         double dj = v/dv;
         dj = (int)dj;
         j2 = jin+dj;
-
-
-
-
 
         if(j2 < 0 || j2 >= Nv) return -1;
 //        if(i2 >= Nx){
@@ -462,7 +460,8 @@ void step()
 			if(newij(k,l) ==0){
 				phaseOld[k][l] = phase[k][l];
 				phaseTemp[i2][j2] += phase[k][l];
-                    phaseTemp[i2][l] += collision(k,l,TAU);
+                    //phaseTemp[i2][l] += collision(k,mod(l,1024),TAU);
+                    //phaseTemp[k][l] -= collision(k,l,TAU);
 			}
 		}
 	}
@@ -475,26 +474,58 @@ void step()
 	}
 }
 
-//Probablemente innecesario. TODO:borrar cuando sea seguro
 void collisionStep()
 {
-	for(k = 0; k<Nx; k++){
+    	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
-			if(newij(k,l) ==0){
+			if(newijCol(k,l) ==0){
 				//phaseOld[k][l] = phase[k][l];
-				phaseTemp[i2][j2] += collision(i2,j2,TAU);
+				//phaseTemp[i2][j2] += phase[k][l];
+                phaseTemp[i2][l] += collision(k,mod(l,1024),TAU);
+                //phaseTemp[k][l] -= collision(k,l,TAU);
 			}
 		}
 	}
 
 	for(i = 0; i<Nx; i++){
 		for(j= 0; j<Nv; j++){
-			phase[i][j] = phaseTemp[i][j];
+			phase[i][j] += phaseTemp[i][j];
 			phaseTemp[i][j] = 0;
 		}
 	}
 }
 
+//Version que discretiza los cambios y no el nuevo valor.
+double newijCol(int iin, int jin)
+{
+        double x = Xmin*1.0+dx*iin; //Inicialización
+
+
+        double v = acce[iin]*dt;
+        double dj = v/dv;
+        dj = (int)dj;
+        j2 = jin;
+
+        if(j2 < 0 || j2 >= Nv) return -1;
+//        if(i2 >= Nx){
+//            printf("i = %d\n", i2);
+//        }
+        v = giveVel(j2);
+        
+        //parte colisional.
+//        v += collision(iin, jin, TAU);
+        //
+        x = v*dt;
+        double di = x/dx;
+        di = (int) di;
+
+        i2 = iin + di;
+        i2 = mod(i2,Nx);
+//	printf("%d\n",j2);
+    return 0;
+}
+
+//Calcula la contribución colisional en phase[icol][jcol] con un Tau dado.
 double collision(int icol, int jcol, double tau)
 {
     if(TAU==0) return 0;

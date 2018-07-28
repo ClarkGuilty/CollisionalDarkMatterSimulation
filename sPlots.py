@@ -3,63 +3,17 @@
 
 
 @author: Javier Alejandro Acevedo Barroso
-Script de Python para cálculos auxiliares.
+Script de Python para comparar versión colisional con no colisional.
 
 """
 import numpy as np
 #import pyqtgraph as pg
 import matplotlib.pyplot as plt
 import scipy as sc
-import decimal as dec
-
-D=dec.Decimal
-    
-
-def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
-    x0 = 3.0857e+22 #un megaparsec en metros.
-    m0 = 1.988e30  #Masa solar en kg.
-    t0 = 13.772*1000000000 #Edad del universo en años.
-    t0 = t0*365.24*24*60*60 #Ahora en segundos.
-    G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2) #G en mis unidades.
-    hubble = 70/(x*x0*1e-3)*(times*t0)*x #La constante de hubble en las unidades.
-    sv = 3e-26* np.power(x*x0*0.01,-3) * times*t0 
-    print("La constante de Hubble es: %f" % hubble)
-    print("La constante gravitacional es %f" % G)
-    return G
-    
-
-def unidadesDec(x,mass,times):
-    x = D(x)
-    mass = D(mass)
-    times = D(times)
-    x0 = D('3.0857e+20' )
-    t0 = D('13.772e9') * D('365.24')*24*60*60
-    x = x*x0
-    sv = D('3e-26')*(x**(-3) ) *times*t0
-    return sv
-
-#Calcula la masa de la materia oscura en mis unidades, massValue siendo la masa en eV.
-def unidadesMass(massValue, mass):
-    mass = D(mass)
-    massValue = D(massValue)
-    val = D('1.783e-36')
-    m0 = D('1.988e+30')
-    return massValue*val/(m0*mass)
-    
-    
-print(unidadesDec(20e-3,1e11,3e-3))
-
-#newG = unidades(5,1e15,2e-1) #Clusters
-newG = unidades(20e-3,1e11,3e-3) #Galaxia 
-dmmass = 1000
-print("El 4*Pi*G = %f" % (4*np.pi*newG))
-#print("La masa a usar es %f eV = %f" % (dmmass, unidadesMass(dmmass, 1e11)))
-print(unidadesMass(dmmass, 1e11))
-
 
 
 constantes = np.loadtxt("constants.dat", usecols = 1)
-#x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
+x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 #inF = np.loadtxt("inF.dat")
 #outF = np.loadtxt("outF0.dat")
 #outF1 = np.loadtxt("outF1.dat")
@@ -74,26 +28,41 @@ constantes = np.loadtxt("constants.dat", usecols = 1)
 
 
 for i in range(int(constantes[6])):
-    col = np.loadtxt("./col/grid{:d}.dat".format(i))
-    nocol = np.loadtxt("./nocol/grid{:d}.dat".format(i))
+    col = np.loadtxt("./col/grid{:d}.dat".format(i)).T
+    nocol = np.loadtxt("./nocol/grid{:d}.dat".format(i)).T
     diff = nocol - col
     
 
-
     plt.imshow(diff, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
-    plt.title("comparacion")
+    plt.title("Phase-Space Difference")
     plt.colorbar()
-#    plt.pcolormesh(dat)
-#    #plt.pcolor(dat) Nunca usar para grandes grillas	
     plt.savefig("./dif/phase{:d}.png".format(i))
     plt.clf()
+
     dcol = np.loadtxt("./col/density{:d}.dat".format(i))
     dnocol = np.loadtxt("./nocol/density{:d}.dat".format(i))
     ddiff = dnocol - dcol
-#dens = np.loadtxt("density.dat")
-#plt.plot(x,dens)
-#    plt.savefig("./images/density{:d}.png".format(i))
-#    plt.clf()
+    plt.plot(x,ddiff)
+    plt.title("Density Difference")
+    plt.savefig("./dif/density{:d}.png".format(i))
+    plt.clf()
+
+    pcol = np.loadtxt("./col/potential{:d}.dat".format(i))
+    pnocol = np.loadtxt("./nocol/potential{:d}.dat".format(i))
+    pdiff = pnocol - pcol
+    plt.plot(x,pdiff)
+    plt.title("Potential Difference")
+    plt.savefig("./dif/potential{:d}.png".format(i))
+    plt.clf()
+
+    acol = np.loadtxt("./col/acce{:d}.dat".format(i))
+    anocol = np.loadtxt("./nocol/acce{:d}.dat".format(i))
+    adiff = anocol - acol
+    plt.plot(x,adiff)
+    plt.title("Acceleration Difference")
+    plt.savefig("./dif/acce{:d}.png".format(i))
+    plt.clf()
+
 #    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
 #    plt.plot(x,potential)
 #    plt.savefig("./images/potential{:d}.png".format(i))
