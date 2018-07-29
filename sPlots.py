@@ -36,6 +36,7 @@ for i in range(int(constantes[6])):
     plt.imshow(diff, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
     plt.title("Phase-Space Difference")
     plt.colorbar()
+    plt.xticks(plt.yticks()[0], [str(t) for t in plt.yticks()[0]])
     plt.savefig("./dif/phase{:d}.png".format(i))
     plt.clf()
 
@@ -43,6 +44,7 @@ for i in range(int(constantes[6])):
     dnocol = np.loadtxt("./nocol/density{:d}.dat".format(i))
     ddiff = dnocol - dcol
     plt.plot(x,ddiff)
+    plt.plot((0, 0), (-1, 1), 'k-')
     plt.title("Density Difference")
     plt.savefig("./dif/density{:d}.png".format(i))
     plt.clf()

@@ -15,8 +15,9 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -0.7
-#define Vmax 0.7
+#define Vmin -0.5
+#define Vmax 0.5
+#define scale 0.5 //Re escala la velocidad para tener mejores gráficas.
 
 //Tamaño del espacio.
 #define Nx 2048
@@ -35,9 +36,9 @@ Primer Bosquejo. 1D con método de fourier.
 
 //Primer intento Via Láctea.
 #define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
-#define fracT0 1e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
-#define G 0.010661906775769971 //G en estas unidades. Se calcula con sPlots.py
+#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
+#define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
+#define G 0.959572 //G en estas unidades. Se calcula con sPlots.py
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -70,7 +71,7 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
-double dt = 0.4; 
+double dt = 0.5; 
 int Nt = 50;
 FILE *constantes;
 void printPhase(char *name);
@@ -91,6 +92,7 @@ void printPot(char *name);
 double einasto(double x, double v, double sx, double sv, double amplitude);
 double jeans(double x, double v, double rho, double sigma, double A, double k);
 double feq(int ipos, int jvel);
+double feq2(int ipos, int jvel);
 double givePos(int ito);
 double giveVel(int jto);
 double collision(int icol, int jcol, double tau);
@@ -122,9 +124,9 @@ int main()
     initCon = GAUSS;
     
     //Gauss
-    double vSx = 0.1;
-    double vSv = 0.1;
-    double ampl = 100;
+    double vSx = 0.06;
+    double vSv = 0.12;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
+    double ampl = 1;
     
     //Jeans
     double rho = 10.0;
@@ -136,7 +138,7 @@ int main()
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
                 //printf("x es %f en %d\n", x,i);
-                x = fabs(x);
+                //x = fabs(x);
                     for(j=0;j<Nv;j+=1){
                         v = Vmin*1.0+dv*j;
                         if(initCon == GAUSS)
@@ -180,8 +182,13 @@ int main()
 	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
     
     
-    collisionStep();
-    calDensity();
+    //collisionStep();
+    double mass2 = calDensity();
+	//for(i=0;i<Nx;i+=1) {
+    //                for(j=0;j<Nv;j+=1){
+    //                    phase[i][j] = phase[i][j]*mass/mass2;
+    //                }
+	//		}
     
     potencial();
     printPot("./datFiles/potential0.dat");
@@ -196,10 +203,13 @@ int main()
         //printf("Error Mesage00\n");
 		
 		step();
-        //collisionStep();
-        //collision(10.0);
-		//calDensity();  //La impresión calcula la densidad.
+        
+        //Descomentar para versión colisional --
+        calDensity();  //La impresión calcula la densidad.
+        collisionStep();
+        //--
 		printf("%d %f\n",suprai,calDensity()*100/mass);
+        
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
 
@@ -297,10 +307,12 @@ double calDensity()
 	double mass = 0;
 	for(i = 0;i<Nx;i+=1){
 		density[i]=0;
+        velocity[i] = 0;
+        energy[i] = 0;
 		for(j=0;j<Nv;j+=1){
 				density[i] += phase[i][j]*dv;
-                velocity[i] += phase[i][j]*dv*(Vmin*1.0+dv*j);
-                energy[i] += phase[i][j]*dv*pow(Vmin*1.0+dv*j - velocity[i], 2)/2;
+                velocity[i] += phase[i][j]*dv*giveVel(j);
+                energy[i] += phase[i][j]*dv*pow(giveVel(j) - velocity[i], 2)/2.0;
 			}
         velocity[i] = velocity[i] / density[i];
         energy[i] = energy[i] / density[i];
@@ -443,7 +455,7 @@ double newij(int iin, int jin)
 //        v += collision(iin, jin, TAU);
         //
         x = v*dt;
-        double di = x/dx;
+        double di = x/dx*scale;
         di = (int) di;
 
         i2 = iin + di;
@@ -481,21 +493,20 @@ void collisionStep()
 			if(newijCol(k,l) ==0){
 				//phaseOld[k][l] = phase[k][l];
 				//phaseTemp[i2][j2] += phase[k][l];
-                phaseTemp[i2][l] += collision(k,mod(l,1024),TAU);
-                //phaseTemp[k][l] -= collision(k,l,TAU);
+                phaseTemp[i2][l] += collision(k,l,TAU) + phase[k][l] ;//+ dt*feq2(k,l)*acce[k]*(giveVel(l)-velocity[k])/energy[k];
 			}
 		}
 	}
 
 	for(i = 0; i<Nx; i++){
 		for(j= 0; j<Nv; j++){
-			phase[i][j] += phaseTemp[i][j];
+			phase[i][j] = phaseTemp[i][j];
 			phaseTemp[i][j] = 0;
 		}
 	}
 }
 
-//Version que discretiza los cambios y no el nuevo valor.
+//Calcula el cambio en x. Ignora j.
 double newijCol(int iin, int jin)
 {
         double x = Xmin*1.0+dx*iin; //Inicialización
@@ -515,7 +526,7 @@ double newijCol(int iin, int jin)
         //parte colisional.
 //        v += collision(iin, jin, TAU);
         //
-        x = v*dt;
+        x = v*dt*scale;
         double di = x/dx;
         di = (int) di;
 
@@ -536,8 +547,16 @@ double collision(int icol, int jcol, double tau)
 double feq(int ipos, int jvel)
 {
     double ex = -1.0*pow(giveVel(jvel)-velocity[ipos],2)/(2.0*energy[ipos]);
+    double other = density[ipos] / sqrt(2.0*PI*energy[ipos]);
+    return other * exp(ex);    
+}
+
+double feq2(int ipos, int jvel)
+{
+    double ex = -1.0*pow(giveVel(jvel),2)/(2.0*energy[ipos]);
     double other = density[ipos] / sqrt(2*PI*energy[ipos]);
-    return other * exp(ex);
+    double lowMach = 1.0 + giveVel(jvel)*velocity[ipos]/energy[ipos] + pow(giveVel(jvel)*velocity[ipos],2)/(2.0*energy[ipos]) - pow(velocity[ipos],2)/(2.0*energy[ipos]);
+    return other * exp(ex)* lowMach;
     
 }
 

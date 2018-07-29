@@ -29,11 +29,14 @@ for i in range(int(constantes[6])):
     plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], interpolation='none') #Es mucho más rápido imshow
     #plt.pcolormesh(dat)
     #plt.pcolor(dat) Nunca usar para grandes grillas	
+    plt.xticks(plt.xticks()[0], [str(t/constantes[1]) for t in plt.xticks()[0]])
+    plt.yticks(plt.yticks()[0], [str(t/constantes[3]) for t in plt.yticks()[0]])
     plt.colorbar()
     plt.savefig("./images/phase{:d}.png".format(i))
     plt.clf()
     dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))
     plt.plot(x,dens)
+    #plt.plot((0, 0), (-1, 1), 'k-')
     plt.savefig("./images/density{:d}.png".format(i))
     plt.clf()
     potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
