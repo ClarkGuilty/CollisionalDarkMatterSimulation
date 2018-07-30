@@ -30,7 +30,8 @@ for i in range(int(constantes[6])):
     #plt.pcolormesh(dat)
     #plt.pcolor(dat) Nunca usar para grandes grillas	
     plt.xticks(plt.xticks()[0], [str(t/constantes[1]) for t in plt.xticks()[0]])
-    plt.yticks(plt.yticks()[0], [str(t/constantes[3]) for t in plt.yticks()[0]])
+#    plt.yticks(plt.yticks()[0], [str(t/constantes[3]) for t in plt.yticks()[0]])
+    plt.xticks(plt.xticks()[0], [str(t) for t in plt.xticks()[0]])
     plt.colorbar()
     plt.savefig("./images/phase{:d}.png".format(i))
     plt.clf()

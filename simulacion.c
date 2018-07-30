@@ -72,7 +72,7 @@ double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
 double dt = 0.5; 
-int Nt = 50;
+int Nt = 100;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -121,7 +121,7 @@ int main()
 	double v;
     
     //Variable que elige condición a simular.
-    initCon = GAUSS;
+    initCon = JEANS;
     
     //Gauss
     double vSx = 0.06;
@@ -129,7 +129,7 @@ int main()
     double ampl = 1;
     
     //Jeans
-    double rho = 10.0;
+    double rho = 0.1;
     double sigma = 0.1;
     double A = 0.9999;
     double k = 2* PI;
@@ -205,8 +205,10 @@ int main()
 		step();
         
         //Descomentar para versión colisional --
+        if(TAU != 0){
         calDensity();  //La impresión calcula la densidad.
         collisionStep();
+        }
         //--
 		printf("%d %f\n",suprai,calDensity()*100/mass);
         

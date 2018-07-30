@@ -36,7 +36,10 @@ for i in range(int(constantes[6])):
     plt.imshow(diff, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
     plt.title("Phase-Space Difference")
     plt.colorbar()
-    plt.xticks(plt.yticks()[0], [str(t) for t in plt.yticks()[0]])
+#    plt.xticks(plt.yticks()[0], [str(t) for t in plt.yticks()[0]])
+    plt.xticks(plt.xticks()[0], [str(t/constantes[1]) for t in plt.xticks()[0]])
+#    plt.yticks(plt.yticks()[0], [str(t/constantes[3]) for t in plt.yticks()[0]])
+    plt.xticks(plt.xticks()[0], [str(t) for t in plt.xticks()[0]])
     plt.savefig("./dif/phase{:d}.png".format(i))
     plt.clf()
 
