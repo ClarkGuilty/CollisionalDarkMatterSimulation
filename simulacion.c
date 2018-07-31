@@ -24,14 +24,14 @@ Primer Bosquejo. 1D con método de fourier.
 #define Nv 2048
 
 //Constantes de unidades.
-#define aMetros 18
+#define aKpc 18
 #define aSegundos 14
 #define aByear 4
 #define aMasasSol 5
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 300.0
+#define TAU 0
 
 
 //Primer intento Via Láctea.
@@ -72,7 +72,7 @@ double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
 double dt = 0.5; 
-int Nt = 100;
+int Nt = 5;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -117,16 +117,20 @@ int main()
 	printConstant("Nx",Nx);
 	printConstant("Nv",Nv);
 	printConstant("Nt", Nt);
+    
 	double x;
 	double v;
     
     //Variable que elige condición a simular.
-    initCon = JEANS;
+    initCon = GAUSS;
+    
+    printConstant("InitCon", initCon);
+    printConstant("TAU", TAU);
     
     //Gauss
     double vSx = 0.06;
     double vSv = 0.12;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
-    double ampl = 1;
+    double ampl = 4;
     
     //Jeans
     double rho = 0.1;
@@ -143,7 +147,7 @@ int main()
                         v = Vmin*1.0+dv*j;
                         if(initCon == GAUSS)
                         {
-                            phase[i][j] = gaussD(x,v,vSx,vSv,ampl); //1 de dispersion de velocidad equivale a 1000 km/s. Valor tomado del Coma Cluster.
+                            phase[i][j] = gaussD(x,v,vSx,vSv,ampl);
                         }
                         if(initCon == JEANS)
                         {
@@ -160,7 +164,7 @@ int main()
 	double mass = calDensity();
 
 	printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
-	printf("La masa fue %f masas coma\n",convertir(mass, aMasasSol)/1e14);
+	printf("La masa fue %f masas de la vía láctea\n",convertir(mass, aMasasSol)/1e12);
         printPhase("./datFiles/grid0.dat");
 	printDensity("./datFiles/density0.dat");
 
@@ -180,15 +184,6 @@ int main()
     }
 
 	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
-    
-    
-    //collisionStep();
-    double mass2 = calDensity();
-	//for(i=0;i<Nx;i+=1) {
-    //                for(j=0;j<Nv;j+=1){
-    //                    phase[i][j] = phase[i][j]*mass/mass2;
-    //                }
-	//		}
     
     potencial();
     printPot("./datFiles/potential0.dat");
@@ -244,7 +239,8 @@ void printPhase(char *name)
 	for(i=0;i<Nx;i+=1) {
 		for(j=1;j<Nv+1;j+=1){ 
           //      printf("ignorarPrimero\n");
-			fprintf(output,"%f ", phase[i][Nv-j]);
+			fprintf(output,"%f ", convertir(phase[i][Nv-j], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
+            //fprintf(output,"%f ",phase[i][Nv-j]);
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -259,7 +255,7 @@ void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",density[i]);
+            fprintf(output, "%f\n",convertir(density[i],aMasasSol)/convertir(1,aKpc)); //Imprime en Masas solares / kiloparsec.
 			}
 	fclose(output);
 }
@@ -318,7 +314,7 @@ double calDensity()
 			}
         velocity[i] = velocity[i] / density[i];
         energy[i] = energy[i] / density[i];
-		mass += density[i];
+		mass += density[i]*dx;
 		}
 	return mass;
 }
@@ -397,8 +393,8 @@ double convertir(double valor, int unidad )
     if(unidad == aMasasSol){
         return valor * solarMases;
     }
-    if(unidad == aMetros){
-        return valor * conx0* mParsecs;
+    if(unidad == aKpc){
+        return valor * mParsecs * 1000.0; //1000 = 1megaparsec en kiloparsec
     }
     if( unidad == aByear){
         return valor*13.772*fracT0;

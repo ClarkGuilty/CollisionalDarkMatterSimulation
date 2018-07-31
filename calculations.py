@@ -27,15 +27,17 @@ def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times e
     print("La constante gravitacional es %f" % G)
     return G
     
-
+#Retorna el valor de un metro / segundo en mis unidades.
 def unidadesDec(x,mass,times):
     x = D(x)
     mass = D(mass)
     times = D(times)
-    x0 = D('3.0857e+20' )
+    x0 = D('3.0857e+22' )
     t0 = D('13.772e9') * D('365.24')*24*60*60
+    t = times*t0
     x = x*x0
-    sv = D('3e-26')*(x**(-3) ) *times*t0
+    #sv = D('3e-26')*(x**(-3) ) *times*t0
+    sv = x/ t
     return sv
 
 #Calcula la masa de la materia oscura en mis unidades, massValue siendo la masa en eV.
@@ -47,7 +49,8 @@ def unidadesMass(massValue, mass):
     return massValue*val/(m0*mass)
     
     
-print(unidadesDec(20e-3,1e11,3e-3))
+print("Las unidades")
+print(unidadesDec(20e-3,1e12,3e-3)/1000)
 
 #newG = unidades(5,1e15,2e-1) #Clusters
 newG = unidades(20e-3,1e12,3e-3) #Galaxia 
