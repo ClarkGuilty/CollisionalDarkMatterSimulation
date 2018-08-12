@@ -56,7 +56,8 @@ Primer Bosquejo. 2D con método de fourier.
 double *phase;
 double *density;
 double *pot;
-double *acce;
+double *accex;
+double *accey;
 
 //Variables recurrentes
 int i;
@@ -85,7 +86,7 @@ FILE *constantes;
 void printPhase(char *name); //TODO: debe replantearse lo que se va a imprimir.
 double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude); 
 double calDensity();
-void printDensity(char *name); //TODO 
+void printDensity(char *name);
 void printConstant(char *name, double value);
 double giveDensity(int in1,int in2);
 double potencial(); //super TODO.
@@ -160,8 +161,8 @@ int main()
             //printf("%d\n",k1);
         }
         printf("Masa = %f\n", calDensity());
-        printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
-        printPhase("Density0.dat");
+        //printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
+        printDensity("Density0.dat");
         potencial();
         printPot("potAft.dat");
         
@@ -174,7 +175,7 @@ int main()
 
 
 //Imprime el espacio de fase con el String name como nombre.
-void printPhase(char *name)
+void printPhase(char *name)//no
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
@@ -195,15 +196,19 @@ void printPhase(char *name)
 void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
-
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny-1;j+=1){
-			fprintf(output,"%f ", density[in(i,j)]);
+		for(j=1;j<Ny+1;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", phase[i][Nv-j]);
+                    fprintf(output,"%f ", giveDensity(i,Ny-j));
+        //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
+		//printf("%d\n", i);
 			}
 
 	fclose(output);
+
 }
 
 //Imprime las constantes de la simulación para referencia fuera del C.
@@ -309,8 +314,15 @@ double potencial()
 //    fftw_execute(pIda2);
 
     //Guarda out en mem. 
-    for(k1=0;i<Nx*Ny;i+=1){
-        mem[i] = out[i];
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2<Ny; k2+=1){
+            
+         mem[in(k1,k2)] = out[in(k1,k2)];   
+            
+            
+            
+            
+        }
      //   fprintf(output0, "%f\n",creal(out[i]));
      //   fprintf(output1, "%f\n",cimag(out[i]));
 
@@ -326,34 +338,24 @@ double potencial()
     //Se debe usar el mismo plan sí o sí al parecer.
     double memDo;
 
-    //pVuelta2 = fftw_plan_dft_c2r_1d(Nx, out2, inR, FFTW_MEASURE);
-
-
     //Devuelve carga a out Î(Chi).
     out[0] = mem[0];
-    //out[0] = -4*PI*G*mem[0];
-    for(i=1;i<Nx*Ny;i+=1){
+    //out[0] = -4*PI*G*mem[0] ;
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2 <Ny;k2 += 1){
       //out[i] = -4*PI*G*mem[i]/calcK2((double)i);//TODO: cálculo en 2d.
-        out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
+        out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
     
+        }
 
-
-      //  memDo = out[i];//Evita problemas de casting.
-        //printf("%f %f %d \n",memDo, calcK2((double) i), i);
     }
-
-
-
+    
     fftw_execute(pIda);
-    //fftw_execute(pVuelta2);
 
-//        for(i=0;i<Nx;i+=1){
-//        fprintf(oR, "%f\n",inR[i]/Nx);
-//        fprintf(oI, "%f\n",cimag(inR[i])/Nx);
-//    }
 
-    for(i=0;i<Nx*Ny;i+=1){
-        pot[i] = creal(inR[i]/Nx);
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2 <Ny;k2 += 1)
+        pot[in(k1,k2)] = creal(inR[in(k1,k2)]/Nx/Ny);
         //fprintf(oR, "%f\n",creal(inR[i])/(Nx*Ny));
         //fprintf(oI, "%f\n",cimag(inR[i])/Nx/Ny);
     }
@@ -384,6 +386,14 @@ double giveDensity(int in1, int in2)
     return rta;
 }
 
+//Ahora para el potencial
+double givePot(int in1, int in2)
+{
+    double rta = pot[in(in1,in2)];
+    return rta;
+}
+
+
 //Convierte unidades de la simulación a masas solares, metros, o segundos.
 double convertir(double valor, int unidad )
 {
@@ -408,8 +418,10 @@ double convertir(double valor, int unidad )
 //Deriva el potencial y carga la aceleración en el arreglo acce.
 void calAcce()
 {
-    for(i = 0; i<Nx ; i +=1){
-    acce[i] =  (-pot[mod(i-2,Nx)] + 8*pot[mod(i-1,Nx)]-8*pot[mod(i+1,Nx)]+pot[mod(i+2,Nx)])/(12*dx);
+    for(k1 = 0; k1<Nx ; k1 +=1){
+        for(k2 = 0; k2<Nx ; k2 +=1){
+    accex[in(k1,k2)] =  (-pot[in(mod(k1-2,Nx),k2)] + 8*pot[in(mod(k1-1,Nx),k2)]-8*pot[in(mod(k1+1,Nx),k2)]+pot[in(mod(k1+2,Nx),k2)])/(12*dx);
+    accey[in(k1,k2)] =  (-pot[in(k1,mod(k2-2,Ny))] + 8*pot[in(k1,mod(k2-1,Ny))]-8*pot[in(k1,mod(k2+1,Ny))]+pot[in(k1,mod(k2+2,Ny))])/(12*dy);
     }
 }
 
@@ -431,7 +443,7 @@ void printPot(char *name)
 		for(j=1;j<Ny+1;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", pot[in(i,j)]);
+                    fprintf(output,"%f ", givePot(i,Ny-j));
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");

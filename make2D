@@ -4,7 +4,7 @@ images: simulacion.c
 	@echo Preparando y corriendo la simulación:
 	mkdir datFiles
 	mkdir images
-	gcc -o heh.a -I/home/clark/local/include -L/home/clark/local/lib/ simulacion2D.c -lfftw3 -lm 
+	gcc -o heh.a -I/home/clark/local/include -L/home/clark/local/lib/ -I/usr/local/include -L/usr/local/lib/ simulacion2D.c -lfftw3 -lm 
 	./heh.a
 
 .PHONY: clean

@@ -28,10 +28,11 @@ Primer Bosquejo. 1D con método de fourier.
 #define aSegundos 14
 #define aByear 4
 #define aMasasSol 5
+#define aMetros 464
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 0
+#define TAU 1000
 
 
 //Primer intento Via Láctea.
@@ -72,7 +73,7 @@ double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
 double dt = 0.5; 
-int Nt = 5;
+int Nt = 100;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -130,7 +131,7 @@ int main()
     //Gauss
     double vSx = 0.06;
     double vSv = 0.12;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
-    double ampl = 4;
+    double ampl = 1;
     
     //Jeans
     double rho = 0.1;
@@ -402,6 +403,9 @@ double convertir(double valor, int unidad )
     if( unidad == aSegundos){
         return valor*cont0s*fracT0;
     }
+    if(unidad == aMetros){
+        return valor * mParsecs * conx0;
+    }
     return -1;
 }
 
@@ -418,7 +422,7 @@ void printAcce(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",acce[i]);
+            fprintf(output, "%f\n",convertir(acce[i], aKpc)/pow(convertir(1.0, aByear)*1000,2)); //Imprime en kpc / s^2;
 			}
 	fclose(output);
 }
@@ -428,7 +432,7 @@ void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",pot[i]);
+            fprintf(output, "%f\n",pow(convertir(pot[i], aMetros)/convertir(1.0, aSegundos),2)/pot[i]);
 			}
 	fclose(output);
 }

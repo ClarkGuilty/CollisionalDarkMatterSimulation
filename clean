@@ -2,6 +2,6 @@ all: limpiar
 
 limpiar:
 	@echo Borrando los archivos de ejecuciones anteriores.
-	-rm heh.a constants.dat density.dat outF0.dat outF1.dat oI.dat oR.dat inF.dat
+	-rm heh.a constants.dat 
 	rm -rf ./datFiles
 	rm -rf ./images
