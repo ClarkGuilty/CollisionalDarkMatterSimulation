@@ -437,7 +437,7 @@ void printPot(char *name)
 	fclose(output);
 }
 
-//Version que discretiza los cambios y no el nuevo valor.
+//Calcula la nueva posición de un elemento de la grilla tras el streaming. Version que discretiza los cambios y no el nuevo valor.
 double newij(int iin, int jin)
 {
         double x = Xmin*1.0+dx*iin; //Inicialización

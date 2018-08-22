@@ -1,6 +1,6 @@
 /*
 Javier Alejandro Acevedo Barroso
-Primer Bosquejo. 2D con método de fourier.
+
 */
 
 #include <stdio.h>
@@ -64,8 +64,14 @@ int i;
 int j;
 int k;
 int l;
-int i2;
-int j2;
+
+//Para las nuevas posiciones.
+int i2x;
+int j2x;
+int i2y;
+int j2y;
+
+//Para iterar.
 int k1;
 int k2;
 int k3;
@@ -91,16 +97,15 @@ void printConstant(char *name, double value);
 double giveDensity(int in1,int in2);
 double giveAccex(int in1, int in2);
 double giveAccey(int in1, int in2);
-double potencial(); //super TODO.
-double calcK2(double j2); //TODO: estudiar la aproximación ahora bidimensionalmente.
+double potencial(); 
+double calcK2(double i2, double j2);
 double convertir(double valor, int unidad);
-void calAcce(); //TODO: implementar derivada bidimensional.
+void calAcce(); 
 void printAcce(char *name); //TODO
-double newij(int iin, int jin); //TODO
+double newij(int iinx, int jinx, int iiny int jiny); //TODO
 void step(); //TODO
 int mod(int p, int q);
-void printPot(char *name); //TODO
-double einasto(double x, double v, double sx, double sv, double amplitude); 
+void printPot(char *name);
 int ind(int in1, int in2, int in3, int in4);
 int in(int in1, int in2);
 
@@ -113,7 +118,8 @@ int main()
         printf("phase es Null\n");   
         }
     density = malloc((sizeof(double)*Nx*Ny));
-    acce = malloc((sizeof(double)*Nx));
+    accex = malloc((sizeof(double)*Nx));
+    accey = malloc((sizeof(double)*Nx));
     pot = malloc((sizeof(double)*Nx*Ny));
 
 	constantes = fopen("constants.dat","w+");
@@ -140,8 +146,7 @@ int main()
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
-        //TODO Inicializar un espacio de fase 4D.
-	for(k1=0;k1<Nx;k1+=1) {
+        for(k1=0;k1<Nx;k1+=1) {
             x = Xmin*1.0+dx*k1;
             for(k2=0;k2<Ny;k2+=1) {
                 y = Ymin*1.0+ dy*k2;
@@ -167,6 +172,8 @@ int main()
         printDensity("Density0.dat");
         potencial();
         printPot("potAft.dat");
+        calAcce();
+        
         
 
 			fclose(constantes);
@@ -236,19 +243,6 @@ double gaussD(double x,double y, double vx, double vy, double sr, double sv, dou
 }
 
 
-//Interesante pero no tan útil de implementar en 1D.
-double einasto(double x, double v, double sx, double sv, double amplitude)
-{
-        double x0 = 1.0; //EN vía lactea 20kpc.
-        double gamma = 0.17;
-        double in = pow(x/sx,gamma)-1.0;
-        double exx = -2.0*in/gamma;
-        double eina = amplitude*exp(exx);
-        double exv = -v*v/(2*sv*sv);
-        double max = sqrt(2/PI)*exp(exv); //Para la velocidad se una una gaussiana
-        return exx;
-    
-}
 
 //Calcula la densidad. Actualiza el arreglo density
 double calDensity()
@@ -345,8 +339,10 @@ double potencial()
     //out[0] = -4*PI*G*mem[0] ;
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny;k2 += 1){
-        out[in(k1,k2)] = -4*PI*G*mem[in(k1,k2)]/(calcK2((double)k1)+calcK2((double)k2));//Porque dx = dy y Nx = Ny.
-        out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
+            //printf("%f\n", mem[in(k1,k2)]);
+            //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
+            out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)k2);//Porque dx = dy y Nx = Ny.
+        //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
     
         }
 
@@ -367,45 +363,45 @@ double potencial()
  //   fclose(output1);
  //   fclose(oR);
  //   fclose(oI);
-
-    //fftw_destroy_plan(pVuelta);
+ //fftw_destroy_plan(pVuelta);
 }
 
-//Calcula el k**2 de mis notas.
-double calcK2(double j2)
+//Retorna 1/(sin2 + sin2).
+double calcK2(double i2, double j2)
 {
-    if((j2 == Nx/2.0)){
-        return 1.0;
+    if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
+        return 0;
     }
-    double k2= 2.0*sin(dx*PI*j2)/dx;
-    return pow(k2,2);
+    double rta1= sin(dx*PI*j2);
+    double rta2= sin(dx*PI*i2);
+    return 1.0/(rta1*rta1+rta2*rta2);
 }
 
-//Método para evitar efectos misticos en la memoria.
+//Retorna la densidad en (in1,in2).
 double giveDensity(int in1, int in2)
 {
     double rta = density[in(in1,in2)];
     return rta;
 }
 
-//Ahora para el potencial
+//Retorna el potencial en (in1,in2).
 double givePot(int in1, int in2)
 {
     double rta = pot[in(in1,in2)];
     return rta;
 }
 
-//Retorna aceleración.
+//Retorna aceleración en x en (in1,in2).
 double giveAccex(int in1, int in2)
 {
-    double rta = density[accex(in1,in2)];
+    double rta = accex[in(in1,in2)];
     return rta;
 }
 
-//
+//Retorna aceleración en y en (in1,in2).
 double giveAccey(int in1, int in2)
 {
-    double rta = density[accey(in1,in2)];
+    double rta = accey[in(in1,in2)];
     return rta;
 }
 
@@ -440,15 +436,19 @@ void calAcce()
     accey[in(k1,k2)] =  (-pot[in(k1,mod(k2-2,Ny))] + 8*pot[in(k1,mod(k2-1,Ny))]-8*pot[in(k1,mod(k2+1,Ny))]+pot[in(k1,mod(k2+2,Ny))])/(12*dy);
     }
 }
+}
 
 //Imprime el arreglo Acce.
 void printAcce(char *name)
 {
-	FILE *output = fopen(name, "w+");
+	FILE *outputx = fopen('x'+name, "w+");
+    FILE *outputy = fopen('y'+name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",acce[i]);
+            fprintf(outputx, "%f\n",accex[i]);
+            fprintf(outputy, "%f\n",accey[i]);
 			}
-	fclose(output);
+	fclose(outputx);
+    fclose(outputy);
 }
 
 //Imprime el arreglo Pot
@@ -468,6 +468,41 @@ void printPot(char *name)
 
 	fclose(output);
 }
+
+
+double newij(int iinx, int jinx,int iiny, int jiny)
+{
+        double x = Xmin*1.0+dx*iinx; //Inicialización
+        double vx = giveAccex(iinx,iiny)*dt;
+        double djx = vx/dvx;
+        djx = (int)djx;
+        j2x = jinx+djx;
+
+        double y = Ymin*1.0+dy*iiny; //Inicialización
+        double vy = giveAccey(iiny,iiny)*dt;
+        double djy = vy/dvy;
+        djy = (int)djy;
+        j2y = jiny+djy;
+        
+        if(j2x < 0 || j2x >= Nvx || j2y < 0 || j2y >= Nvy) return -1;
+//        if(i2 >= Nx){
+//            printf("i = %d\n", i2);
+//        }
+        v = Vmin*1.0+dv*j2;
+        
+        //parte colisional.
+//        v += collision(iin, jin, TAU);
+        //
+        x = v*dt;
+        double di = x/dx*scale;
+        di = (int) di;
+
+        i2 = iin + di;
+        i2 = mod(i2,Nx);
+//	printf("%d\n",j2);
+    return 0;
+}
+
 
 
 //Calcula la posición del elemento (in1,in2,in3,in4) del espacio de fase (x,y,vx,vy).
