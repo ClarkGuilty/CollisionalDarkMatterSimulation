@@ -89,6 +89,8 @@ double calDensity();
 void printDensity(char *name);
 void printConstant(char *name, double value);
 double giveDensity(int in1,int in2);
+double giveAccex(int in1, int in2);
+double giveAccey(int in1, int in2);
 double potencial(); //super TODO.
 double calcK2(double j2); //TODO: estudiar la aproximación ahora bidimensionalmente.
 double convertir(double valor, int unidad);
@@ -343,7 +345,7 @@ double potencial()
     //out[0] = -4*PI*G*mem[0] ;
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny;k2 += 1){
-      //out[i] = -4*PI*G*mem[i]/calcK2((double)i);//TODO: cálculo en 2d.
+        out[in(k1,k2)] = -4*PI*G*mem[in(k1,k2)]/(calcK2((double)k1)+calcK2((double)k2));//Porque dx = dy y Nx = Ny.
         out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
     
         }
@@ -390,6 +392,20 @@ double giveDensity(int in1, int in2)
 double givePot(int in1, int in2)
 {
     double rta = pot[in(in1,in2)];
+    return rta;
+}
+
+//Retorna aceleración.
+double giveAccex(int in1, int in2)
+{
+    double rta = density[accex(in1,in2)];
+    return rta;
+}
+
+//
+double giveAccey(int in1, int in2)
+{
+    double rta = density[accey(in1,in2)];
     return rta;
 }
 
@@ -452,9 +468,6 @@ void printPot(char *name)
 
 	fclose(output);
 }
-
-
-
 
 
 //Calcula la posición del elemento (in1,in2,in3,in4) del espacio de fase (x,y,vx,vy).

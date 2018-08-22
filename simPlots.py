@@ -55,8 +55,9 @@ for i in range(int(constantes[6])):
         plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU))
     elif(constantes[7] == GAUSS):
         plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU))
-        
-    w
+    cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+    cbar.set_label("Mass density $M_{\odot}$ / kpc  $\\frac{km}{s}$")
+    plt.savefig("./images/phase{:d}.png".format(i))
     cbar.set_clim(0,1e5)
     
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]")

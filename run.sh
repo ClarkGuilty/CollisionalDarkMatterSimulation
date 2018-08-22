@@ -1,3 +1,3 @@
 make -f clean
-make -f make2
+make -f make1D
 ./gif.sh

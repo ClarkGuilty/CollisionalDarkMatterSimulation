@@ -1,0 +1,14 @@
+all: images .PHONY
+
+images: simulacion.c
+	@echo Preparando y corriendo la simulación:
+	mkdir datFiles
+	mkdir images
+	gcc -no-pie -o heh.a -I/usr/local/include -L/usr/local/lib/ simulacion.c -Wall -lfftw3 -lm 
+	./heh.a
+	python simPlots.py
+
+.PHONY: clean
+clean:
+	@echo eliminando archivos temporales
+	rm heh.a oI.dat oR.dat outF0.dat outF1.dat inF.dat
