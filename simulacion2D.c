@@ -54,6 +54,7 @@ Javier Alejandro Acevedo Barroso
 //Arreglos
 //static double phase[Nx][Ny][Nvx][Nvy] = {0};
 double *phase;
+double *phaseTemp;
 double *density;
 double *pot;
 double *accex;
@@ -460,7 +461,7 @@ void printPot(char *name)
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
                     fprintf(output,"%f ", givePot(i,Ny-j));
-        //printf("Error MesagenoIgno\n");
+/        //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
 		//printf("%d\n", i);
@@ -470,15 +471,17 @@ void printPot(char *name)
 }
 
 
-double newij(int iinx, int jinx,int iiny, int jiny)
+//Calcula la nueva posición de (x,y,vx,vy)=(iinx,iiny,jinx,jiny).
+double newij(int iinx, int iiny,int jinx, int jiny)
 {
-        double x = Xmin*1.0+dx*iinx; //Inicialización
-        double vx = giveAccex(iinx,iiny)*dt;
-        double djx = vx/dvx;
-        djx = (int)djx;
-        j2x = jinx+djx;
+        scale = 1.0; //1.0 es el valor estandar, modificarlo para mejorar visualización.
+        //double x = Xmin*1.0+dx*iinx; //Inicialización
+        double vx = giveAccex(iinx,iiny)*dt; //Cambio de velocidad.
+        double djx = vx/dvx;                
+        djx = (int)djx;                     //Cambio de vel en el tablero.
+        j2x = jinx+djx;                     //Nuevo j.
 
-        double y = Ymin*1.0+dy*iiny; //Inicialización
+        //double y = Ymin*1.0+dy*iiny; //Inicialización
         double vy = giveAccey(iiny,iiny)*dt;
         double djy = vy/dvy;
         djy = (int)djy;
@@ -488,22 +491,65 @@ double newij(int iinx, int jinx,int iiny, int jiny)
 //        if(i2 >= Nx){
 //            printf("i = %d\n", i2);
 //        }
-        v = Vmin*1.0+dv*j2;
+        vx = Vxmin*1.0+dvx*j2x;
+        vy = Vymin*1.0+dvy*j2y;
         
         //parte colisional.
 //        v += collision(iin, jin, TAU);
         //
-        x = v*dt;
-        double di = x/dx*scale;
-        di = (int) di;
+        x = vx*dt;
+        double dix = x/dx*scale;
+        dix = (int) dix;
+        
+        y = vy*dt;
+        double diy = y/dy*scale;
+        diy = (int) diy;
+        
+        
 
-        i2 = iin + di;
-        i2 = mod(i2,Nx);
+        i2x = iinx + dix;
+        i2x = mod(i2x,Nx);
+        
+        i2y = iiny + diy;
+        i2y = mod(i2y,Ny);
 //	printf("%d\n",j2);
     return 0;
 }
 
 
+//Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. 
+void step()
+{
+    
+    
+    
+    for(k1=0;k1<Nx;k1+=1) {
+        for(k2=0;k2<Ny;k2+=1) {
+            for(k3=0;k3<Nvx;k3+=1) {
+                for(k4=0;k4<Nvy;k4+=1) {
+                    if(newij(k1,k2,k3,k4) == 0){
+                        phaseTemp[ind(i2x,i2y,j2x,j2y)] += phase[ind(k1,k2,k3,k4)];
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
+    
+    for(k1=0;k1<Nx;k1+=1) {
+        for(k2=0;k2<Ny;k2+=1) {
+            for(k3=0;k3<Nvx;k3+=1) {
+                for(k4=0;k4<Nvy;k4+=1) {
+                    phase[ind(k1,k2,k3,k4)] = phaseTemp[ind(k1,k2,k3,k4)];
+                    phaseTemp[ind(k1,k2,k3,k4)] = 0;
+                }
+            }
+        }
+    }
+    
+}
 
 //Calcula la posición del elemento (in1,in2,in3,in4) del espacio de fase (x,y,vx,vy).
 int ind(int in1, int in2, int in3, int in4)
