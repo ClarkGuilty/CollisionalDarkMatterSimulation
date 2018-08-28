@@ -472,7 +472,7 @@ void step()
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
 			if(newij(k,l) ==0){
-				phaseOld[k][l] = phase[k][l];
+				//phaseOld[k][l] = phase[k][l]; TODO:No se usa
 				phaseTemp[i2][j2] += phase[k][l];
                     //phaseTemp[i2][l] += collision(k,mod(l,1024),TAU);
                     //phaseTemp[k][l] -= collision(k,l,TAU);

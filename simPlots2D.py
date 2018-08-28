@@ -9,8 +9,8 @@ Script de Python para la visualización de la simulación en 2D.
 import numpy as np
 import matplotlib.pyplot as plt
 
-potTest0 = np.loadtxt('Density0.dat')
-potTest1 = np.loadtxt('potAft.dat')
+potTest0 = np.loadtxt('Density0.dat').T
+potTest1 = np.loadtxt('Density1.dat').T
 
 h0 = plt.figure()
 plt.imshow(potTest0)
@@ -19,11 +19,23 @@ cbar = plt.colorbar()
 h1 = plt.figure()
 plt.imshow(potTest1)
 cbar = plt.colorbar()
+#
+#
+#diff = potTest1 - potTest0
+#h2 = plt.figure()
+#plt.imshow(diff)
+#cbar = plt.colorbar()
+#
+#print(np.sum(np.sum(potTest0-potTest1)))
+
+pxTest0 = np.loadtxt('px0.dat').T
+pxTest1 = np.loadtxt('pxAft.dat').T
 
 
-diff = potTest1 - potTest0
-h2 = plt.figure()
-plt.imshow(diff)
+h0 = plt.figure()
+plt.imshow(pxTest0)
 cbar = plt.colorbar()
 
-print(np.sum(np.sum(potTest0-potTest1)))
+h1 = plt.figure()
+plt.imshow(pxTest1)
+cbar = plt.colorbar()

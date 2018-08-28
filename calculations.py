@@ -56,6 +56,8 @@ print(unidadesDec(20e-3,1e12,3e-3)/1000)
 newG = unidades(20e-3,1e12,3e-3) #Galaxia 
 dmmass = 1000
 print("El 4*Pi*G = %f" % (4*np.pi*newG))
+print("El G = %f" % (newG))
+
 #print("La masa a usar es %f eV = %f" % (dmmass, unidadesMass(dmmass, 1e11)))
 print(unidadesMass(dmmass, 1e11))
 
