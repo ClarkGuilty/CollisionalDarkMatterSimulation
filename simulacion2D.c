@@ -40,10 +40,12 @@ Javier Alejandro Acevedo Barroso
 
 
 
-#define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
-#define fracT0 1e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
-#define G 0.010661906775769971 //G en estas unidades. Se calcula con sPlots.py
+#define mParsecs 200e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
+#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
+#define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
+#define G 0.00096 //G en estas unidades. Se calcula con calculations.py
+
+#define scale 1.0 //1.0 es el valor estandar, modificarlo para mejorar visualización.
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -79,6 +81,22 @@ int k2;
 int k3;
 int k4;
 
+double totalMass = 0;
+
+fftw_complex *inE, *out, *inR, *mem, *out2;
+fftw_plan pIda;
+fftw_plan pVuelta;
+
+double deltax;
+double deltay;
+double deltavx;
+double deltavy;
+
+double dix;
+double diy;
+double djx;
+double djy;
+
 double Lx = Xmax - Xmin;
 double Ly = Ymax - Ymin;
 double Lvx = Vxmax - Vxmin;
@@ -88,15 +106,16 @@ double dy = (Ymax - Ymin)*1.0/Nx;
 double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
-double dt = 0.05;
-int Nt = 5;
+double dt = 0.5;
+int Nt = 15;
 
 double totalPerdido;
 
 
 FILE *constantes;
 void printPhase(char *name); //TODO: debe replantearse lo que se va a imprimir.
-void printPhaseX(char *name);
+void printPhaseX(char *name, int corteY, int corteVy);
+void printPhaseY(char *name, int corteX, int corteVx);
 double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude); 
 double calDensity();
 void printDensity(char *name);
@@ -148,9 +167,9 @@ int main()
 	double vx;
     double y;
 	double vy;
-	double sr = 0.1;
-    double sv = 0.05;
-	double ampl = 0.01;
+	double sr = 0.13;
+    double sv = 0.13;
+	double ampl = 0.0001;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
@@ -178,22 +197,69 @@ int main()
         double mass0 = calDensity();
         printf("Masa = %f\n", mass0);
         //printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
-        printDensity("Density0.dat");
-        printPhaseX("px0.dat");
+        printDensity("./datFiles/density0.dat");
+        printPhaseX("./datFiles/gridx0.dat", Ny/2, Nvy/2);
+        printPhaseY("./datFiles/gridy0.dat", Nx/2, Nvx/2);
         potencial();
-        printPot("potAft.dat");
+        printPot("./datFiles/potential0.dat");
         //printf("aun sirve\n");
         calAcce();
         totalPerdido = 0;
         step();
-        printPhaseX("pxAft.dat");
+        printPhaseX("./datFiles/gridx1.dat", Ny/2, Nvy/2);
+        printPhaseY("./datFiles/gridy1.dat", Nx/2, Nvx/2);
         double mass1 = calDensity();
+        printDensity("./datFiles/density1.dat");
         printf("Masa2 = %f\n", mass1/mass0);
         printf("Total = %f\n", (mass1+totalPerdido)/mass0);
         printDensity("Density1.dat");
-        
-        //TODO:Iterar sobre el tiempo.
+        printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
         //fclose(constantes);
+        
+        
+           printf("G es %lf\n", G*1.0);
+
+
+	for(int suprai = 1; suprai<Nt;suprai+=1){
+        char *grid = (char*) malloc(200* sizeof(char));
+        //printf("Error Mesage00\n");
+		
+		//step();
+        
+        //Descomentar para versión colisional --
+        //if(TAU != 0){
+        //calDensity();  //La impresión calcula la densidad.
+        //collisionStep();
+        //}
+        //--
+		
+        
+		sprintf(grid, "./datFiles/density%d.dat", suprai);
+        printf("%d %f\n",suprai,calDensity()*100/mass0);
+		printDensity(grid);
+
+		potencial();
+		sprintf(grid, "./datFiles/potential%d.dat", suprai);
+		printPot(grid);
+		calAcce();
+		sprintf(grid, "./datFiles/acce%d.dat", suprai);
+		//printAcce(grid);
+        sprintf(grid, "./datFiles/gridx%d.dat", suprai);
+        printPhaseX(grid, Ny/2, Nvy/2);
+        sprintf(grid, "./datFiles/gridy%d.dat", suprai);
+        printPhaseY(grid, Nx/2, Nvx/2);
+        //printPhase(grid);
+        free(grid);
+        
+        
+        step();
+        
+                
+	}
+
+	
+    fclose(constantes);
+	//fclose(simInfo);
 	return 0;
 
 }
@@ -219,7 +285,8 @@ void printPhase(char *name)//no
 
 }
 
-void printPhaseX(char *name)
+//Imprime el corte y = corteY , Vy = corteVy del espacio de fase (un plano 2d).
+void printPhaseX(char *name, int corteY, int corteVy)
 {
  
    	FILE *output = fopen(name, "w+");
@@ -228,7 +295,29 @@ void printPhaseX(char *name)
 		for(j=1;j<Nvx+1;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
-            fprintf(output,"%f ",phase[ind(i,Ny/2,Nvx-j,Nvy/2)]);
+            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+    
+}
+
+//Imprime el corte x = corteX , Vx = corteVx del espacio de fase (un plano 2d).
+void printPhaseY(char *name, int corteX, int corteVx)
+{
+ 
+   	FILE *output = fopen(name, "w+");
+
+	for(i=0;i<Nx;i+=1) {
+		for(j=1;j<Nvx+1;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
+            fprintf(output,"%f ",phase[ind(corteX,i,corteVx,Nvy-j)]);
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -285,7 +374,7 @@ double gaussD(double x,double y, double vx, double vy, double sr, double sv, dou
 //Calcula la densidad. Actualiza el arreglo density
 double calDensity()
 {
-	double mass = 0;
+    totalMass = 0;
         for(k1=0; k1<Nx;k1+=1){
             for(k2=0; k2< Ny; k2+=1){
                 density[in(k1,k2)] = 0;
@@ -295,10 +384,10 @@ double calDensity()
                         density[in(k1,k2)] = giveDensity(k1,k2)+ phase[ind(k1,k2,k3,k4)];
                     }
                 }
-                mass += density[in(k1,k2)];
+                totalMass += density[in(k1,k2)];
             }
         }
-        return mass;
+        return totalMass;
 }
 
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
@@ -310,7 +399,6 @@ double potencial()
 //    }
 
 
-    fftw_complex *inE, *out, *inR, *mem, *out2;
     inE=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
@@ -322,7 +410,7 @@ double potencial()
     //double *in2;
     //in2 = (double*) malloc((sizeof(double)*Nx));
 
-    fftw_plan pIda, pVuelta;
+
     pIda = fftw_plan_dft_2d(Nx, Ny, inE, out,FFTW_FORWARD, FFTW_MEASURE);
 
     //fftw_plan pIda2, pVuelta2;
@@ -370,7 +458,6 @@ double potencial()
     //fftw_execute(pIda);
     pIda = fftw_plan_dft_2d(Nx, Ny, out, inR,FFTW_BACKWARD, FFTW_MEASURE);
     //Se debe usar el mismo plan sí o sí al parecer.
-    double memDo;
 
     //Devuelve carga a out Î(Chi).
     out[0] = mem[0];
@@ -402,6 +489,13 @@ double potencial()
  //   fclose(oR);
  //   fclose(oI);
  //fftw_destroy_plan(pVuelta);
+ 
+ fftw_free(inE);
+ fftw_free(out);
+ fftw_free(inR);
+ fftw_free(mem);
+ fftw_free(out2);
+ 
 }
 
 //Retorna 1/(sin2 + sin2).
@@ -513,16 +607,16 @@ void printPot(char *name)
 //Calcula la nueva posición de (x,y,vx,vy)=(iinx,iiny,jinx,jiny).
 double newij(int iinx, int iiny,int jinx, int jiny)
 {
-        double scale = 1.0; //1.0 es el valor estandar, modificarlo para mejorar visualización.
+        
         //double x = Xmin*1.0+dx*iinx; //Inicialización
-        double vx = giveAccex(iinx,iiny)*dt; //Cambio de velocidad.
-        double djx = vx/dvx;                
+        deltavx = giveAccex(iinx,iiny)*dt; //Cambio de velocidad.
+        djx = deltavx/dvx;                
         djx = (int)djx;                     //Cambio de vel en el tablero.
         j2x = jinx+djx;                     //Nuevo j.
 
         //double y = Ymin*1.0+dy*iiny; //Inicialización
-        double vy = giveAccey(iinx,iiny)*dt;
-        double djy = vy/dvy;
+        deltavy = giveAccey(iinx,iiny)*dt;
+        djy = deltavy/dvy;
         djy = (int)djy;
         j2y = jiny+djy;
         
@@ -535,18 +629,18 @@ double newij(int iinx, int iiny,int jinx, int jiny)
 //        if(i2 >= Nx){
 //            printf("i = %d\n", i2);
 //        }
-        vx = Vxmin*1.0+dvx*j2x;
-        vy = Vymin*1.0+dvy*j2y;
+        deltavx = Vxmin*1.0+dvx*j2x;
+        deltavy = Vymin*1.0+dvy*j2y;
         
         //parte colisional.
 //        v += collision(iin, jin, TAU);
         //
-        double x = vx*dt;
-        double dix = x/dx*scale;
+        deltax = deltavx*dt;
+        dix = deltax/dx*scale;
         dix = (int) dix;
         
-        double y = vy*dt;
-        double diy = y/dy*scale;
+        deltay = deltavy*dt;
+        diy = deltay/dy*scale;
         diy = (int) diy;
         
         
