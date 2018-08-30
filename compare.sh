@@ -1,5 +1,5 @@
-#mkdir dif
-#python sPlots.py
+mkdir dif
+python sPlots.py
 total=$(grep Nt constants.dat | cut -d "." -f 1 | cut -d " " -f 2 )
 dens="python gif.py 0.2 "
 acce="python gif.py 0.2 "

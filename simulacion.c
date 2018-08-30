@@ -32,7 +32,7 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 1000
+#define TAU 0
 
 
 //Primer intento Via Láctea.
