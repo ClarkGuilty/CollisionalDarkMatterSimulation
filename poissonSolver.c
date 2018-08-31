@@ -45,7 +45,11 @@ Javier Alejandro Acevedo Barroso
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 #define G 0.00096 //G en estas unidades. Se calcula con calculations.py
 
+#define radius 0.5
+#define MASSo 10.0
 #define scale 1.0 //1.0 es el valor estandar, modificarlo para mejorar visualización.
+
+
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -111,6 +115,9 @@ int Nt = 15;
 
 double totalPerdido;
 
+double sigma = MASSo/(PI*radius*radius);
+double lambda = MASSo/2;
+
 
 FILE *constantes;
 void printPhase(char *name); //TODO: debe replantearse lo que se va a imprimir.
@@ -127,14 +134,22 @@ double potencial();
 double calcK2(double i2, double j2);
 double convertir(double valor, int unidad);
 void calAcce(); 
-void printAcce(char *name);
+void printAcce(char *namex, char *namey);
 double newij(int iinx, int jinx, int iiny, int jiny); 
 void step(); 
 int mod(int p, int q);
 void printPot(char *name);
 int ind(int in1, int in2, int in3, int in4);
 int in(int in1, int in2);
-
+double gtheory(int in1, int in2,int eje);
+double darX(int input);
+double darY(int input);
+double darVx(int input);
+double darVy(int input);
+double gmod(int in1, int in2);
+void printGtheo(char *namex, char *namey);
+double uniDisk(double x, double y);
+double line(int inx, int iny);
 
 int main()
 {
@@ -184,8 +199,11 @@ int main()
                         vy = Vymin*1-0 + dvy*k4;
                         //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
 
-                        //phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
                         phase[ind(k1,k2,k3,k4)] = gaussD(x,y,vx,vy,sr,sv,ampl);
+                        
+                        //phase[ind(k1,k2,k3,k4)] = 0;
+                        
+                        
                         //printf("(%d,%d,%d,%d) %f\n", k1,k2,k3,k4,phase[ind(k1,k2,k3,k4)]);
                         //phaseTemp[ind(k1,k2,k3,k4)] = 0;
                         
@@ -195,7 +213,22 @@ int main()
             //printf("%d\n",k1);
         }
         double mass0 = calDensity();
+        
         printf("Masa = %f\n", mass0);
+        
+//        radius = 0.1;
+        for(k1=0;k1<Nx;k1+=1) {
+            x = Xmin*1.0+dx*k1;
+            for(k2=0;k2<Ny;k2+=1) {
+                y = Ymin*1.0+ dy*k2;
+                //density[in(k1,k2)] = uniDisk(x,y,radius);
+                density[in(k1,k2)] = uniDisk(x,y);
+                //density[in(k1,k2)] = line(k1,k2);
+                
+            }
+            //printf("%d\n",k1);
+        }
+        
         //printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
         printDensity("./datFiles/density0.dat");
         //printPhaseX("./datFiles/gridx0.dat", Ny/2, Nvy/2);
@@ -204,6 +237,8 @@ int main()
         printPot("./datFiles/potential0.dat");
         //printf("aun sirve\n");
         calAcce();
+        printAcce("./datFiles/acce0x.dat","./datFiles/acce0y.dat");
+        printGtheo("./datFiles/gtheox.dat","./datFiles/gtheoy.dat");
         //totalPerdido = 0;
         //step();
         //printPhaseX("./datFiles/gridx1.dat", Ny/2, Nvy/2);
@@ -219,11 +254,6 @@ int main()
         
            printf("G es %lf\n", G*1.0);
 
-
-	
-	
-
-	
     fclose(constantes);
 	//fclose(simInfo);
 	return 0;
@@ -335,8 +365,28 @@ double gaussD(double x,double y, double vx, double vy, double sr, double sv, dou
 
 }
 
+double uniDisk(double x, double y)
+{
+ if(x*x+y*y < radius*radius)
+ {
+  return sigma;
+     
+ }
+ 
+ return 0;
+    
+}
 
-
+double line(int inx, int iny)
+{
+    
+ if(inx == Nx/2 || inx == Nx/2-1)
+ {
+        return lambda;
+ }
+ return 0;
+    
+}
 //Calcula la densidad. Actualiza el arreglo density
 double calDensity()
 {
@@ -539,14 +589,48 @@ void calAcce()
 }
 
 //Imprime el arreglo Acce.
-void printAcce(char *name)
+void printAcce(char *namex, char *namey)
 {
-	FILE *outputx = fopen('x'+name, "w+");
-    FILE *outputy = fopen('y'+name, "w+");
+	FILE *outputx = fopen(namex, "w+");
+    FILE *outputy = fopen(namey, "w+");
+
+    
 	for(i=0;i<Nx;i+=1) {
-            fprintf(outputx, "%f\n",accex[i]);
-            fprintf(outputy, "%f\n",accey[i]);
-			}
+		for(j=1;j<Ny+1;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", phase[i][Nv-j]);
+            fprintf(outputx, "%f ",giveAccex(i,Ny-j));
+            fprintf(outputy, "%f ",giveAccey(i,Ny-j));
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(outputx,"\n");
+        fprintf(outputy,"\n");
+		//printf("%d\n", i);
+        }
+
+
+	fclose(outputx);
+    fclose(outputy);
+    
+    
+}
+
+void printGtheo(char *namex, char *namey)
+{
+	FILE *outputx = fopen(namex, "w+");
+    FILE *outputy = fopen(namey, "w+");
+
+	for(i=0;i<Nx;i+=1) {
+		for(j=1;j<Ny+1;j+=1){ 
+          
+            fprintf(outputx, "%f ",gtheory(i,Ny-j,0));
+            fprintf(outputy, "%f ",gtheory(i,Ny-j,1));
+        
+        }
+		fprintf(outputx,"\n");
+        fprintf(outputy,"\n");
+		//printf("%d\n", i);
+        }
 	fclose(outputx);
     fclose(outputy);
 }
@@ -681,7 +765,61 @@ int mod(int p, int q)
 
 
 
+//Da el valor de la gravedad para una distribución de disco en (in1,in2) en la cordenada dada en eje (x = 0, y = 1).
+double gtheory(int in1, int in2, int eje)
+{
+    double angle = 0;
+    if(darX(in1) == 0)
+    {
+        if(eje == 1)
+        {
+         return -gmod(in1,in2)*fabs(darY(in2))/darY(in2);   
+        }
+        return 0;
+        
+    }
+    if(eje == 1)
+    {
+     return -gmod(in1,in2)*sin(   atan(darY(in2)/darX(in1)) )* fabs(darX(in1))/darX(in1); //Modulo del vector * sin (theta), la dirección de y va incluida en sin.  atan va de -pi/2 a pi/2. 
+       // return 0;
+    }
+    
+    return -1*gmod(in1,in2)*cos( fabs( atan(darY(in2)/darX(in1)) ) )* fabs(darX(in1))/darX(in1);//Modulo del vector * cos(theta) * en dirección de x
+    //return 2*PI*lambda*G;
+    
+    //return 0;
+}
 
+
+double gmod(int in1, int in2)
+{
+    
+    if(darX(in1)*darX(in1)+darY(in2)*darY(in2)< radius*radius){
+        
+        return 2*G*sigma*PI*sqrt( darX(in1)*darX(in1) +darY(in2)*darY(in2));
+    }
+ return 2*G*MASSo/sqrt(darX(in1)*darX(in1)+darY(in2)*darY(in2));
+}
+
+
+
+
+double darX(int input)
+{
+ return Xmin*1.0+dx*input;   
+}
+double darY(int input)
+{
+ return Ymin*1.0+dy*input;   
+}
+double darVx(int input)
+{
+ return Vxmin*1.0+dvx*input;   
+}
+double darVy(int input)
+{
+ return Vymin*1.0+dvy*input;   
+}
 
 
 

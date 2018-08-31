@@ -12,24 +12,69 @@ import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
+
+
+def fmt(x, pos):
+    a, b = '{:.1e}'.format(x).split('e')
+    b = int(b)
+    return r'${} \times 10^{{{}}}$'.format(a, b)
+
 constantes = np.loadtxt("constants.dat", usecols = 1)
 TAU = int(constantes[8])
 
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 
-densidad = np.loadtxt('./datFiles/density0.dat')
-densidad1 = np.loadtxt('./datFiles/potential0.dat')
+densidad = np.loadtxt('./datFiles/density0.dat').T
+densidad1 = np.loadtxt('./datFiles/potential0.dat').T
 
 plt.imshow(densidad)
 
 plt.figure()
 plt.imshow(densidad1)
 
-#def fmt(x, pos):
-#    a, b = '{:.1e}'.format(x).split('e')
-#    b = int(b)
-#    return r'${} \times 10^{{{}}}$'.format(a, b)
+
+accex = np.loadtxt('./datFiles/acce0x.dat').T
+accey = np.loadtxt('./datFiles/acce0y.dat').T
+
+gtheox = np.loadtxt('./datFiles/gtheox.dat').T
+gtheoy = np.loadtxt('./datFiles/gtheoy.dat').T
+
+def darX(inx):
+    return -1.0+2.0/128*inx
+
+def darY(iny):
+    return -1.0+2.0/128*iny
+
+#def rad(x,y):
+#    return x*x+y*y
+#x = np.linspace(-1,1,128)
+#y = np.linspace(-1,1,128)
 #
+#values = np.zeros((128,128))
+#values = rad(x,y)
+
+ratax = accex/gtheox
+ratay = accey/gtheoy
+
+plt.figure()
+#plt.imshow(accey)
+#plt.imshow(accex)
+plt.imshow(gtheoy)
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.figure()
+plt.imshow(accey)
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.figure()
+plt.imshow(ratax)
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.figure()
+plt.imshow(np.log(ratay))
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+
+
+#
+    
+#cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 #def giveDens(i,n):
 #    cosa = ['a','b']
 #    cosa[0] = './datFiles/density{:d}.dat'.format(i)
