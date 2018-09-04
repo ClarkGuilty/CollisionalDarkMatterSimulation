@@ -43,7 +43,8 @@ Javier Alejandro Acevedo Barroso
 #define mParsecs 200e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
 #define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
-#define G 0.00096 //G en estas unidades. Se calcula con calculations.py
+//#define G 0.00096 //G en estas unidades. Se calcula con calculations.py
+#define G 1.0
 
 #define radius 0.5
 #define MASSo 10.0
@@ -63,6 +64,7 @@ Javier Alejandro Acevedo Barroso
 double *phase;
 double *phaseTemp;
 double *density;
+double *densitytheo;
 double *pot;
 double *accex;
 double *accey;
@@ -91,6 +93,11 @@ fftw_complex *inE, *out, *inR, *mem, *out2;
 fftw_plan pIda;
 fftw_plan pVuelta;
 
+double ix;
+double iy;
+double ivx;
+double ivy;
+
 double deltax;
 double deltay;
 double deltavx;
@@ -105,10 +112,10 @@ double Lx = Xmax - Xmin;
 double Ly = Ymax - Ymin;
 double Lvx = Vxmax - Vxmin;
 double Lvy = Vymax - Vymin;
-double dx = (Xmax - Xmin)*1.0/Nx;
-double dy = (Ymax - Ymin)*1.0/Nx;
-double dvx = (Vxmax - Vxmin)*1.0/Nvx;
-double dvy = (Vymax - Vymin)*1.0/Nvy;
+double dx = (Xmax - Xmin)*1.0/(Nx);
+double dy = (Ymax - Ymin)*1.0/(Ny);
+double dvx = (Vxmax - Vxmin)*1.0/(Nvx);
+double dvy = (Vymax - Vymin)*1.0/(Nvy);
 
 double dt = 0.5;
 int Nt = 15;
@@ -130,6 +137,7 @@ void printConstant(char *name, double value);
 double giveDensity(int in1,int in2);
 double giveAccex(int in1, int in2);
 double giveAccey(int in1, int in2);
+double givePot(int in1, int in2);
 double potencial(); 
 double calcK2(double i2, double j2);
 double convertir(double valor, int unidad);
@@ -150,6 +158,11 @@ double gmod(int in1, int in2);
 void printGtheo(char *namex, char *namey);
 double uniDisk(double x, double y);
 double line(int inx, int iny);
+void loadPot(double alpha, int n);
+void printDensityTheo(char *name);
+void loadDensityTheo();
+double newPot(double alpha, int n, int iin, int jin);
+double laplacePot(int iin, int jin,double alpha, int n);
 
 int main()
 {
@@ -160,6 +173,7 @@ int main()
         printf("phase es Null\n");   
         }
     density = malloc((sizeof(double)*Nx*Ny));
+    densitytheo = malloc((sizeof(double)*Nx*Ny));
     accex = malloc((sizeof(double)*Nx*Ny));
     accey = malloc((sizeof(double)*Nx*Ny));
     pot = malloc((sizeof(double)*Nx*Ny));
@@ -188,33 +202,9 @@ int main()
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
-        for(k1=0;k1<Nx;k1+=1) {
-            x = Xmin*1.0+dx*k1;
-            for(k2=0;k2<Ny;k2+=1) {
-                y = Ymin*1.0+ dy*k2;
-                density[in(k1,k2)] = 0;
-                for(k3=0;k3<Nvx;k3+=1) {
-                    vx = Vxmin*1.0+ dvx*k3;
-                    for(k4=0;k4<Nvy;k4+=1) {
-                        vy = Vymin*1-0 + dvy*k4;
-                        //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
-
-                        phase[ind(k1,k2,k3,k4)] = gaussD(x,y,vx,vy,sr,sv,ampl);
-                        
-                        //phase[ind(k1,k2,k3,k4)] = 0;
-                        
-                        
-                        //printf("(%d,%d,%d,%d) %f\n", k1,k2,k3,k4,phase[ind(k1,k2,k3,k4)]);
-                        //phaseTemp[ind(k1,k2,k3,k4)] = 0;
-                        
-                    }
-                }
-            }
-            //printf("%d\n",k1);
-        }
-        double mass0 = calDensity();
+        //double mass0 = calDensity();
         
-        printf("Masa = %f\n", mass0);
+        //printf("Masa = %f\n", mass0);
         
 //        radius = 0.1;
         for(k1=0;k1<Nx;k1+=1) {
@@ -222,23 +212,32 @@ int main()
             for(k2=0;k2<Ny;k2+=1) {
                 y = Ymin*1.0+ dy*k2;
                 //density[in(k1,k2)] = uniDisk(x,y,radius);
-                density[in(k1,k2)] = uniDisk(x,y);
+                density[in(k1,k2)] = MASSo;
                 //density[in(k1,k2)] = line(k1,k2);
-                
             }
             //printf("%d\n",k1);
         }
         
+        
+        
+        loadPot(4*PI*G*MASSo,2);
+        
         //printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
-        printDensity("./datFiles/density0.dat");
+        //printDensity("./datFiles/density0.dat");
+        loadDensityTheo(4*PI*G*MASSo,2);
+        printDensityTheo("./datFiles/density0theo.dat");
         //printPhaseX("./datFiles/gridx0.dat", Ny/2, Nvy/2);
         //printPhaseY("./datFiles/gridy0.dat", Nx/2, Nvx/2);
-        potencial();
         printPot("./datFiles/potential0.dat");
+        potencial();
+
+        
+        printPot("./datFiles/potential1.dat");
+        
         //printf("aun sirve\n");
-        calAcce();
-        printAcce("./datFiles/acce0x.dat","./datFiles/acce0y.dat");
-        printGtheo("./datFiles/gtheox.dat","./datFiles/gtheoy.dat");
+        //calAcce();
+        //printAcce("./datFiles/acce0x.dat","./datFiles/acce0y.dat");
+        //printGtheo("./datFiles/gtheox.dat","./datFiles/gtheoy.dat");
         //totalPerdido = 0;
         //step();
         //printPhaseX("./datFiles/gridx1.dat", Ny/2, Nvy/2);
@@ -251,8 +250,8 @@ int main()
 //        printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
         //fclose(constantes);
         
-        
-           printf("G es %lf\n", G*1.0);
+   // printf("%f %f %f %f %f %f\n", givePot(1,1)/dy/dy,givePot(127,1)/dy/dy,givePot(1,127)/dy/dy,givePot(127,127)/dy/dy, givePot(0,0)/dy/dy, givePot(1,1)/dy/dy + givePot(127,1)/dy/dy + givePot(1,127)/dy/dy + givePot(127,127)/dy/dy- 4*givePot(0,0)/dy/dy );
+           //printf("G es %lf\n", G*1.0);
 
     fclose(constantes);
 	//fclose(simInfo);
@@ -483,6 +482,9 @@ double potencial()
             //printf("%f\n", mem[in(k1,k2)]);
             //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
             out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)k2);//Porque dx = dy y Nx = Ny.
+            //printf("%f\n", mem[in(k1,k2)]);
+            //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
+            //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
         //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
     
         }
@@ -640,10 +642,10 @@ void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny+1;j+=1){ 
+		for(j=0;j<Ny;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", givePot(i,Ny-j));
+                    fprintf(output,"%f ", givePot(i,j));
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -802,8 +804,6 @@ double gmod(int in1, int in2)
 }
 
 
-
-
 double darX(int input)
 {
  return Xmin*1.0+dx*input;   
@@ -821,13 +821,89 @@ double darVy(int input)
  return Vymin*1.0+dvy*input;   
 }
 
+//Carga el potencial teórico en el arreglo potencial.
+void loadPot(double alpha, int n)
+{
+ 	for(i=0;i<Nx;i+=1) {
+                ix = darX(i);
+                    for(j=0;j<Ny;j+=1){
+                        iy = darY(j);
+                        pot[in(i,j)] = -alpha * pow(sqrt(pow(ix,2)+pow(iy,2)),n);
+                        //printf("%d %d %f %f %f %f\n", i, j,darX(i),darY(j), givePot(i,j), -MASSo*4*PI*G*(pow(ix,2)+pow(iy,2)));
+                    }
+			}
+}
 
 
+double newPot(double alpha, int n, int iin, int jin)
+{
+                    ix = darX(iin);
+                    iy = darY(jin);
+                    return -alpha * pow(sqrt(pow(ix,2)+pow(iy,2)),n);
+}
+
+//Calcula el laplaciano del potencial.
+double laplacePot(int iin, int jin,double alpha, int n)
+{
+    //return (givePot(mod(iin+1,Nx),jin) + givePot(mod(iin-1,Nx),jin)+givePot(iin,mod(jin+1,Ny))+givePot(iin,mod(jin-1,Ny))-4*givePot(iin,jin))/(dy*dy); //dx = dy
+//        printf("%d %d %f %f %f %f %f %f\n",iin,jin, givePot(mod(iin+1,Nx),mod(jin+1,Ny)),givePot(mod(iin-1,Nx),mod(jin+1,Ny)),givePot(mod(iin+1,Nx),mod(jin-1,Ny)),givePot(mod(iin-1,Nx),mod(jin-1,Ny)),givePot(iin,jin),    -(givePot(mod(iin+1,Nx),mod(jin+1,Ny)) +givePot(mod(iin-1,Nx),mod(jin+1,Ny))+givePot(mod(iin+1,Nx),mod(jin-1,Ny))+givePot(mod(iin-1,Nx),mod(jin-1,Ny))-4*givePot(iin,jin))    );
+    //return -(givePot(mod(iin+1,Nx),mod(jin+1,Ny)) +givePot(mod(iin-1,Nx),mod(jin+1,Ny))+givePot(mod(iin+1,Nx),mod(jin-1,Ny))+givePot(mod(iin-1,Nx),mod(jin-1,Ny))-4*givePot(iin,jin))/(dy*dy); //dx = dy
+    
+return -(newPot(alpha, n,mod(iin,Nx),mod(jin-1,Ny)) +newPot(alpha, n,mod(iin,Nx),mod(jin+1,Ny))+newPot(alpha, n,mod(iin+1,Nx),mod(jin,Ny))+newPot(alpha, n,mod(iin-1,Nx),mod(jin,Ny))-4*newPot(alpha, n,iin,jin))/(dy*dy);
+    
+//return -(newPot(alpha, n,mod(iin+1,Nx),mod(jin+1,Ny)) +newPot(alpha, n,mod(iin-1,Nx),mod(jin+1,Ny))+newPot(alpha, n,mod(iin+1,Nx),mod(jin-1,Ny))+newPot(alpha, n,mod(iin-1,Nx),mod(jin-1,Ny))-4*newPot(alpha, n,iin,jin))/(dy*dy);
+    
+
+}
+
+//Imprime el arreglo density con el String name como nombre.
+void printDensityTheo(char *name)
+{
+	FILE *output = fopen(name, "w+");
+	for(i=0;i<Nx;i+=1) {
+		for(j=0;j<Ny;j+=1){ 
+                  //fprintf(output,"%f ", densitytheo[in(i,Ny-j)]);
+            //fprintf(output,"%f ", laplacePot(i,Ny-j));
+            fprintf(output,"%f ", densitytheo[in(i,j)]);
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+}
 
 
+void loadDensityTheo(double alpha, int n)
+{
+	for(i=1;i<Nx;i+=1) {
+		for(j=1;j<Ny;j+=1){ 
+                  //fprintf(output,"%f ", densitytheo[in(i,Ny-j)]);
+            //fprintf(output,"%f ", laplacePot(i,Ny-j));
+            //fprintf(output,"%f ", laplacePot(i,j)/(4*PI*G));
+            densitytheo[in(mod(i,Nx),mod(j,Ny))] = laplacePot(i,j,alpha, n);// /(4*PI*G);
+            density[in(mod(i,Nx),mod(j,Ny))] = laplacePot(i,j,alpha, n);// /(4*PI*G);
+        //printf("Error MesagenoIgno\n");
+        }
+		//printf("%d\n", i);
+			}
+			
+    double valor = laplacePot(6,6,alpha, n);
+    //Por las condiciones periódicas, esto se debe hacer manualmente.
+    for(j = 0; j<Ny;j+=1){
+        densitytheo[in(0,j)] = valor;// /(4*PI*G);
+            density[in(0,j)] = valor;// /(4*PI*G);
+    }
+    
+        for(i = 0; j<Ny;j+=1){
+        densitytheo[in(i,0)] = valor;// /(4*PI*G);
+            density[in(i,0)] = valor;// /(4*PI*G);
+    }
 
 
-
+}
 
 
 

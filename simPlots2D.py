@@ -24,20 +24,30 @@ TAU = int(constantes[8])
 
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 
-densidad = np.loadtxt('./datFiles/density0.dat').T
-densidad1 = np.loadtxt('./datFiles/potential0.dat').T
+densidadTheo = np.loadtxt('./datFiles/density0theo.dat')
+potTheo = np.loadtxt('./datFiles/potential0.dat')
+potReal = np.loadtxt('./datFiles/potential1.dat')
 
-plt.imshow(densidad)
+plt.imshow(densidadTheo)
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 
 plt.figure()
-plt.imshow(densidad1)
+plt.imshow(potTheo)
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 
 
-accex = np.loadtxt('./datFiles/acce0x.dat').T
-accey = np.loadtxt('./datFiles/acce0y.dat').T
+plt.figure()
+plt.imshow(potReal)
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 
-gtheox = np.loadtxt('./datFiles/gtheox.dat').T
-gtheoy = np.loadtxt('./datFiles/gtheoy.dat').T
+
+#accex = np.loadtxt('./datFiles/acce0x.dat').T
+#accey = np.loadtxt('./datFiles/acce0y.dat').T
+#
+#gtheox = np.loadtxt('./datFiles/gtheox.dat').T
+#gtheoy = np.loadtxt('./datFiles/gtheoy.dat').T
+
+#lapl = (-4*potTheo[0:128,0:128]+potTheo[-1:127,1:129]+potTheo[1:129,1:129]+potTheo[-1:127,-1:127]+potTheo[-1:127,1:129])
 
 def darX(inx):
     return -1.0+2.0/128*inx
@@ -45,6 +55,13 @@ def darX(inx):
 def darY(iny):
     return -1.0+2.0/128*iny
 
+
+potT = potTheo.T-potTheo
+i,j = 3,3
+stencil = np.array([potTheo[i+1,j+1],potTheo[i-1,j+1],potTheo[i+1,j-1],potTheo[i-1,j-1]])
+stencil2 = np.array([potTheo[i,j-1],potTheo[i,j+1],potTheo[i+1,j],potTheo[i-1,j]])
+stencil3 = np.array([potTheo[i+1,j],potTheo[i,j+1]])
+print(i,j,potTheo[i+1,j+1],potTheo[i-1,j+1],potTheo[i+1,j-1],potTheo[i-1,j-1], stencil.sum()-4*potTheo[i,j])
 #def rad(x,y):
 #    return x*x+y*y
 #x = np.linspace(-1,1,128)
@@ -53,23 +70,23 @@ def darY(iny):
 #values = np.zeros((128,128))
 #values = rad(x,y)
 
-ratax = accex/gtheox
-ratay = accey/gtheoy
-
-plt.figure()
+#ratax = accex/gtheox
+#ratay = accey/gtheoy
+#
+#plt.figure()
 #plt.imshow(accey)
 #plt.imshow(accex)
-plt.imshow(gtheoy)
-cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-plt.figure()
-plt.imshow(accey)
-cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-plt.figure()
-plt.imshow(ratax)
-cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-plt.figure()
-plt.imshow(np.log(ratay))
-cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+#plt.imshow(gtheoy)
+#cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+#plt.figure()
+#plt.imshow(accey)
+#cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+#plt.figure()
+#plt.imshow(ratax)
+#cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+#plt.figure()
+#plt.imshow(np.log(ratay))
+#cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 
 
 #
@@ -127,6 +144,8 @@ cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 #
 #
 #
+#for i in range(128):
+#    print(-1.0+i*2/127)
 
 
 

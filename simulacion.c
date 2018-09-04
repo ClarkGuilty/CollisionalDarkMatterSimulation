@@ -32,7 +32,7 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 0
+#define TAU 500
 
 
 //Primer intento Via Láctea.
@@ -202,7 +202,7 @@ int main()
         
         //Descomentar para versión colisional --
         if(TAU != 0){
-        calDensity();  //La impresión calcula la densidad.
+        calDensity(); 
         collisionStep();
         }
         //--
@@ -472,7 +472,7 @@ void step()
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
 			if(newij(k,l) ==0){
-				//phaseOld[k][l] = phase[k][l]; TODO:No se usa
+				//phaseOld[k][l] = phase[k][l];// TODO:No se usa
 				phaseTemp[i2][j2] += phase[k][l];
                     //phaseTemp[i2][l] += collision(k,mod(l,1024),TAU);
                     //phaseTemp[k][l] -= collision(k,l,TAU);
@@ -515,9 +515,9 @@ double newijCol(int iin, int jin)
 
 
         double v = acce[iin]*dt;
-        double dj = v/dv;
-        dj = (int)dj;
-        j2 = jin;
+        //double dj = v/dv;
+        //dj = (int)dj;
+        j2 = jin; 
 
         if(j2 < 0 || j2 >= Nv) return -1;
 //        if(i2 >= Nx){
@@ -525,9 +525,6 @@ double newijCol(int iin, int jin)
 //        }
         v = giveVel(j2);
         
-        //parte colisional.
-//        v += collision(iin, jin, TAU);
-        //
         x = v*dt*scale;
         double di = x/dx;
         di = (int) di;
@@ -542,7 +539,7 @@ double newijCol(int iin, int jin)
 double collision(int icol, int jcol, double tau)
 {
     if(TAU==0) return 0;
-    double df = (feq(icol,jcol) - phaseOld[icol][jcol])/tau;    
+    double df = (feq(icol,jcol) - phase[icol][jcol])/tau;    
     return df;
 }
 
