@@ -163,6 +163,7 @@ void printDensityTheo(char *name);
 void loadDensityTheo();
 double newPot(double alpha, int n, int iin, int jin);
 double laplacePot(int iin, int jin,double alpha, int n);
+double lineTheo(int inx, int iny);
 
 int main()
 {
@@ -212,8 +213,8 @@ int main()
             for(k2=0;k2<Ny;k2+=1) {
                 y = Ymin*1.0+ dy*k2;
                 //density[in(k1,k2)] = uniDisk(x,y,radius);
-                density[in(k1,k2)] = MASSo;
-                //density[in(k1,k2)] = line(k1,k2);
+                //density[in(k1,k2)] = MASSo;
+                density[in(k1,k2)] = line(k1,k2);
             }
             //printf("%d\n",k1);
         }
@@ -223,9 +224,9 @@ int main()
         loadPot(4*PI*G*MASSo,2);
         
         //printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
-        //printDensity("./datFiles/density0.dat");
-        loadDensityTheo(4*PI*G*MASSo,2);
-        printDensityTheo("./datFiles/density0theo.dat");
+        printDensity("./datFiles/density0.dat");
+        //loadDensityTheo(MASSo,2);
+        //printDensityTheo("./datFiles/density0theo.dat");
         //printPhaseX("./datFiles/gridx0.dat", Ny/2, Nvy/2);
         //printPhaseY("./datFiles/gridy0.dat", Nx/2, Nvx/2);
         printPot("./datFiles/potential0.dat");
@@ -379,13 +380,16 @@ double uniDisk(double x, double y)
 double line(int inx, int iny)
 {
     
- if(inx == Nx/2 || inx == Nx/2-1)
- {
-        return lambda;
- }
- return 0;
+ return PI*cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5)/(8.0*G);
+}
+
+double lineTheo(int inx, int iny)
+{
+    
+ return cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5);
     
 }
+
 //Calcula la densidad. Actualiza el arreglo density
 double calDensity()
 {
@@ -475,13 +479,13 @@ double potencial()
     //Se debe usar el mismo plan sí o sí al parecer.
 
     //Devuelve carga a out Î(Chi).
-    out[0] = mem[0];
+    
     //out[0] = -4*PI*G*mem[0] ;
     for(k1=0;k1<Nx;k1+=1){
-        for(k2 = 0; k2 <Ny;k2 += 1){
+        for(k2 = 0; k2 <Ny   ;k2 += 1){
             //printf("%f\n", mem[in(k1,k2)]);
             //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
-            out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)k2);//Porque dx = dy y Nx = Ny.
+            out[in(k1,k2)] = PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
             //printf("%f\n", mem[in(k1,k2)]);
             //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
             //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
@@ -490,7 +494,7 @@ double potencial()
         }
 
     }
-    
+    //out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
     fftw_execute(pIda);
 
 
@@ -520,11 +524,11 @@ double potencial()
 double calcK2(double i2, double j2)
 {
     if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
-        return 1;
+        return 0;
     }
     double rta1= sin(dx*PI*j2);
     double rta2= sin(dx*PI*i2);
-    return 1.0/(rta1*rta1+rta2*rta2);
+    return 1.0/(pow(rta1,2)+pow(rta2,2));
 }
 
 //Retorna la densidad en (in1,in2).
@@ -828,7 +832,8 @@ void loadPot(double alpha, int n)
                 ix = darX(i);
                     for(j=0;j<Ny;j+=1){
                         iy = darY(j);
-                        pot[in(i,j)] = -alpha * pow(sqrt(pow(ix,2)+pow(iy,2)),n);
+                        //pot[in(i,j)] = -alpha * pow(sqrt(pow(ix,2)+pow(iy,2)),n);
+                        pot[in(i,j)] = lineTheo(i,j);
                         //printf("%d %d %f %f %f %f\n", i, j,darX(i),darY(j), givePot(i,j), -MASSo*4*PI*G*(pow(ix,2)+pow(iy,2)));
                     }
 			}
@@ -897,11 +902,11 @@ void loadDensityTheo(double alpha, int n)
             density[in(0,j)] = valor;// /(4*PI*G);
     }
     
-        for(i = 0; j<Ny;j+=1){
+        for(i = 0; i<Ny;i+=1){
         densitytheo[in(i,0)] = valor;// /(4*PI*G);
             density[in(i,0)] = valor;// /(4*PI*G);
     }
-
+    totalMass = laplacePot(6,6,alpha, n)*Nx*Ny;
 
 }
 

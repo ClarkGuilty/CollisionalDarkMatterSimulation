@@ -24,21 +24,26 @@ TAU = int(constantes[8])
 
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 
-densidadTheo = np.loadtxt('./datFiles/density0theo.dat')
+densidadTheo = np.loadtxt('./datFiles/density0.dat')
 potTheo = np.loadtxt('./datFiles/potential0.dat')
 potReal = np.loadtxt('./datFiles/potential1.dat')
 
 plt.imshow(densidadTheo)
+plt.title("Densidad cumple la ecuación de poisson del potTeorico")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.savefig("densidadTeorica.png")
 
 plt.figure()
 plt.imshow(potTheo)
+plt.title("potTeorico V = cos(0.5*pi*x)cos(0.5*pi*y)")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-
+plt.savefig("PotencialTeorico.png")
 
 plt.figure()
 plt.imshow(potReal)
+plt.title("potCalculado a partir de la densidad")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.savefig("potReal.png")
 
 
 #accex = np.loadtxt('./datFiles/acce0x.dat').T
@@ -56,12 +61,21 @@ def darY(iny):
     return -1.0+2.0/128*iny
 
 
-potT = potTheo.T-potTheo
-i,j = 3,3
-stencil = np.array([potTheo[i+1,j+1],potTheo[i-1,j+1],potTheo[i+1,j-1],potTheo[i-1,j-1]])
-stencil2 = np.array([potTheo[i,j-1],potTheo[i,j+1],potTheo[i+1,j],potTheo[i-1,j]])
-stencil3 = np.array([potTheo[i+1,j],potTheo[i,j+1]])
-print(i,j,potTheo[i+1,j+1],potTheo[i-1,j+1],potTheo[i+1,j-1],potTheo[i-1,j-1], stencil.sum()-4*potTheo[i,j])
+diff = potTheo/potReal/np.pi/8
+
+
+plt.figure()
+plt.imshow(diff)
+plt.title("potTeorico/potCalculado")
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.savefig("potCalpotTeo.png")
+
+#potT = potTheo.T-potTheo
+#i,j = 3,3
+#stencil = np.array([potTheo[i+1,j+1],potTheo[i-1,j+1],potTheo[i+1,j-1],potTheo[i-1,j-1]])
+#stencil2 = np.array([potTheo[i,j-1],potTheo[i,j+1],potTheo[i+1,j],potTheo[i-1,j]])
+#stencil3 = np.array([potTheo[i+1,j],potTheo[i,j+1]])
+#print(i,j,potTheo[i+1,j+1],potTheo[i-1,j+1],potTheo[i+1,j-1],potTheo[i-1,j-1], stencil.sum()-4*potTheo[i,j])
 #def rad(x,y):
 #    return x*x+y*y
 #x = np.linspace(-1,1,128)
