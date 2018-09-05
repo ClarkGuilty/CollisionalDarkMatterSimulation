@@ -157,13 +157,13 @@ double darVy(int input);
 double gmod(int in1, int in2);
 void printGtheo(char *namex, char *namey);
 double uniDisk(double x, double y);
-double line(int inx, int iny);
+double densidadTeorica(int inx, int iny);
 void loadPot(double alpha, int n);
 void printDensityTheo(char *name);
 void loadDensityTheo();
 double newPot(double alpha, int n, int iin, int jin);
 double laplacePot(int iin, int jin,double alpha, int n);
-double lineTheo(int inx, int iny);
+double potencialTeorico(int inx, int iny);
 
 int main()
 {
@@ -214,7 +214,7 @@ int main()
                 y = Ymin*1.0+ dy*k2;
                 //density[in(k1,k2)] = uniDisk(x,y,radius);
                 //density[in(k1,k2)] = MASSo;
-                density[in(k1,k2)] = line(k1,k2);
+                density[in(k1,k2)] = densidadTeorica(k1,k2);
             }
             //printf("%d\n",k1);
         }
@@ -377,13 +377,15 @@ double uniDisk(double x, double y)
     
 }
 
-double line(int inx, int iny)
+//Da el valor de la densidad pensada para que al resolver la ecuación de poisson se obtenga el potencial teorico.
+double densidadTeorica(int inx, int iny)
 {
     
- return PI*cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5)/(8.0*G);
+ return -PI*cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5)/(8.0*G);
 }
 
-double lineTheo(int inx, int iny)
+//Potencial teórico bajo el cual se basa la densidad teorica.
+double potencialTeorico(int inx, int iny)
 {
     
  return cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5);
@@ -412,69 +414,31 @@ double calDensity()
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
 double potencial()
 {
-//    double * densityIN= malloc(sizeof(double)*Nx);
-//    for(i = 0;i<Nx;i+=1){
-//        densityIN[i] = giveDensity(i);
-//    }
-
-
     inE=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     mem=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
 
-
-    //fftw_complex *out2;
-   // out2=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
-    //double *in2;
-    //in2 = (double*) malloc((sizeof(double)*Nx));
-
-
     pIda = fftw_plan_dft_2d(Nx, Ny, inE, out,FFTW_FORWARD, FFTW_MEASURE);
-
-    //fftw_plan pIda2, pVuelta2;
-    //pIda2 = fftw_plan_dft_r2c_1d(Nx, in2, out2, FFTW_MEASURE);
-
-    //FILE *input = fopen("inF.dat", "w+");
-    //FILE *output0 = fopen("outF0.dat", "w+");
-    //FILE *output1 = fopen("outF1.dat", "w+");
-    //FILE *oR = fopen("oR.dat", "w+");
-    //FILE *oI = fopen("oI.dat", "w+");
-
 
     //Cargar densidad en in:
     for(k1=0;k1<Nx;k1+=1){
         for(k2=0;k2<Ny;k2+=1){
         inE[in(k1,k2)] = giveDensity(k1,k2);
-       //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
-//        fprintf(input, "%f\n",creal(inE[i]));
+
         }
     }
 
+    
     fftw_execute(pIda);
-//    fftw_execute(pIda2);
-
+    
     //Guarda out en mem. 
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2<Ny; k2+=1){
-            
          mem[in(k1,k2)] = out[in(k1,k2)];   
-            
-            
-            
-            
         }
-     //   fprintf(output0, "%f\n",creal(out[i]));
-     //   fprintf(output1, "%f\n",cimag(out[i]));
-
-
-//        mem[i] = out2[i];
-//        fprintf(output0, "%f\n",creal(out2[i]));
-//        fprintf(output1, "%f\n",cimag(out2[i]));
-
     }
 
-    //fftw_execute(pIda);
     pIda = fftw_plan_dft_2d(Nx, Ny, out, inR,FFTW_BACKWARD, FFTW_MEASURE);
     //Se debe usar el mismo plan sí o sí al parecer.
 
@@ -485,32 +449,26 @@ double potencial()
         for(k2 = 0; k2 <Ny   ;k2 += 1){
             //printf("%f\n", mem[in(k1,k2)]);
             //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
-            out[in(k1,k2)] = PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
+            out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
             //printf("%f\n", mem[in(k1,k2)]);
             //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
             //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
+            
         //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
     
         }
 
     }
-    //out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
+    out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
     fftw_execute(pIda);
 
 
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny;k2 += 1)
         pot[in(k1,k2)] = creal(inR[in(k1,k2)]/Nx/Ny);
-        //fprintf(oR, "%f\n",creal(inR[i])/(Nx*Ny));
-        //fprintf(oI, "%f\n",cimag(inR[i])/Nx/Ny);
+
     }
 
- //   fclose(input);
- //   fclose(output0);
- //   fclose(output1);
- //   fclose(oR);
- //   fclose(oI);
- //fftw_destroy_plan(pVuelta);
  
  fftw_free(inE);
  fftw_free(out);
@@ -833,8 +791,8 @@ void loadPot(double alpha, int n)
                     for(j=0;j<Ny;j+=1){
                         iy = darY(j);
                         //pot[in(i,j)] = -alpha * pow(sqrt(pow(ix,2)+pow(iy,2)),n);
-                        pot[in(i,j)] = lineTheo(i,j);
-                        //printf("%d %d %f %f %f %f\n", i, j,darX(i),darY(j), givePot(i,j), -MASSo*4*PI*G*(pow(ix,2)+pow(iy,2)));
+                        pot[in(i,j)] = potencialTeorico(i,j);
+                        printf("%d %d %f %f %f %f %f %f\n", i, j,darX(i),darY(j), givePot(i,j), cos(PI*darX(i)*0.5),cos(PI*darX(j)*0.5),cos(PI*darX(i)*0.5)*cos(PI*darY(j)*0.5));
                     }
 			}
 }
@@ -879,8 +837,6 @@ void printDensityTheo(char *name)
 	fclose(output);
 
 }
-
-
 void loadDensityTheo(double alpha, int n)
 {
 	for(i=1;i<Nx;i+=1) {

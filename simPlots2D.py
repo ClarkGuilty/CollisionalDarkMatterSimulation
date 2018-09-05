@@ -23,6 +23,7 @@ constantes = np.loadtxt("constants.dat", usecols = 1)
 TAU = int(constantes[8])
 
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
+dpi = 500
 
 densidadTheo = np.loadtxt('./datFiles/density0.dat')
 potTheo = np.loadtxt('./datFiles/potential0.dat')
@@ -31,19 +32,19 @@ potReal = np.loadtxt('./datFiles/potential1.dat')
 plt.imshow(densidadTheo)
 plt.title("Densidad cumple la ecuación de poisson del potTeorico")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-plt.savefig("densidadTeorica.png")
+plt.savefig("densidadTeorica.png",dpi=dpi)
 
 plt.figure()
 plt.imshow(potTheo)
 plt.title("potTeorico V = cos(0.5*pi*x)cos(0.5*pi*y)")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-plt.savefig("PotencialTeorico.png")
+plt.savefig("PotencialTeorico.png",dpi=dpi)
 
 plt.figure()
 plt.imshow(potReal)
 plt.title("potCalculado a partir de la densidad")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-plt.savefig("potReal.png")
+plt.savefig("potReal.png",dpi=dpi)
 
 
 #accex = np.loadtxt('./datFiles/acce0x.dat').T
@@ -62,13 +63,13 @@ def darY(iny):
 
 
 diff = potTheo/potReal/np.pi/8
-
+dif = np.log(diff)
 
 plt.figure()
 plt.imshow(diff)
 plt.title("potTeorico/potCalculado")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-plt.savefig("potCalpotTeo.png")
+plt.savefig("potCalpotTeo.png", dpi=dpi)
 
 #potT = potTheo.T-potTheo
 #i,j = 3,3
