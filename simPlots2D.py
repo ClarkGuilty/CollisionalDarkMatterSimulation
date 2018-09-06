@@ -28,6 +28,7 @@ dpi = 500
 densidadTheo = np.loadtxt('./datFiles/density0.dat')
 potTheo = np.loadtxt('./datFiles/potential0.dat')
 potReal = np.loadtxt('./datFiles/potential1.dat')
+#potReal = potReal - potReal[0,0]
 
 plt.imshow(densidadTheo)
 plt.title("Densidad cumple la ecuación de poisson del potTeorico")
@@ -63,7 +64,6 @@ def darY(iny):
 
 
 diff = potTheo/potReal/np.pi/8
-dif = np.log(diff)
 
 plt.figure()
 plt.imshow(diff)

@@ -208,6 +208,7 @@ int main()
         //printf("Masa = %f\n", mass0);
         
 //        radius = 0.1;
+        totalMass = 0;
         for(k1=0;k1<Nx;k1+=1) {
             x = Xmin*1.0+dx*k1;
             for(k2=0;k2<Ny;k2+=1) {
@@ -215,6 +216,7 @@ int main()
                 //density[in(k1,k2)] = uniDisk(x,y,radius);
                 //density[in(k1,k2)] = MASSo;
                 density[in(k1,k2)] = densidadTeorica(k1,k2);
+                totalMass += densidadTeorica(k1,k2)*dx*dy;// + 2.0/PI/Nx/Ny;
             }
             //printf("%d\n",k1);
         }
@@ -424,8 +426,9 @@ double potencial()
     //Cargar densidad en in:
     for(k1=0;k1<Nx;k1+=1){
         for(k2=0;k2<Ny;k2+=1){
-        inE[in(k1,k2)] = giveDensity(k1,k2);
-
+        inE[in(k1,k2)] = giveDensity(k1,k2)- totalMass/((Xmax-Xmin)*(Ymax-Ymin));
+        inR[in(k1,k2)] = -1.0;
+        out[in(k1,k2)] = 0;
         }
     }
 
@@ -449,18 +452,28 @@ double potencial()
         for(k2 = 0; k2 <Ny   ;k2 += 1){
             //printf("%f\n", mem[in(k1,k2)]);
             //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
-            out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
+            out[in(k1,k2)] = -4*PI*G*(mem[in(k1,k2)])*calcK2((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
             //printf("%f\n", mem[in(k1,k2)]);
             //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
             //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
             
         //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
-    
         }
-
     }
-    out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
+    
+    
+        k1 = 0;
+        printf("a0 es %f\n", creal(mem[in(0,0)]));
+     //   out[in(0,0)] = 0;
+        
+        
+    for(k2 = 1; k2<Ny;k2+=1){
+      //  out[in(k1,k2)] = -PI*G*(mem[in(k1,k2)])*calcK2((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
+    }
+
+//out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
     fftw_execute(pIda);
+    printf("%f\n",totalMass);
 
 
     for(k1=0;k1<Nx;k1+=1){
@@ -481,13 +494,50 @@ double potencial()
 //Retorna 1/(sin2 + sin2).
 double calcK2(double i2, double j2)
 {
-    if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
-        return 0;
+    //if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
+    if( ( (j2 == 0) )  && ( (i2 == 0)   )  ){
+        return 1;
     }
-    double rta1= sin(dx*PI*j2);
-    double rta2= sin(dx*PI*i2);
-    return 1.0/(pow(rta1,2)+pow(rta2,2));
+     if(i2<Nx/2-1){
+         i2 = PI*i2;
+     }
+     if(j2<Nx/2-1){
+         j2 = PI*j2;
+     }
+     if(i2>=Nx/2-1){
+         i2 = PI*(i2-Nx);
+     }
+     if(j2>=Nx/2-1){
+         j2 = PI*(j2-Ny);
+     }
+    //double rta1= sin(dx*PI*j2);
+    //double rta2= sin(dx*PI*i2);
+//     double rta1= -4*Nx*sin(PI*i2/Nx)/PI;
+//     double rta2= -4*Nx*sin(PI*j2/Nx)/PI;
+
+    //return 1.0/(pow(rta1,2)+pow(rta2,2));
+    return -1.0/(pow(i2,2)+pow(j2,2));
 }
+
+
+//double calcK2(double i2, double j2)
+//{
+//     if(i2<=Nx/2){
+//         i2 = PI*i2;
+//     }
+//     if(j2<=Nx/2){
+//         j2 = PI*j2;
+//     }
+//     if(i2>Nx/2){
+//         i2 = PI*(i2-Nx);
+//     }
+//     if(j2>Nx/2){
+//         j2 = PI*(j2-Ny);
+//     }
+// 
+//     return 1.0/(pow(i2,2) + pow(j2,2));
+//     
+//}
 
 //Retorna la densidad en (in1,in2).
 double giveDensity(int in1, int in2)
@@ -792,7 +842,7 @@ void loadPot(double alpha, int n)
                         iy = darY(j);
                         //pot[in(i,j)] = -alpha * pow(sqrt(pow(ix,2)+pow(iy,2)),n);
                         pot[in(i,j)] = potencialTeorico(i,j);
-                        printf("%d %d %f %f %f %f %f %f\n", i, j,darX(i),darY(j), givePot(i,j), cos(PI*darX(i)*0.5),cos(PI*darX(j)*0.5),cos(PI*darX(i)*0.5)*cos(PI*darY(j)*0.5));
+                        //printf("%d %d %f %f %f %f %f %f\n", i, j,darX(i),darY(j), givePot(i,j), cos(PI*darX(i)*0.5),cos(PI*darX(j)*0.5),cos(PI*darX(i)*0.5)*cos(PI*darY(j)*0.5));
                     }
 			}
 }
