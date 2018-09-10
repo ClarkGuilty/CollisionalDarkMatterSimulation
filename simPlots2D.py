@@ -63,7 +63,7 @@ def darY(iny):
     return -1.0+2.0/128*iny
 
 
-diff = potTheo/potReal/np.pi/8
+diff = potTheo/potReal
 
 plt.figure()
 plt.imshow(diff)

@@ -142,7 +142,8 @@ double potencial();
 double calcK2(double i2, double j2);
 double convertir(double valor, int unidad);
 void calAcce(); 
-void printAcce(char *namex, char *namey);
+void printAccex(char *namex);
+void printAccey(char *namex);
 double newij(int iinx, int jinx, int iiny, int jiny); 
 void step(); 
 int mod(int p, int q);
@@ -164,6 +165,10 @@ void loadDensityTheo();
 double newPot(double alpha, int n, int iin, int jin);
 double laplacePot(int iin, int jin,double alpha, int n);
 double potencialTeorico(int inx, int iny);
+double potencialTeorico2(int inx, int iny, int nx, int ny);
+double potencial2(); 
+double densidadTeorica2(int inx, int iny, int nx, int ny);
+double calcK3(double i2, double j2);
 
 int main()
 {
@@ -213,48 +218,28 @@ int main()
             x = Xmin*1.0+dx*k1;
             for(k2=0;k2<Ny;k2+=1) {
                 y = Ymin*1.0+ dy*k2;
-                //density[in(k1,k2)] = uniDisk(x,y,radius);
-                //density[in(k1,k2)] = MASSo;
-                density[in(k1,k2)] = densidadTeorica(k1,k2);
-                totalMass += densidadTeorica(k1,k2)*dx*dy;// + 2.0/PI/Nx/Ny;
+                
+                //density[in(k1,k2)] = potencialTeorico2(k1,k2,3,20);
+                density[in(k1,k2)] = densidadTeorica2(k1,k2,3,20);
+
+                pot[in(k1,k2)] = potencialTeorico2(k1,k2,3,20);
+                totalMass += density[in(k1,k2)]*dx*dy;// + 2.0/PI/Nx/Ny;
             }
             //printf("%d\n",k1);
         }
         
         
         
-        loadPot(4*PI*G*MASSo,2);
+        //loadPot(4*PI*G*MASSo,2);
         
-        //printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
         printDensity("./datFiles/density0.dat");
-        //loadDensityTheo(MASSo,2);
-        //printDensityTheo("./datFiles/density0theo.dat");
-        //printPhaseX("./datFiles/gridx0.dat", Ny/2, Nvy/2);
-        //printPhaseY("./datFiles/gridy0.dat", Nx/2, Nvx/2);
         printPot("./datFiles/potential0.dat");
-        potencial();
-
+        potencial2();
+        printAccex("./datFiles/fdens0.dat");
+        printAccey("./datFiles/fdens1.dat");
         
         printPot("./datFiles/potential1.dat");
         
-        //printf("aun sirve\n");
-        //calAcce();
-        //printAcce("./datFiles/acce0x.dat","./datFiles/acce0y.dat");
-        //printGtheo("./datFiles/gtheox.dat","./datFiles/gtheoy.dat");
-        //totalPerdido = 0;
-        //step();
-        //printPhaseX("./datFiles/gridx1.dat", Ny/2, Nvy/2);
-        //printPhaseY("./datFiles/gridy1.dat", Nx/2, Nvx/2);
-//        double mass1 = calDensity();
-        //printDensity("./datFiles/density1.dat");
-//        printf("Masa2 = %f\n", mass1/mass0);
-//        printf("Total = %f\n", (mass1+totalPerdido)/mass0);
-
-//        printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
-        //fclose(constantes);
-        
-   // printf("%f %f %f %f %f %f\n", givePot(1,1)/dy/dy,givePot(127,1)/dy/dy,givePot(1,127)/dy/dy,givePot(127,127)/dy/dy, givePot(0,0)/dy/dy, givePot(1,1)/dy/dy + givePot(127,1)/dy/dy + givePot(1,127)/dy/dy + givePot(127,127)/dy/dy- 4*givePot(0,0)/dy/dy );
-           //printf("G es %lf\n", G*1.0);
 
     fclose(constantes);
 	//fclose(simInfo);
@@ -262,156 +247,6 @@ int main()
 
 }
 
-
-
-//Imprime el espacio de fase con el String name como nombre.
-void printPhase(char *name)//no
-{
-	FILE *output = fopen(name, "w+");
-	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", giveDensity(i,Ny-j));
-        //printf("Error MesagenoIgno\n");
-        }
-		fprintf(output,"\n");
-		//printf("%d\n", i);
-			}
-
-	fclose(output);
-
-}
-
-//Imprime el corte y = corteY , Vy = corteVy del espacio de fase (un plano 2d).
-void printPhaseX(char *name, int corteY, int corteVy)
-{
- 
-   	FILE *output = fopen(name, "w+");
-
-	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nvx+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
-            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
-        //printf("Error MesagenoIgno\n");
-        }
-		fprintf(output,"\n");
-		//printf("%d\n", i);
-			}
-
-	fclose(output);
-
-    
-}
-
-//Imprime el corte x = corteX , Vx = corteVx del espacio de fase (un plano 2d).
-void printPhaseY(char *name, int corteX, int corteVx)
-{
- 
-   	FILE *output = fopen(name, "w+");
-
-	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nvx+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
-            fprintf(output,"%f ",phase[ind(corteX,i,corteVx,Nvy-j)]);
-        //printf("Error MesagenoIgno\n");
-        }
-		fprintf(output,"\n");
-		//printf("%d\n", i);
-			}
-
-	fclose(output);
-
-    
-}
-//Imprime el arreglo density con el String name como nombre.
-void printDensity(char *name)
-{
-	FILE *output = fopen(name, "w+");
-	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", giveDensity(i,Ny-j));
-        //printf("Error MesagenoIgno\n");
-        }
-		fprintf(output,"\n");
-		//printf("%d\n", i);
-			}
-
-	fclose(output);
-
-}
-
-//Imprime las constantes de la simulación para referencia fuera del C.
-void printConstant(char *name, double value)
-{
-    fprintf(constantes, "%s", name);
-    fprintf(constantes, " %f\n", value);
-
-}
-
-//Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
-double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude)
-{
-	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
-    	double ex = -x*x/(2.0*sr*sr)-y*y/(2.0*sr*sr)-vx*vx/(2.0*sv*sv)-vy*vy/(2.0*sv*sv);
-        
-//	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
-        //printf("%f\n",ex);
-	//return amplitude*exp(ex)/(2*PI*sx*sv);
-	//return amplitude*exp(-sqrt(fabs(ex)));
-        return amplitude*exp(ex);
-
-}
-
-double uniDisk(double x, double y)
-{
- if(x*x+y*y < radius*radius)
- {
-  return sigma;
-     
- }
- 
- return 0;
-    
-}
-
-//Da el valor de la densidad pensada para que al resolver la ecuación de poisson se obtenga el potencial teorico.
-double densidadTeorica(int inx, int iny)
-{
-    
- return -PI*cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5)/(8.0*G);
-}
-
-//Potencial teórico bajo el cual se basa la densidad teorica.
-double potencialTeorico(int inx, int iny)
-{
-    
- return cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5);
-    
-}
-
-//Calcula la densidad. Actualiza el arreglo density
-double calDensity()
-{
-    totalMass = 0;
-        for(k1=0; k1<Nx;k1+=1){
-            for(k2=0; k2< Ny; k2+=1){
-                density[in(k1,k2)] = 0;
-                for(k3=0; k3< Nvx; k3+=1){
-                    for(k4=0; k4< Nvy; k4+=1){
-                        //density[in(k1,k2)] += phase[k1][k2][k3][k4]*dvx*dvy;
-                        density[in(k1,k2)] = giveDensity(k1,k2)+ phase[ind(k1,k2,k3,k4)];
-                    }
-                }
-                totalMass += density[in(k1,k2)];
-            }
-        }
-        return totalMass;
-}
 
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
 double potencial()
@@ -491,6 +326,91 @@ double potencial()
  
 }
 
+
+//Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
+double potencial2()
+{
+    inE=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
+    out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
+    inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
+    mem=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
+
+    pIda = fftw_plan_dft_2d(Nx, Ny, inE, out, FFTW_FORWARD, FFTW_MEASURE);
+
+    //Cargar densidad en in:
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2=0;k2<Ny;k2+=1){
+        inE[in(k1,k2)] = giveDensity(k1,k2);//- totalMass/((Xmax-Xmin)*(Ymax-Ymin));
+        inR[in(k1,k2)] = 0;
+        out[in(k1,k2)] = 0;
+        }
+    }
+
+    
+    //fftw_execute(pIda);
+    fftw_execute(pIda);
+    
+    //Guarda out en mem. 
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2<Ny; k2+=1){
+         mem[in(k1,k2)] = out[in(k1,k2)];   
+        }
+    }
+
+    pIda = fftw_plan_dft_2d(Nx, Ny, out, inR,FFTW_BACKWARD, FFTW_MEASURE);
+    //Se debe usar el mismo plan sí o sí al parecer.
+
+    //Devuelve carga a out Î(Chi).
+    
+            for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2 <Ny;k2 += 1){
+        accex[in(k1,k2)] = creal(mem[in(k1,k2)]/Nx/Ny); //Voy a guardar en accex mi espacio de fourier
+        accey[in(k1,k2)] = cimag(mem[in(k1,k2)]/Nx/Ny); //Voy a guardar en accex mi espacio de fourier
+        }
+    }
+    
+    //out[0] = -4*PI*G*mem[0] ;
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2 <Ny   ;k2 += 1){
+            //printf("%f\n", mem[in(k1,k2)]);
+            //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
+            out[in(k1,k2)] = -4*PI*G*(mem[in(k1,k2)])*calcK3((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
+            //printf("%f\n", mem[in(k1,k2)]);
+            //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
+            //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
+            
+        //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
+        }
+    }
+    
+    
+        k1 = 0;
+        printf("a0 es %f\n", creal(mem[in(0,0)]));
+     //   out[in(0,0)] = 0;
+
+
+    
+
+//out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
+    fftw_execute(pIda);
+    printf("Masa total %f\n",totalMass);
+
+
+    for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2 <Ny;k2 += 1)
+        pot[in(k1,k2)] = creal(inR[in(k1,k2)]/Nx/Ny);
+
+    }
+
+ 
+ fftw_free(inE);
+ fftw_free(out);
+ fftw_free(inR);
+ fftw_free(mem);
+ fftw_free(out2);
+ 
+}
+
 //Retorna 1/(sin2 + sin2).
 double calcK2(double i2, double j2)
 {
@@ -518,6 +438,243 @@ double calcK2(double i2, double j2)
     //return 1.0/(pow(rta1,2)+pow(rta2,2));
     return -1.0/(pow(i2,2)+pow(j2,2));
 }
+
+double calcK3(double i2, double j2)
+{
+    //if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
+    if( ( (j2 == 0) )  && ( (i2 == 0)   )  ){
+        return 1;
+    }
+     if(i2<Nx/2+1){
+         i2 = PI*i2;
+     }
+     if(j2<Nx/2+1){
+         j2 = PI*j2;
+     }
+     if(i2>=Nx/2+1){
+         i2 = PI*(-i2);
+     }
+     if(j2>=Nx/2-1){
+         j2 = PI*(-j2);
+     }
+    double rta1= 2*sin(dx*PI*j2)/dx;
+    double rta2= 2*sin(dx*PI*i2)/dx;
+//     double rta1= -4*Nx*sin(PI*i2/Nx)/PI;
+//     double rta2= -4*Nx*sin(PI*j2/Nx)/PI;
+
+    //return 1.0/(pow(rta1,2)+pow(rta2,2));
+    return -1.0/(pow(rta1,2)+pow(rta2,2));
+}
+
+//Da el valor de la densidad pensada para que al resolver la ecuación de poisson se obtenga el potencial teorico.
+double densidadTeorica(int inx, int iny)
+{
+    
+ //return -PI*cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5)/(8.0*G);
+    return -PI*potencialTeorico(inx,iny)/(8.0);
+    //return -potencialTeorico(inx,iny);
+}
+
+//Potencial teórico bajo el cual se basa la densidad teorica.
+double potencialTeorico(int inx, int iny)
+{
+    
+ return -cos(PI*darX(inx)*0.5)*cos(PI*darY(iny)*0.5);
+}
+
+double densidadTeorica2(int inx, int iny, int nx, int ny)
+{
+    
+ return -(pow(PI*0.5*2.0*nx,2)*sin(PI*darX(inx)*0.5*nx*2.0)+pow(PI*0.5*ny*2.0,2)*sin(PI*darY(iny)*0.5*ny*2.0))/(4*PI);
+
+}
+
+//POtencial con sin(nx*pi*x/Nx) + sin(ny*pi*y/Ny)
+double potencialTeorico2(int inx, int iny, int nx, int ny)
+{
+    
+ return sin(PI*darX(inx)*0.5*nx*2)+sin(PI*darY(iny)*0.5*ny*2.0);
+ //np.sin(np.pi*xin*nx*2.0/L)+np.sin(np.pi*yin*ny*2.0/L)
+
+}
+
+//Imprime el espacio de fase con el String name como nombre.
+void printPhase(char *name)//no
+{
+	FILE *output = fopen(name, "w+");
+	for(i=0;i<Nx;i+=1) {
+		for(j=1;j<Ny+1;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", phase[i][Nv-j]);
+                    fprintf(output,"%f ", giveDensity(i,Ny-j));
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+}
+
+//Imprime el corte y = corteY , Vy = corteVy del espacio de fase (un plano 2d).
+void printPhaseX(char *name, int corteY, int corteVy)
+{
+ 
+   	FILE *output = fopen(name, "w+");
+
+	for(i=0;i<Nx;i+=1) {
+		for(j=1;j<Nvx+1;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
+            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+    
+}
+
+//Imprime el corte x = corteX , Vx = corteVx del espacio de fase (un plano 2d).
+void printPhaseY(char *name, int corteX, int corteVx)
+{
+ 
+   	FILE *output = fopen(name, "w+");
+
+	for(i=0;i<Nx;i+=1) {
+		for(j=1;j<Nvx+1;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
+            fprintf(output,"%f ",phase[ind(corteX,i,corteVx,Nvy-j)]);
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+    
+}
+//Imprime el arreglo density con el String name como nombre.
+void printDensity(char *name)
+{
+	FILE *output = fopen(name, "w+");
+	for(i=0;i<Nx;i+=1) {
+		for(j=0;j<Ny;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", phase[i][Nv-j]);
+                    //fprintf(output,"%f ", giveDensity(i,mod(Ny-j,Ny)));  //The correct way to print. Use .T in numpy.
+            fprintf(output,"%f ", giveDensity(i,j));  //Al parecer esta SÍ es la real.
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+}
+
+//Imprime el arreglo density con el String name como nombre.
+void printAccex(char *name)
+{
+	FILE *output = fopen(name, "w+");
+	for(i=0;i<Nx;i+=1) {
+		for(j=0;j<Ny;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", phase[i][Nv-j]);
+                    //fprintf(output,"%f ", giveAccex(i,mod(Ny-j,Ny)));  //The correct way to print. Use .T in numpy.
+            fprintf(output,"%f ", giveAccex(i,j));
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+}
+
+//Imprime el arreglo density con el String name como nombre.
+void printAccey(char *name)
+{
+	FILE *output = fopen(name, "w+");
+	for(i=0;i<Nx;i+=1) {
+		for(j=0;j<Ny;j+=1){ 
+          //      printf("ignorarPrimero\n");
+			//fprintf(output,"%f ", phase[i][Nv-j]);
+                    //fprintf(output,"%f ", giveAccey(i,mod(Ny-j,Ny)));  //The correct way to print. Use .T in numpy.
+                    fprintf(output,"%f ", giveAccey(i,j));
+        //printf("Error MesagenoIgno\n");
+        }
+		fprintf(output,"\n");
+		//printf("%d\n", i);
+			}
+
+	fclose(output);
+
+}
+//Imprime las constantes de la simulación para referencia fuera del C.
+void printConstant(char *name, double value)
+{
+    fprintf(constantes, "%s", name);
+    fprintf(constantes, " %f\n", value);
+
+}
+
+//Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
+double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude)
+{
+	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
+    	double ex = -x*x/(2.0*sr*sr)-y*y/(2.0*sr*sr)-vx*vx/(2.0*sv*sv)-vy*vy/(2.0*sv*sv);
+        
+//	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
+        //printf("%f\n",ex);
+	//return amplitude*exp(ex)/(2*PI*sx*sv);
+	//return amplitude*exp(-sqrt(fabs(ex)));
+        return amplitude*exp(ex);
+
+}
+
+double uniDisk(double x, double y)
+{
+ if(x*x+y*y < radius*radius)
+ {
+  return sigma;
+     
+ }
+ 
+ return 0;
+    
+}
+
+
+
+//Calcula la densidad. Actualiza el arreglo density
+double calDensity()
+{
+    totalMass = 0;
+        for(k1=0; k1<Nx;k1+=1){
+            for(k2=0; k2< Ny; k2+=1){
+                density[in(k1,k2)] = 0;
+                for(k3=0; k3< Nvx; k3+=1){
+                    for(k4=0; k4< Nvy; k4+=1){
+                        //density[in(k1,k2)] += phase[k1][k2][k3][k4]*dvx*dvy;
+                        density[in(k1,k2)] = giveDensity(k1,k2)+ phase[ind(k1,k2,k3,k4)];
+                    }
+                }
+                totalMass += density[in(k1,k2)];
+            }
+        }
+        return totalMass;
+}
+
+
 
 
 //double calcK2(double i2, double j2)
@@ -602,32 +759,6 @@ void calAcce()
 }
 }
 
-//Imprime el arreglo Acce.
-void printAcce(char *namex, char *namey)
-{
-	FILE *outputx = fopen(namex, "w+");
-    FILE *outputy = fopen(namey, "w+");
-
-    
-	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", phase[i][Nv-j]);
-            fprintf(outputx, "%f ",giveAccex(i,Ny-j));
-            fprintf(outputy, "%f ",giveAccey(i,Ny-j));
-        //printf("Error MesagenoIgno\n");
-        }
-		fprintf(outputx,"\n");
-        fprintf(outputy,"\n");
-		//printf("%d\n", i);
-        }
-
-
-	fclose(outputx);
-    fclose(outputy);
-    
-    
-}
 
 void printGtheo(char *namex, char *namey)
 {
@@ -657,7 +788,7 @@ void printPot(char *name)
 		for(j=0;j<Ny;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", givePot(i,j));
+                    fprintf(output,"%f ", givePot(i,mod(Ny-j,Ny)));
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
