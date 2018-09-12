@@ -13,14 +13,14 @@ Javier Alejandro Acevedo Barroso
 #define PI 3.14159265359
 
 //Valores límites para la posición y velocidad.
-//#define Xmin -1.0
-//#define Xmax 1.0
-//#define Ymin -1.0
-//#define Ymax 1.0
-#define Xmin 0
-#define Xmax 2.0
-#define Ymin 0
-#define Ymax 2.0
+#define Xmin -1.0
+#define Xmax 1.0
+#define Ymin -1.0
+#define Ymax 1.0
+//#define Xmin 0
+//#define Xmax 2.0
+//#define Ymin 0
+//#define Ymax 2.0
 
 #define Vxmin -1.0
 #define Vxmax 1.0
@@ -175,6 +175,8 @@ double potencial2();
 double densidadTeorica2(int inx, int iny, int nx, int ny);
 double calcK3(double i2, double j2);
 double calcK4(double i2, double j2);
+double gaussD2(double x,double y, double sr, double sv, double amplitude);
+double gaussD2Dens(double x,double y, double sr, double sv, double amplitude);
 
 int main()
 {
@@ -208,9 +210,9 @@ int main()
 	double vx;
     double y;
 	double vy;
-	double sr = 0.13;
+	double sr = 0.2;
     double sv = 0.13;
-	double ampl = 0.0001;
+	double ampl = 1.0;
     int nx = 10;
     int ny = 4;
         //printf("size of double %lu\n", sizeof(double));
@@ -228,15 +230,18 @@ int main()
                 y = Ymin*1.0+ dy*k2;
                 
                 //density[in(k1,k2)] = potencialTeorico2(k1,k2,3,20);
-                density[in(k1,k2)] = densidadTeorica2(k1,k2,nx,ny);
-
-                pot[in(k1,k2)] = potencialTeorico2(k1,k2,nx,ny);
+                //density[in(k1,k2)] = densidadTeorica2(k1,k2,nx,ny);
+                density[in(k1,k2)] = gaussD2Dens(x,y,sr,sv,ampl);
+                //pot[in(k1,k2)] = potencialTeorico2(k1,k2,nx,ny);
+                pot[in(k1,k2)] = gaussD2(x,y,sr,sv,ampl);
                 totalMass += density[in(k1,k2)]*dx*dy;// + 2.0/PI/Nx/Ny;
             }
             //printf("%d\n",k1);
         }
         
         
+        
+
         
         //loadPot(4*PI*G*MASSo,2);
         
@@ -255,7 +260,23 @@ int main()
 
 }
 
+double gaussD2(double x,double y, double sr, double sv, double amplitude)
+{
+	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
+    	double ex = -x*x/(sr*sr)-y*y/(sr*sr);
 
+        return amplitude*exp(ex);
+
+}
+
+double gaussD2Dens(double x,double y, double sr, double sv, double amplitude)
+{
+	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
+    	double ex = -x*x/(sr*sr)-y*y/(sr*sr);
+
+        return amplitude*exp(ex)*(x*x+y*y-sr*sr)/(PI*pow(sr,4));
+
+}
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
 double potencial()
 {
@@ -295,7 +316,7 @@ double potencial()
         for(k2 = 0; k2 <Ny   ;k2 += 1){
             //printf("%f\n", mem[in(k1,k2)]);
             //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
-            out[in(k1,k2)] = -4*PI*G*(mem[in(k1,k2)])*calcK2((double)k1,(double)(k2));//Porque dx = dy y Nx = Ny.
+            out[in(k1,k2)] = -4*PI*G*(mem[in(k1,k2)])*calcK2((double)k1,(double)k2);//Porque dx = dy y Nx = Ny.
             //printf("%f\n", mem[in(k1,k2)]);
             //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
             //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
@@ -348,7 +369,7 @@ double potencial2()
     //Cargar densidad en in:
     for(k1=0;k1<Nx;k1+=1){
         for(k2=0;k2<Ny;k2+=1){
-        inE[in(k1,k2)] = giveDensity(k1,k2);//- totalMass/((Xmax-Xmin)*(Ymax-Ymin));
+        inE[in(k1,k2)] = giveDensity(k1,k2) - totalMass/((Xmax-Xmin)*(Ymax-Ymin));
         inR[in(k1,k2)] = 0;
         out[in(k1,k2)] = 0;
         }
@@ -417,7 +438,7 @@ double potencial2()
 
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny;k2 += 1)
-        pot[in(k1,k2)] = creal(inR[in(k1,k2)]/Nx/Ny);
+        pot[in(k1,k2)] = creal(inR[in(k1,k2)]/Nx/Ny);//+ totalMass/((Xmax-Xmin)*(Ymax-Ymin));
 
     }
 
@@ -471,10 +492,10 @@ double calcK3(double i2, double j2)
          j2 = j2;
      }
      if(i2>=Nx/2+1){
-         i2 = -i2;
+         i2 = Nx-i2;
      }
      if(j2>=Nx/2+1){
-         j2 = -j2;
+         j2 = Nx-j2;
      }
     double rta1= 2*sin(dx*j2*PI)/dx;
     double rta2= 2*sin(dx*i2*PI)/dx;
@@ -491,9 +512,13 @@ double calcK3(double i2, double j2)
 
 double calcK4(double i2, double j2)
 {
-    if( ( (j2 == 0) || (j2==  Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2)   )  ){
+    if( ( (j2 == 0)   )  && ( (i2 == 0)  )  ){
         return 0;
     }
+    if ( (j2 == Nx/2+1)  && (i2 == Nx/2+1)  ) {
+        return 0;
+    }
+
      if(i2<Nx/2+1){
          i2 = PI*i2;
      }
@@ -661,11 +686,7 @@ double gaussD(double x,double y, double vx, double vy, double sr, double sv, dou
 {
 	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
     	double ex = -x*x/(2.0*sr*sr)-y*y/(2.0*sr*sr)-vx*vx/(2.0*sv*sv)-vy*vy/(2.0*sv*sv);
-        
-//	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
-        //printf("%f\n",ex);
-	//return amplitude*exp(ex)/(2*PI*sx*sv);
-	//return amplitude*exp(-sqrt(fabs(ex)));
+
         return amplitude*exp(ex);
 
 }
@@ -817,7 +838,8 @@ void printPot(char *name)
 		for(j=0;j<Ny;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", givePot(i,mod(Ny-j,Ny)));
+                    //fprintf(output,"%f ", givePot(i,mod(Ny-j,Ny)));
+            fprintf(output,"%f ", givePot(i,mod(j,Ny)));
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");

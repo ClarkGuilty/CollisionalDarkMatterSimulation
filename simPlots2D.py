@@ -15,7 +15,7 @@ rcParams.update({'figure.autolayout': True})
 
 
 def fmt(x, pos):
-    a, b = '{:.1e}'.format(x).split('e')
+    a, b = '{:.4e}'.format(x).split('e')
     b = int(b)
     return r'${} \times 10^{{{}}}$'.format(a, b)
 
@@ -62,7 +62,11 @@ def darX(inx):
 def darY(iny):
     return -1.0+2.0/128*iny
 
+dista = (int) (0.2*TAU)
+mina = (int) (TAU//2 ) - dista 
+maxa = (int) ( TAU//2+dista) 
 
+#diff = (potTheo[mina:maxa,mina:maxa]-potReal[mina:maxa,mina:maxa])/potTheo[mina:maxa,mina:maxa]
 diff = potTheo-potReal
 
 plt.figure()
