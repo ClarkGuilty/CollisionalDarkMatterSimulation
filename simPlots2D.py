@@ -13,6 +13,11 @@ from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
 
+def fastShow(image, title="none"):
+    plt.figure()
+    plt.imshow(image)
+    plt.colorbar()
+    plt.title(title)
 
 def fmt(x, pos):
     a, b = '{:.4e}'.format(x).split('e')
@@ -74,6 +79,18 @@ plt.imshow(diff)
 plt.title("potTeorico/potCalculado")
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 plt.savefig("potCalpotTeo.png", dpi=dpi)
+
+
+realx = np.loadtxt('./datFiles/realx.dat')
+realy = np.loadtxt('./datFiles/realy.dat')
+calcx = np.loadtxt('./datFiles/calcx.dat')
+calcy = np.loadtxt('./datFiles/calcy.dat')
+
+fastShow(realx, title="realx")
+fastShow(realy, title="realy")
+fastShow(calcx, title="accex Calc - Teorica")
+fastShow(calcy, title="accey Calc - Teorica")
+
 
 #potT = potTheo.T-potTheo
 #i,j = 3,3

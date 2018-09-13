@@ -231,7 +231,7 @@ int main()
                 
                 //density[in(k1,k2)] = potencialTeorico2(k1,k2,3,20);
                 //density[in(k1,k2)] = densidadTeorica2(k1,k2,nx,ny);
-                density[in(k1,k2)] = gaussD2Dens(x,y,sr,sv,ampl);
+                density[in(k1,k2)] = gaussD2(x,y,sr,sv,ampl);
                 //pot[in(k1,k2)] = potencialTeorico2(k1,k2,nx,ny);
                 pot[in(k1,k2)] = gaussD2(x,y,sr,sv,ampl);
                 totalMass += density[in(k1,k2)]*dx*dy;// + 2.0/PI/Nx/Ny;
@@ -247,9 +247,18 @@ int main()
         
         printDensity("./datFiles/density0.dat");
         printPot("./datFiles/potential0.dat");
+        calAcce();
+        printAccex("./datFiles/realx.dat");
+        printAccey("./datFiles/realy.dat");
+        
+        
         potencial2();
         printAccex("./datFiles/fpot0.dat");
         printAccey("./datFiles/fpot1.dat");
+        calAcce();
+        printAccex("./datFiles/calcx.dat");
+        printAccey("./datFiles/calcy.dat");
+        
         
         printPot("./datFiles/potential1.dat");
         
@@ -263,7 +272,7 @@ int main()
 double gaussD2(double x,double y, double sr, double sv, double amplitude)
 {
 	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
-    	double ex = -x*x/(sr*sr)-y*y/(sr*sr);
+    	double ex = -x*x/(sr*sr)-y*y/(2*sr*sr);
 
         return amplitude*exp(ex);
 
@@ -272,7 +281,7 @@ double gaussD2(double x,double y, double sr, double sv, double amplitude)
 double gaussD2Dens(double x,double y, double sr, double sv, double amplitude)
 {
 	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
-    	double ex = -x*x/(sr*sr)-y*y/(sr*sr);
+    	double ex = -x*x/(sr*sr)-y*y/(2*sr*sr);
 
         return amplitude*exp(ex)*(x*x+y*y-sr*sr)/(PI*pow(sr,4));
 
