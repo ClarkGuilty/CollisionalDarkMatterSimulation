@@ -30,9 +30,9 @@ TAU = int(constantes[8])
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 dpi = 500
 
-densidadTheo = np.loadtxt('./datFiles/density0.dat')
-potTheo = np.loadtxt('./datFiles/potential0.dat')
-potReal = np.loadtxt('./datFiles/potential1.dat')
+densidadTheo = np.loadtxt('./datFiles/density0.dat').T
+potTheo = np.loadtxt('./datFiles/potential0.dat').T
+potReal = np.loadtxt('./datFiles/potential1.dat').T
 #potReal = potReal - potReal[0,0]
 
 plt.imshow(densidadTheo)
@@ -81,10 +81,10 @@ cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 plt.savefig("potCalpotTeo.png", dpi=dpi)
 
 
-realx = np.loadtxt('./datFiles/realx.dat')
-realy = np.loadtxt('./datFiles/realy.dat')
-calcx = np.loadtxt('./datFiles/calcx.dat')
-calcy = np.loadtxt('./datFiles/calcy.dat')
+realx = np.loadtxt('./datFiles/realx.dat').T
+realy = np.loadtxt('./datFiles/realy.dat').T
+calcx = np.loadtxt('./datFiles/calcx.dat').T
+calcy = np.loadtxt('./datFiles/calcy.dat').T
 
 fastShow(realx, title="realx")
 fastShow(realy, title="realy")
