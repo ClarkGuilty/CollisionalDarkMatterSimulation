@@ -6,6 +6,7 @@ images: simulacion.c
 	mkdir images
 	gcc -o heh.a -I/home/clark/local/include -L/home/clark/local/lib/ -I/usr/local/include -L/usr/local/lib/ simulacion2D.c -lfftw3 -lm 
 	./heh.a
+	python simPlots2D.py
 
 .PHONY: clean
 clean:

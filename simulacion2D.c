@@ -17,10 +17,10 @@ Javier Alejandro Acevedo Barroso
 #define Xmax 1.0
 #define Ymin -1.0
 #define Ymax 1.0
-#define Vxmin -1.0
-#define Vxmax 1.0
-#define Vymin -1.0
-#define Vymax 1.0
+#define Vxmin -2.0
+#define Vxmax 2.0
+#define Vymin -2.0
+#define Vymax 2.0
 
 
 //Tamaño del espacio.
@@ -106,8 +106,8 @@ double dy = (Ymax - Ymin)*1.0/Nx;
 double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
-double dt = 0.5;
-int Nt = 15;
+double dt = 0.25;
+int Nt = 50;
 
 double totalPerdido;
 
@@ -127,7 +127,7 @@ double potencial();
 double calcK2(double i2, double j2);
 double convertir(double valor, int unidad);
 void calAcce(); 
-void printAcce(char *name);
+void printAcce(char *namex, char *namey);
 double newij(int iinx, int jinx, int iiny, int jiny); 
 void step(); 
 int mod(int p, int q);
@@ -168,9 +168,9 @@ int main()
 	double vx;
     double y;
 	double vy;
-	double sr = 0.13;
+	double sr = 0.2;
     double sv = 0.13;
-	double ampl = 0.0001;
+	double ampl = 10.0;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
@@ -182,7 +182,7 @@ int main()
                 for(k3=0;k3<Nvx;k3+=1) {
                     vx = Vxmin*1.0+ dvx*k3;
                     for(k4=0;k4<Nvy;k4+=1) {
-                        vy = Vymin*1-0 + dvy*k4;
+                        vy = Vymin*1.0 + dvy*k4;
                         //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
 
                         //phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
@@ -293,16 +293,11 @@ void printPhaseX(char *name, int corteY, int corteVy)
    	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nvx+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
-            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
-        //printf("Error MesagenoIgno\n");
+		for(j=0;j<Nvx;j+=1){ 
+            fprintf(output,"%f ",phase[ind(i,corteY,j,corteVy)]);
         }
 		fprintf(output,"\n");
-		//printf("%d\n", i);
 			}
-
 	fclose(output);
 
     
@@ -315,16 +310,11 @@ void printPhaseY(char *name, int corteX, int corteVx)
    	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nvx+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", convertir(phase[ind(i,Ny/2,Nvx-j,Nvy/2)], aMasasSol)/convertir(1.0,aKpc)/(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
-            fprintf(output,"%f ",phase[ind(corteX,i,corteVx,Nvy-j)]);
-        //printf("Error MesagenoIgno\n");
+		for(j=0;j<Nvx;j+=1){ 
+            fprintf(output,"%f ",phase[ind(corteX,i,corteVx,j)]);
         }
 		fprintf(output,"\n");
-		//printf("%d\n", i);
 			}
-
 	fclose(output);
 
     
@@ -332,20 +322,14 @@ void printPhaseY(char *name, int corteX, int corteVx)
 //Imprime el arreglo density con el String name como nombre.
 void printDensity(char *name)
 {
-	FILE *output = fopen(name, "w+");
+    FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", giveDensity(i,Ny-j));
-        //printf("Error MesagenoIgno\n");
+		for(j=0;j<Ny;j+=1){ 
+            fprintf(output,"%f ", giveDensity(i,j));  //Al parecer esta SÍ es la real.
         }
 		fprintf(output,"\n");
-		//printf("%d\n", i);
 			}
-
 	fclose(output);
-
 }
 
 //Imprime las constantes de la simulación para referencia fuera del C.
@@ -370,8 +354,6 @@ double gaussD(double x,double y, double vx, double vy, double sr, double sv, dou
 
 }
 
-
-
 //Calcula la densidad. Actualiza el arreglo density
 double calDensity()
 {
@@ -382,10 +364,10 @@ double calDensity()
                 for(k3=0; k3< Nvx; k3+=1){
                     for(k4=0; k4< Nvy; k4+=1){
                         //density[in(k1,k2)] += phase[k1][k2][k3][k4]*dvx*dvy;
-                        density[in(k1,k2)] = giveDensity(k1,k2)+ phase[ind(k1,k2,k3,k4)];
+                        density[in(k1,k2)] = giveDensity(k1,k2)+ phase[ind(k1,k2,k3,k4)]*dvy*dvx;
                     }
                 }
-                totalMass += density[in(k1,k2)];
+                totalMass += density[in(k1,k2)]*dx*dy;
             }
         }
         return totalMass;
@@ -424,51 +406,18 @@ double potencial()
     pIda = fftw_plan_dft_2d(Nx, Ny, out, inR,FFTW_BACKWARD, FFTW_MEASURE);
     //Se debe usar el mismo plan sí o sí al parecer.
 
-    //Devuelve carga a out Î(Chi).
-    
-        for(k1=0;k1<Nx;k1+=1){
-        for(k2 = 0; k2 <Ny;k2 += 1){
-        accex[in(k1,k2)] = creal(mem[in(k1,k2)]/Nx/Ny); //Voy a guardar en accex mi espacio de fourier
-        accey[in(k1,k2)] = cimag(mem[in(k1,k2)]/Nx/Ny); //Voy a guardar en accex mi espacio de fourier
-        }
-    }
-
-        printAccex("./datFiles/fdens0.dat");
-        printAccey("./datFiles/fdens1.dat");
-
-    
+    //Devuelve carga a out Î(Chi).   
     //out[0] = -4*PI*G*mem[0] ;
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny   ;k2 += 1){
-            //printf("%f\n", mem[in(k1,k2)]);
-            //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
              out[in(k1,k2)] = -4.0*PI*1.0*(mem[in(k1,k2)])*calcK4((double)k1,(double)k2);//Porque dx = dy y Nx = Ny.
-            //printf("%f\n", mem[in(k1,k2)]);
-            //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
-            //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
-            
         //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
         }
     }
-    
-
-     for(k1=0;k1<Nx;k1+=1){
-        for(k2 = 0; k2 <Ny;k2 += 1){
-        accex[in(k1,k2)] = creal(out[in(k1,k2)]); //Voy a guardar en accex mi espacio de fourier
-        accey[in(k1,k2)] = cimag(out[in(k1,k2)]); //Voy a guardar en accex mi espacio de fourier
-        }
-    }
-    
         k1 = 0;
-        printf("a0 es %f\n", creal(mem[in(0,0)]));
-     //   out[in(0,0)] = 0;
-
-
-
-
-//out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
+     
     fftw_execute(pIda);
-    printf("Masa total %f\n",totalMass);
+    //printf("Masa total %f\n",totalMass);
 
 
     for(k1=0;k1<Nx;k1+=1){
@@ -586,13 +535,17 @@ void calAcce()
 }
 
 //Imprime el arreglo Acce.
-void printAcce(char *name)
+void printAcce(char *namex, char *namey)
 {
-	FILE *outputx = fopen('x'+name, "w+");
-    FILE *outputy = fopen('y'+name, "w+");
+	FILE *outputx = fopen(namex, "w+");
+    FILE *outputy = fopen(namey, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(outputx, "%f\n",accex[i]);
-            fprintf(outputy, "%f\n",accey[i]);
+		for(j=0;j<Ny;j+=1){ 
+            fprintf(outputx,"%f ", giveAccex(i,j)); 
+            fprintf(outputy,"%f ", giveAccey(i,j)); 
+        }
+		fprintf(outputx,"\n");
+        fprintf(outputy,"\n");
 			}
 	fclose(outputx);
     fclose(outputy);
