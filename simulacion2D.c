@@ -134,6 +134,7 @@ int mod(int p, int q);
 void printPot(char *name);
 int ind(int in1, int in2, int in3, int in4);
 int in(int in1, int in2);
+double calcK4(double i2, double j2);
 
 
 int main()
@@ -393,102 +394,89 @@ double calDensity()
 //Calcula el potencial (V) con el método de Fourier. Actualiza el arreglo pot.
 double potencial()
 {
-//    double * densityIN= malloc(sizeof(double)*Nx);
-//    for(i = 0;i<Nx;i+=1){
-//        densityIN[i] = giveDensity(i);
-//    }
-
-
     inE=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     inR=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
     mem=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx*Ny);
 
-
-    //fftw_complex *out2;
-   // out2=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
-    //double *in2;
-    //in2 = (double*) malloc((sizeof(double)*Nx));
-
-
-    pIda = fftw_plan_dft_2d(Nx, Ny, inE, out,FFTW_FORWARD, FFTW_MEASURE);
-
-    //fftw_plan pIda2, pVuelta2;
-    //pIda2 = fftw_plan_dft_r2c_1d(Nx, in2, out2, FFTW_MEASURE);
-
-    //FILE *input = fopen("inF.dat", "w+");
-    //FILE *output0 = fopen("outF0.dat", "w+");
-    //FILE *output1 = fopen("outF1.dat", "w+");
-    //FILE *oR = fopen("oR.dat", "w+");
-    //FILE *oI = fopen("oI.dat", "w+");
-
+    pIda = fftw_plan_dft_2d(Nx, Ny, inE, out, FFTW_FORWARD, FFTW_MEASURE);
 
     //Cargar densidad en in:
     for(k1=0;k1<Nx;k1+=1){
         for(k2=0;k2<Ny;k2+=1){
-        inE[in(k1,k2)] = giveDensity(k1,k2);
-       //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
-//        fprintf(input, "%f\n",creal(inE[i]));
+        inE[in(k1,k2)] = giveDensity(k1,k2) - totalMass/((Xmax-Xmin)*(Ymax-Ymin));
+        inR[in(k1,k2)] = 0;
+        out[in(k1,k2)] = 0;
         }
     }
 
+    
+    //fftw_execute(pIda);
     fftw_execute(pIda);
-//    fftw_execute(pIda2);
-
+    
     //Guarda out en mem. 
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2<Ny; k2+=1){
-            
          mem[in(k1,k2)] = out[in(k1,k2)];   
-            
-            
-            
-            
         }
-     //   fprintf(output0, "%f\n",creal(out[i]));
-     //   fprintf(output1, "%f\n",cimag(out[i]));
-
-
-//        mem[i] = out2[i];
-//        fprintf(output0, "%f\n",creal(out2[i]));
-//        fprintf(output1, "%f\n",cimag(out2[i]));
-
     }
 
-    //fftw_execute(pIda);
     pIda = fftw_plan_dft_2d(Nx, Ny, out, inR,FFTW_BACKWARD, FFTW_MEASURE);
     //Se debe usar el mismo plan sí o sí al parecer.
 
     //Devuelve carga a out Î(Chi).
-    out[0] = mem[0];
+    
+        for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2 <Ny;k2 += 1){
+        accex[in(k1,k2)] = creal(mem[in(k1,k2)]/Nx/Ny); //Voy a guardar en accex mi espacio de fourier
+        accey[in(k1,k2)] = cimag(mem[in(k1,k2)]/Nx/Ny); //Voy a guardar en accex mi espacio de fourier
+        }
+    }
+
+        printAccex("./datFiles/fdens0.dat");
+        printAccey("./datFiles/fdens1.dat");
+
+    
     //out[0] = -4*PI*G*mem[0] ;
     for(k1=0;k1<Nx;k1+=1){
-        for(k2 = 0; k2 <Ny;k2 += 1){
+        for(k2 = 0; k2 <Ny   ;k2 += 1){
             //printf("%f\n", mem[in(k1,k2)]);
             //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
-            out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]*calcK2((double)k1,(double)k2);//Porque dx = dy y Nx = Ny.
+             out[in(k1,k2)] = -4.0*PI*1.0*(mem[in(k1,k2)])*calcK4((double)k1,(double)k2);//Porque dx = dy y Nx = Ny.
+            //printf("%f\n", mem[in(k1,k2)]);
+            //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
+            //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
+            
         //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
-    
         }
-
     }
     
+
+     for(k1=0;k1<Nx;k1+=1){
+        for(k2 = 0; k2 <Ny;k2 += 1){
+        accex[in(k1,k2)] = creal(out[in(k1,k2)]); //Voy a guardar en accex mi espacio de fourier
+        accey[in(k1,k2)] = cimag(out[in(k1,k2)]); //Voy a guardar en accex mi espacio de fourier
+        }
+    }
+    
+        k1 = 0;
+        printf("a0 es %f\n", creal(mem[in(0,0)]));
+     //   out[in(0,0)] = 0;
+
+
+
+
+//out[0] = PI*G*totalMass; //Posible alternativa para a0. Doesn't seems like it.
     fftw_execute(pIda);
+    printf("Masa total %f\n",totalMass);
 
 
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny;k2 += 1)
-        pot[in(k1,k2)] = creal(inR[in(k1,k2)]/Nx/Ny);
-        //fprintf(oR, "%f\n",creal(inR[i])/(Nx*Ny));
-        //fprintf(oI, "%f\n",cimag(inR[i])/Nx/Ny);
+        pot[in(k1,k2)] = creal(inR[in(k1,k2)]/Nx/Ny);//+ totalMass/((Xmax-Xmin)*(Ymax-Ymin));
+
     }
 
- //   fclose(input);
- //   fclose(output0);
- //   fclose(output1);
- //   fclose(oR);
- //   fclose(oI);
- //fftw_destroy_plan(pVuelta);
  
  fftw_free(inE);
  fftw_free(out);
@@ -507,6 +495,31 @@ double calcK2(double i2, double j2)
     double rta1= sin(dx*PI*j2);
     double rta2= sin(dx*PI*i2);
     return 1.0/(rta1*rta1+rta2*rta2);
+}
+
+double calcK4(double i2, double j2)
+{
+    if( ( (j2 == 0)   )  && ( (i2 == 0)  )  ){
+        return 0;
+    }
+    if ( (j2 == Nx/2+1)  && (i2 == Nx/2+1)  ) {
+        return 0;
+    }
+
+     if(i2<Nx/2+1){
+         i2 = PI*i2;
+     }
+     if(j2<Nx/2+1){
+         j2 = PI*j2;
+     }
+     if(i2>=Nx/2+1){
+         i2 = -PI*(Nx-i2);
+     }
+     if(j2>=Nx/2+1){
+         j2 = -PI*(Nx-j2);
+     }    
+    return 1.0/(i2*i2+j2*j2);
+
 }
 
 //Retorna la densidad en (in1,in2).

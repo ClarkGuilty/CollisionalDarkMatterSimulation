@@ -17,7 +17,7 @@ Primer Bosquejo. 1D con método de fourier.
 #define Xmax 1.0
 #define Vmin -0.5
 #define Vmax 0.5
-#define scale 0.5 //Re escala la velocidad para tener mejores gráficas.
+#define scale 1 //Re escala la velocidad para tener mejores gráficas.
 
 //Tamaño del espacio.
 #define Nx 2048
@@ -32,8 +32,7 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 500
-
+#define TAU 500.0
 
 //Primer intento Via Láctea.
 #define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
@@ -59,6 +58,7 @@ double *density;
 double *pot;
 double *acce;
 int initCon;
+double totalMass;
 
 //Variables
 int i;
@@ -72,7 +72,7 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
-double dt = 0.5; 
+double dt = 0.25; 
 int Nt = 100;
 FILE *constantes;
 void printPhase(char *name);
@@ -82,7 +82,7 @@ void printDensity(char *name);
 void printConstant(char *name, double value);
 double giveDensity(int l);
 void potencial();
-double calcK2(double j2);
+double calcK2(int j2);
 double convertir(double valor, int unidad);
 void calAcceG();
 void printAcce(char *name);
@@ -129,9 +129,9 @@ int main()
     printConstant("TAU", TAU);
     
     //Gauss
-    double vSx = 0.06;
-    double vSv = 0.12;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
-    double ampl = 1;
+    double vSx = 0.2;
+    double vSv = 0.05;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
+    double ampl = 1.0;
     
     //Jeans
     double rho = 0.1;
@@ -185,7 +185,7 @@ int main()
     }
 
 	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
-    
+    totalMass = calDensity();
     potencial();
     printPot("./datFiles/potential0.dat");
     calAcceG();
@@ -202,11 +202,12 @@ int main()
         
         //Descomentar para versión colisional --
         if(TAU != 0){
-        calDensity(); 
+        totalMass = calDensity();
         collisionStep();
         }
         //--
-		printf("%d %f\n",suprai,calDensity()*100/mass);
+        totalMass = calDensity();
+		printf("%d %f\n",suprai,totalMass*100/mass);
         
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
@@ -337,7 +338,7 @@ void potencial()
     //Cargar densidad en in y borra out:
     for(i=0;i<Nx;i+=1){
 
-        in[i] = giveDensity(i);
+        in[i] = giveDensity(i) - totalMass/(Xmax-Xmin);
         inR[i] = -1.0;
         out[i] = 0;
         //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
@@ -354,7 +355,8 @@ void potencial()
     //Devuelve carga a out Î(Chi).
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
-      out[i] = -4*PI*G*mem[i]/calcK2((double)i);
+      out[i] = -4.0*PI*G*mem[i]*calcK2(i);
+      //printf("%f %f \n",creal(out[i]), calcK2((double)i));
     //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
     }
     fftw_execute(pIda);
@@ -368,13 +370,33 @@ void potencial()
 }
 
 //Calcula el k**2 de mis notas.
-double calcK2(double j2)
+double calcK4(double j2)
 {
     if((j2 == Nx/2.0)){
         return 1.0;
     }
     double k2= 2.0*sin(dx*PI*j2)/dx;
     return pow(k2,2);
+}
+
+double calcK2(int j2)
+{
+    double rta;
+    if( ( (j2 == 0)   )  ){
+        return 0;
+    }
+    if ( (j2 == Nx/2+1) ) {
+        return 0;
+    }
+
+     if(j2<Nx/2+1){
+         rta = PI*j2;
+     }
+     if(j2>=Nx/2+1){
+         rta = -PI*(Nx-j2);
+     }    
+    return pow(1.0/rta,2);
+
 }
 
 //Método para evitar efectos misticos en la memoria.

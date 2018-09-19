@@ -95,7 +95,7 @@ for i in range(int(constantes[6])):
 #            ddif[aq]= 0
     plt.plot(x,ddif)
     #plt.plot((0, 0), (-1, 1), 'k-')
-    plt.title("Density Comparison")
+    plt.title("Density Comparison $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
     
@@ -121,7 +121,7 @@ for i in range(int(constantes[6])):
     plt.xlabel("Position [kpc]")
     plt.ylabel("Porcentual difference")
     plt.ylim(-0.0006, 0.001)
-    plt.title("Potential Comparison")
+    plt.title("Potential Comparison $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
     plt.savefig("./dif/potential{:d}.png".format(i), dpi=dpII)
     plt.clf()
 
@@ -138,7 +138,7 @@ for i in range(int(constantes[6])):
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
     plt.ylabel("Porcentual difference")
-    plt.title("Acceleration Difference")
+    plt.title("Acceleration Difference $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
     plt.savefig("./dif/acce{:d}.png".format(i), dpi=dpII)
     plt.clf()
 
