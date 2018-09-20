@@ -32,7 +32,7 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 500.0
+#define TAU 10.0
 
 //Primer intento Via Láctea.
 #define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
@@ -124,6 +124,7 @@ int main()
     
     //Variable que elige condición a simular.
     initCon = GAUSS;
+    //initCon = JEANS;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);

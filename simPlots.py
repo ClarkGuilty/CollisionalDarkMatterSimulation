@@ -47,7 +47,7 @@ for i in range(int(constantes[6])):
     plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], interpolation='none', aspect='auto') #Es mucho más rápido imshow
     #plt.pcolormesh(dat)
     #plt.pcolor(dat) Nunca usar para grandes grillas	
-    plt.yticks(plt.yticks()[0], [str(np.round(t*473,2)) for t in plt.yticks()[0]]) 
+    plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]")
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
@@ -78,29 +78,29 @@ for i in range(int(constantes[6])):
     plt.clf()
     
     
-    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
-    plt.plot(x,potential)
-    plt.ylabel("Potential [J /kg]")
-    plt.title("Potential $\\tau =$ {:d}".format(TAU))
-    #plt.ylim(-6.6e10,-5.8e10)
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
-    plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
-    plt.clf()
-    
-    
-    acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
-    plt.plot(x,acce)
-    plt.ylabel("Acceleration [kpc / $(mYears)^2$]")
-    plt.title("Acceleration $\\tau =$ {:d}".format(TAU))
-    #plt.yticks(plt.yticks()[0], [str(t*2754463327) for t in plt.yticks()[0]])
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    
-    plt.ylim(-0.0037,0.0037)
-    
-    plt.xlabel(" [kpc]")
-    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
-    plt.clf()
+#    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
+#    plt.plot(x,potential)
+#    plt.ylabel("Potential [J /kg]")
+#    plt.title("Potential $\\tau =$ {:d}".format(TAU))
+#    #plt.ylim(-6.6e10,-5.8e10)
+#    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
+#    plt.xlabel("Position [kpc]")
+#    plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
+#    plt.clf()
+#    
+#    
+#    acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
+#    plt.plot(x,acce)
+#    plt.ylabel("Acceleration [kpc / $(mYears)^2$]")
+#    plt.title("Acceleration $\\tau =$ {:d}".format(TAU))
+#    #plt.yticks(plt.yticks()[0], [str(t*2754463327) for t in plt.yticks()[0]])
+#    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
+#    
+#    plt.ylim(-0.0037,0.0037)
+#    
+#    plt.xlabel(" [kpc]")
+#    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
+#    plt.clf()
     
 xf = np.linspace(0,1-1/constantes[4],int(constantes[4])) #Espacio de frecuencias senoidal
 #plt.plot(x,density)

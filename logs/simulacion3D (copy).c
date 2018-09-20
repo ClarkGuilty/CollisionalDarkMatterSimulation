@@ -202,16 +202,8 @@ double darVz(int input);
 double densidadTeorica(int inx, int iny);
 double potencialTeorico2(int inx, int iny, int inz, int nx, int ny, int nz);
 double densidadTeorica2(int inx, int iny, int inz, int nx, int ny, int nz);
-double calcK3(double i2, double j2, double k2);
+double calcK3(double i2, double j2);
 double calcK4(double i2, double j2);
-double darAcceTheo(double x, double y, double z, int xyz);
-
-
-
-double sr = 0.2;
-double sv = 0.13;
-double ampl = 1.0;
-
 
 int main()
 {
@@ -256,7 +248,9 @@ int main()
 	double vy;
     double z;
 	double vz;
-
+	double sr = 0.2;
+    double sv = 0.13;
+	double ampl = 1.0;
     int nx = 1;
     int ny = 0;
     int nz = 4  ;
@@ -280,9 +274,6 @@ int main()
                     density[in(k1,k2,k3)] = gaussD2Dens(x,y,z,sr,sv,ampl);
                     //pot[in(k1,k2,k3)] = potencialTeorico2(k1,k2,k3,nx,ny,nz);
                     pot[in(k1,k2,k3)] = gaussD2(x,y,z,sr,sv,ampl);
-                    acce[ina(k1,k2,k3,0)] = darAcceTheo(x,y,z,0);
-                    acce[ina(k1,k2,k3,1)] = darAcceTheo(x,y,z,1);
-                    acce[ina(k1,k2,k3,2)] = darAcceTheo(x,y,z,2);
                     totalMass += density[in(k1,k2,k3)]*dx*dy*dz;// + 2.0/PI/Nx/Ny;
             }
             //printf("%d\n",k1);
@@ -295,7 +286,7 @@ int main()
     printDensityXZ("./datFiles/densXZ0.dat",0);
     printThr(printPotXY,"./datFiles/pot0XY");
 
-    //calAcce();
+    calAcce();
     printThr2(printAcceXY,"./datFiles/accex0XY",0);
 
     potencial(); 
@@ -398,9 +389,9 @@ double potencial()
      for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny;k2 += 1){
             for(k3 = 0; k3 <Nz;k3 += 1){
-        //acce[ina(k1,k2,k3,0)] = creal(out[in(k1,k2,k3)]); //Voy a guardar en accex mi espacio de fourier
-       // acce[ina(k1,k2,k3,1)] = cimag(out[in(k1,k2,k3)]); //Voy a guardar en accey mi espacio de fourier
-      //  acce[ina(k1,k2,k3,2)] = cimag(out[in(k1,k2,k3)]); //Voy a guardar en accez mi espacio de fourier
+        acce[ina(k1,k2,k3,0)] = creal(out[in(k1,k2,k3)]); //Voy a guardar en accex mi espacio de fourier
+        acce[ina(k1,k2,k3,1)] = cimag(out[in(k1,k2,k3)]); //Voy a guardar en accey mi espacio de fourier
+        acce[ina(k1,k2,k3,2)] = cimag(out[in(k1,k2,k3)]); //Voy a guardar en accez mi espacio de fourier
             }
         }
     }
@@ -429,10 +420,10 @@ double potencial()
  
 }
 
-double calcK3(double i2, double j2, double k2)
+double calcK3(double i2, double j2)
 {
     //if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
-    if( ( (j2 == 0) || (j2==  Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2)   ) && ( (k2 == 0) || (k2 == Nx/2)   ) ){
+    if( ( (j2 == 0) || (j2==  Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2)   )  ){
         return 0;
     }
      if(i2<Nx/2+1){
@@ -441,27 +432,20 @@ double calcK3(double i2, double j2, double k2)
      if(j2<Nx/2+1){
          j2 = j2;
      }
-     if(j2<Nx/2+1){
-         k2 = k2;
-     }
      if(i2>=Nx/2+1){
          i2 = Nx-i2;
      }
      if(j2>=Nx/2+1){
          j2 = Nx-j2;
      }
-     if(j2>=Nx/2+1){
-         k2 = Nx-k2;
-     }
     double rta1= 2*sin(dx*j2*PI)/dx;
     double rta2= 2*sin(dx*i2*PI)/dx;
-    double rta3= 2*sin(dx*k2*PI)/dx;
 //     double rta1= -4*Nx*sin(PI*i2/Nx)/PI;
 //     double rta2= -4*Nx*sin(PI*j2/Nx)/PI;
 
     
     //printf(" (%.0f, %.0f) = %f\n",i2,j2, -1.0/(pow(rta1,2)+pow(rta2,2)));
-    return 1.0/(pow(rta1,2)+pow(rta2,2)+pow(rta3,2));
+    return 1.0/(pow(rta1,2)+pow(rta2,2));
     //return 1.0/(i2*i2+j2*j2);
 
 }
@@ -899,25 +883,7 @@ void printThr2(void (*f)(char*, int, int), char *name, int xyz)
 }
 
 
-double darAcceTheo(double x, double y, double z, int xyz)
-{
-        double rta = 2.0*gaussD2(x,y,z,sr,sv,ampl)/(sv*sv);
-        if(xyz == 0)
-        {
-         return rta * x;
-        }
-        if(xyz == 1)
-        {
-         return rta * y;
-        }
-        if(xyz == 2)
-        {
-         return rta * z;
-        }
-    return 0.0;
-    
-    
-}
+
 
 
 

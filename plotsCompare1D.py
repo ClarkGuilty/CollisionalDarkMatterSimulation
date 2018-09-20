@@ -14,7 +14,7 @@ import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
-constantes = np.loadtxt("constants.dat", usecols = 1)
+constantes = np.loadtxt("./col/constants.dat", usecols = 1)
 x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 TAU = int(constantes[8])
 #inF = np.loadtxt("inF.dat")
@@ -34,7 +34,10 @@ def fmt(x, pos):
 
 figu = plt.gcf()
 dpII = 150
-for i in range(int(constantes[6])):
+ran1 = [0,1]
+ran2 = list(range(2,int(constantes[6]),2))
+ran3 = ran1+ran2
+for i in ran3:
     col = np.loadtxt("./col/grid{:d}.dat".format(i)).T
     nocol = np.loadtxt("./nocol/grid{:d}.dat".format(i)).T
     col = col/sum(sum(col))
@@ -60,7 +63,7 @@ for i in range(int(constantes[6])):
 
 
     plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
-    #plt.yticks(plt.yticks()[0], [str(np.round(t*473,2)) for t in plt.yticks()[0]]) 
+    plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]")
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
@@ -73,7 +76,7 @@ for i in range(int(constantes[6])):
     #cbar.set_ticks([0, .2, .4, .6, .8, 1])
     #cbar.set_ticklabels(['0', '20%','40%','60%', '80%', '100%'])
     cbar.set_label("Percentual difference")
-    cbar.set_clim(-0.0004,0.0005)
+    cbar.set_clim(-0.001,0.001)
     plt.savefig("./dif/phase{:d}.png".format(i), dpi=dpII)
     plt.clf()
 
@@ -95,12 +98,12 @@ for i in range(int(constantes[6])):
 #            ddif[aq]= 0
     plt.plot(x,ddif)
     #plt.plot((0, 0), (-1, 1), 'k-')
-    plt.title("Density Comparison $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
+    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU))
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
     
     plt.ylabel("Porcentual difference")
-    plt.ylim(-0.14, 0.20)
+    plt.ylim(-0.20, 0.45)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     
@@ -108,39 +111,48 @@ for i in range(int(constantes[6])):
 #----------------------------------
     
     
-    pcol = np.loadtxt("./col/potential{:d}.dat".format(i))
-    pnocol = np.loadtxt("./nocol/potential{:d}.dat".format(i))
-
-    pcol = pcol/sum(pcol)
-    pnocol = pnocol/sum(pnocol)
-    pdif = (pnocol - pcol)*100
+    #pcol = np.loadtxt("./col/potential{:d}.dat".format(i))
+    #pnocol = np.loadtxt("./nocol/potential{:d}.dat".format(i))
+#
+ #   pcol = pcol/sum(pcol)
+  #  pnocol = pnocol/sum(pnocol)
+   # pdif = (pnocol - pcol)*100
     
     
-    plt.plot(x,pdif)
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
-    plt.ylabel("Porcentual difference")
-    plt.ylim(-0.0006, 0.001)
-    plt.title("Potential Comparison $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
-    plt.savefig("./dif/potential{:d}.png".format(i), dpi=dpII)
-    plt.clf()
+ #   plt.plot(x,pdif)
+  #  plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
+#    plt.xlabel("Position [kpc]")
+ #   plt.ylabel("Porcentual difference")
+  #  plt.ylim(-0.0006, 0.001)
+   # plt.title("Potential Comparison $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
+    #plt.savefig("./dif/potential{:d}.png".format(i), dpi=dpII)
+    #plt.clf()
 
 
 #-------------------------------------------------
     
     
-    acol = np.loadtxt("./col/acce{:d}.dat".format(i))
-    anocol = np.loadtxt("./nocol/acce{:d}.dat".format(i))
-    acol = acol/sum(acol)
-    anocol = anocol/sum(anocol)
-    adif = (anocol - acol)*100
-    plt.plot(x,adif)
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
-    plt.ylabel("Porcentual difference")
-    plt.title("Acceleration Difference $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
-    plt.savefig("./dif/acce{:d}.png".format(i), dpi=dpII)
-    plt.clf()
+ #   acol = np.loadtxt("./col/acce{:d}.dat".format(i))
+#    anocol = np.loadtxt("./nocol/acce{:d}.dat".format(i))
+#    acol = acol/sum(acol)
+#    anocol = anocol/sum(anocol)
+#    adif = (anocol - acol)*100
+#    plt.plot(x,adif)
+#    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
+#    plt.xlabel("Position [kpc]")
+#    plt.ylabel("Porcentual difference")
+#    plt.title("Acceleration Difference $(\\tau = 0$) - $\\tau =$ {:d}".format(TAU))
+#    plt.savefig("./dif/acce{:d}.png".format(i), dpi=dpII)
+#    plt.clf()
+
+
+
+
+#-------------------------------------
+
+
+
+
 
 #    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
 #    plt.plot(x,potential)

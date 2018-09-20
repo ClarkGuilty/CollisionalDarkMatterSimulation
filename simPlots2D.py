@@ -118,22 +118,22 @@ for i in range(Nt):
     plt.savefig(giveDens(i,1),dpi=dpi)
 #
 #
-#for i in range(Nt):
-#    phasex = np.loadtxt(giveGridX(i,0)).T
-#    h0 = plt.figure()
-#    plt.imshow(phasex)
-#    cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-#    plt.title('phaseX t = %d' %(i))
-#    plt.savefig(giveGridX(i,1),dpi=dpi)
+for i in range(Nt):
+    phasex = np.loadtxt(giveGridX(i,0)).T
+    h0 = plt.figure()
+    plt.imshow(phasex)
+    cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+    plt.title('phaseX t = %d' %(i))
+    plt.savefig(giveGridX(i,1),dpi=dpi)
 #
-#for i in range(15):
-#    phasey = np.loadtxt(giveGridY(i,0)).T
-#    h0 = plt.figure()
-#    plt.imshow(phasey)
-#    cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-#    plt.clim(0,1e-4)
-#    plt.title('phaseY t = %d' %(i))
-#    plt.savefig(giveGridY(i,1),dpi=dpi)
+for i in range(Nt):
+    phasey = np.loadtxt(giveGridY(i,0)).T
+    h0 = plt.figure()
+    plt.imshow(phasey)
+    cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+    plt.clim(0,1e-4)
+    plt.title('phaseY t = %d' %(i))
+    plt.savefig(giveGridY(i,1),dpi=dpi)
 #
 #
 #

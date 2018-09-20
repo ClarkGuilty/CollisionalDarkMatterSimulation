@@ -17,9 +17,10 @@ def fastShow(image, title="none"):
     plt.clf()
     plt.imshow(image)
     cbar = plt.colorbar()
+    plt.title(title)
+
     plt.savefig(title+".png",dpi=dpiT)
 
-    plt.title(title)
 
 def fmt(x, pos):
     a, b = '{:.4e}'.format(x).split('e')
@@ -27,7 +28,7 @@ def fmt(x, pos):
     return r'${} \times 10^{{{}}}$'.format(a, b)
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
-tau = int(constantes[-2])
+Nt = int(constantes[-2])
 
 
 densidadXY0 = np.loadtxt('./datFiles/densXY0.dat').T
@@ -40,12 +41,13 @@ densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 #fastShow(densidadXY0, "XY")
 #fastShow(densidadYZ0, "YZ")
 #fastShow(densidadXZ0, "XZ")
+densidadXY = np.loadtxt("./datFiles/densXY{:d}.dat".format(i)).T
 plt.figure()
-imagenes = 5
-for i in range(0,tau,tau//imagenes):
-    densidadXY = np.loadtxt("./datFiles/densXY{:d}.dat".format(i)).T
-    potXY0 = np.loadtxt("./datFiles/pot0XY{:d}.dat".format(i)).T
-    potXY1 = np.loadtxt("./datFiles/pot1XY{:d}.dat".format(i)).T
-    diff = potXY0 - potXY1
+imagenes = Nt//2
+for i in range(0,Nt,Nt//imagenes):
+#    potXY0 = np.loadtxt("./datFiles/pot0XY{:d}.dat".format(i)).T
+#    potXY1 = np.loadtxt("./datFiles/pot1XY{:d}.dat".format(i)).T
+#    diff = potXY0 - potXY1
+    accexXY = np.loadtxt("./datFiles/accex1XY{:d}.dat".format(i)).T
     fastShow( diff, "XY{:d}".format(i) )
     

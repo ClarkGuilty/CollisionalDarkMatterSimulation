@@ -1,10 +1,12 @@
 mkdir dif
-python sPlots.py
+echo "Generando Plots"
+#python plotsCompare1D.py
+echo "Generando gif"
 total=$(grep Nt constants.dat | cut -d "." -f 1 | cut -d " " -f 2 )
-dens="python gif.py 0.2 "
-acce="python gif.py 0.2 "
-phase="python gif.py 0.2 "
-pot="python gif.py 0.2 "
+dens="python gif.py 0.5 "
+acce="python gif.py 0.5 "
+phase="python gif.py 0.5 "
+pot="python gif.py 0.5 "
 #echo $com
 for i in $(seq 0 1)
 do
@@ -24,5 +26,5 @@ do
 done
 eval $phase
 eval $dens
-eval $pot
-eval $acce
+#eval $pot
+#eval $acce
