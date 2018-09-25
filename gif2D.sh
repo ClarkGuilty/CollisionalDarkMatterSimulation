@@ -5,7 +5,7 @@ acce="python gif.py 0.2 "
 phasex="python gif.py 0.2 "
 phasey="python gif.py 0.2 "
 pot="python gif.py 0.2 "
-for i in $(seq 0 1 $(($total-1)))
+for i in $(seq 0 2 $(($total-1)))
 do
 #    echo $i
     phasex+="images/gridx$i.png "

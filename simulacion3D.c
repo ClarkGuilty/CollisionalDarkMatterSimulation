@@ -277,25 +277,31 @@ int main()
                     z = Zmin*1.0+ dz*k3;
                 
                     //density[in(k1,k2,k3)] = densidadTeorica2(k1,k2,k3,nx,ny,nz);
+                    
                     density[in(k1,k2,k3)] = gaussD2Dens(x,y,z,sr,sv,ampl);
+                    
                     //pot[in(k1,k2,k3)] = potencialTeorico2(k1,k2,k3,nx,ny,nz);
+                    
+                    
                     pot[in(k1,k2,k3)] = gaussD2(x,y,z,sr,sv,ampl);
-                    acce[ina(k1,k2,k3,0)] = darAcceTheo(x,y,z,0);
-                    acce[ina(k1,k2,k3,1)] = darAcceTheo(x,y,z,1);
-                    acce[ina(k1,k2,k3,2)] = darAcceTheo(x,y,z,2);
+
                     totalMass += density[in(k1,k2,k3)]*dx*dy*dz;// + 2.0/PI/Nx/Ny;
             }
             //printf("%d\n",k1);
         }
-        
         }
+        
+
+        
+    
         
     printDensityXY("./datFiles/densXY0.dat",0);
     printDensityYZ("./datFiles/densYZ0.dat",0);
     printDensityXZ("./datFiles/densXZ0.dat",0);
+    
     printThr(printPotXY,"./datFiles/pot0XY");
 
-    //calAcce();
+    calAcce();
     printThr2(printAcceXY,"./datFiles/accex0XY",0);
 
     potencial(); 
@@ -332,9 +338,7 @@ double gaussD2(double x,double y, double z, double sr, double sv, double amplitu
 double gaussD2Dens(double x,double y, double z, double sr, double sv, double amplitude)
 {
 	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
-    	double ex = -x*x/(sr*sr)-y*y/(sr*sr)-z*z/(sr*sr);
-
-        return amplitude*exp(ex)*(4.0*x*x+4.0*y*y-6.0*sr*sr+4.0*z*z)/(4.0*PI*pow(sr,4));
+        return gaussD2(x,y,z,sr,sv,amplitude)*(4.0*x*x+4.0*y*y-6.0*sr*sr+4.0*z*z)/(4.0*PI*G*pow(sr,4));
 
 }
 
@@ -376,6 +380,8 @@ double potencial()
     //Se debe usar el mismo plan sí o sí al parecer.
 
     //Devuelve carga a out Î(Chi).
+    
+    
     
     //out[0] = -4*PI*G*mem[0] ;
     for(k1=0;k1<Nx;k1+=1){
@@ -432,35 +438,40 @@ double potencial()
 double calcK3(double i2, double j2, double k2)
 {
     //if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
-    if( ( (j2 == 0) || (j2==  Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2)   ) && ( (k2 == 0) || (k2 == Nx/2)   ) ){
-        return 0;
+ //   if( ( (j2 == 0) || (j2==  Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2)   ) && ( (k2 == 0) || (k2 == Nx/2)   ) ){
+ //       return 0;
+ //   }
+    
+    if( (i2 == 0) && (j2 == 0) && (k2 == 0)){
+     return 0;   
     }
      if(i2<Nx/2+1){
-         i2 = i2;
+         i2 = i2/Nx*PI;
      }
      if(j2<Nx/2+1){
-         j2 = j2;
+         j2 = j2/Nx*PI;
      }
      if(j2<Nx/2+1){
-         k2 = k2;
+         k2 = k2/Nx*PI;
      }
      if(i2>=Nx/2+1){
-         i2 = Nx-i2;
+         i2 = (Nx-i2)/Nx*PI;
      }
      if(j2>=Nx/2+1){
-         j2 = Nx-j2;
+         j2 = (Nx-j2)/Nx*PI;
      }
      if(j2>=Nx/2+1){
-         k2 = Nx-k2;
+         k2 = (Nx-k2)/Nx*PI;
      }
-    double rta1= 2*sin(dx*j2*PI)/dx;
-    double rta2= 2*sin(dx*i2*PI)/dx;
-    double rta3= 2*sin(dx*k2*PI)/dx;
+    double rta1= 2*sin(j2)/dx;
+    double rta2= 2*sin(i2)/dx;
+    double rta3= 2*sin(k2)/dx;
 //     double rta1= -4*Nx*sin(PI*i2/Nx)/PI;
 //     double rta2= -4*Nx*sin(PI*j2/Nx)/PI;
 
     
     //printf(" (%.0f, %.0f) = %f\n",i2,j2, -1.0/(pow(rta1,2)+pow(rta2,2)));
+
     return 1.0/(pow(rta1,2)+pow(rta2,2)+pow(rta3,2));
     //return 1.0/(i2*i2+j2*j2);
 
@@ -476,23 +487,23 @@ double calcK2(double i2, double j2, double k2)
         return 0;
     }
 
-     if(i2<Nx/2+1){
+     if(i2<Nx/2){
          i2 = PI*i2;
      }
-     if(j2<Nx/2+1){
+     if(j2<Nx/2){
          j2 = PI*j2;
      }
-     if(k2<Nx/2+1){
+     if(k2<Nx/2){
          k2 = PI*k2;
      }
      
-     if(i2>=Nx/2+1){
+     if(i2>=Nx/2){
          i2 = -PI*(Nx-i2);
      }
-     if(j2>=Nx/2+1){
+     if(j2>=Nx/2){
          j2 = -PI*(Ny-j2);
      }    
-     if(k2>=Nx/2+1){
+     if(k2>=Nx/2){
          k2 = -PI*(Nz-k2);
      }    
     return 1.0/(i2*i2+j2*j2+k2*k2);
@@ -904,6 +915,7 @@ double darAcceTheo(double x, double y, double z, int xyz)
         double rta = 2.0*gaussD2(x,y,z,sr,sv,ampl)/(sv*sv);
         if(xyz == 0)
         {
+        //printf("fue x\n");
          return rta * x;
         }
         if(xyz == 1)

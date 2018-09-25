@@ -28,7 +28,7 @@ constantes = np.loadtxt("constants.dat", usecols = 1)
 Nt = int(constantes[-1])
 
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
-dpi = 500
+dpi = 200
 
 #densidadTheo = np.loadtxt('./datFiles/density0.dat').T
 #potTheo = np.loadtxt('./datFiles/potential0.dat').T
@@ -108,7 +108,7 @@ def giveGridY(i,n):
 #
 #dpi = 300
 #
-for i in range(Nt):
+for i in range(0,Nt,2):
     dens = np.loadtxt(giveDens(i,0)).T
     h0 = plt.figure()
     plt.imshow(dens)
@@ -118,7 +118,7 @@ for i in range(Nt):
     plt.savefig(giveDens(i,1),dpi=dpi)
 #
 #
-for i in range(Nt):
+for i in range(0,Nt,2):
     phasex = np.loadtxt(giveGridX(i,0)).T
     h0 = plt.figure()
     plt.imshow(phasex)
@@ -126,12 +126,12 @@ for i in range(Nt):
     plt.title('phaseX t = %d' %(i))
     plt.savefig(giveGridX(i,1),dpi=dpi)
 #
-for i in range(Nt):
+for i in range(0,Nt,2):
     phasey = np.loadtxt(giveGridY(i,0)).T
     h0 = plt.figure()
     plt.imshow(phasey)
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-    plt.clim(0,1e-4)
+    #plt.clim(0,1e-4)
     plt.title('phaseY t = %d' %(i))
     plt.savefig(giveGridY(i,1),dpi=dpi)
 #
