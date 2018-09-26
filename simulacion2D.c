@@ -135,7 +135,11 @@ void printPot(char *name);
 int ind(int in1, int in2, int in3, int in4);
 int in(int in1, int in2);
 double calcK4(double i2, double j2);
-
+double feq2(int ipos, int jvel); //TODO
+double feq(int ipos, int jvel); //TODO
+double collision(int icol, int jcol, double tau); //TODO
+void collisionStep();//Modificado sin terminar //TODO
+double newijCol(int iin, int jin);//TODO
 
 int main()
 {
@@ -272,10 +276,10 @@ void printPhase(char *name)//no
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny+1;j+=1){ 
+		for(j=0;j<Ny;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", giveDensity(i,Ny-j));
+                    fprintf(output,"%f ", giveDensity(i,j));
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -293,8 +297,8 @@ void printPhaseX(char *name, int corteY, int corteVy)
    	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=0;j<Nvx;j+=1){ 
-            fprintf(output,"%f ",phase[ind(i,corteY,j,corteVy)]);
+		for(j=1;j<Nvx+1;j+=1){ 
+            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
         }
 		fprintf(output,"\n");
 			}
@@ -310,8 +314,8 @@ void printPhaseY(char *name, int corteX, int corteVx)
    	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=0;j<Nvx;j+=1){ 
-            fprintf(output,"%f ",phase[ind(corteX,i,corteVx,j)]);
+		for(j=1;j<Nvx+1;j+=1){ 
+            fprintf(output,"%f ",phase[ind(corteX,i,corteVx,Nvx-j)]);
         }
 		fprintf(output,"\n");
 			}
@@ -556,10 +560,10 @@ void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Ny+1;j+=1){ 
+		for(j=0;j<Ny;j+=1){ 
           //      printf("ignorarPrimero\n");
 			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", givePot(i,Ny-j));
+                    fprintf(output,"%f ", givePot(i,j));
         //printf("Error MesagenoIgno\n");
         }
 		fprintf(output,"\n");
@@ -680,9 +684,81 @@ int mod(int p, int q)
 }
 
 
+void collisionStep()//Modificado sin terminar
+{
+    	for(k1 = 0; k1<Nx; k1++){
+            for(k2 = 0; k2<Ny; k2++){
+                for(k3= 0; k3<Nvx; k3++){
+                    for(k4= 0; k4<Nvy; k4++){
+                        if(newijCol(k,l) ==0){
+				//phaseOld[k][l] = phase[k][l];
+				//phaseTemp[i2][j2] += phase[k][l];
+                            phaseTemp[i2][l] += collision(k,l,TAU) + phase[k][l] ;//+ dt*feq2(k,l)*acce[k]*(giveVel(l)-velocity[k])/energy[k];
+                        }
+                    }
+			}
+		}
+	}
+
+	for(i = 0; i<Nx; i++){
+		for(j= 0; j<Nv; j++){
+			phase[i][j] = phaseTemp[i][j];
+			phaseTemp[i][j] = 0;
+		}
+	}
+}
 
 
+//Calcula el cambio en r. Ignora j.
+double newijCol(int iin, int jin)
+{
+        double x = Xmin*1.0+dx*iin; //Inicialización
 
+
+        double v = acce[iin]*dt;
+        //double dj = v/dv;
+        //dj = (int)dj;
+        j2 = jin; 
+
+        if(j2 < 0 || j2 >= Nv) return -1;
+//        if(i2 >= Nx){
+//            printf("i = %d\n", i2);
+//        }
+        v = giveVel(j2);
+        
+        x = v*dt*scale;
+        double di = x/dx;
+        di = (int) di;
+
+        i2 = iin + di;
+        i2 = mod(i2,Nx);
+//	printf("%d\n",j2);
+    return 0;
+}
+
+//Calcula la contribución colisional en phase[icol][jcol] con un Tau dado.
+double collision(int icol, int jcol, double tau)
+{
+    if(TAU==0) return 0;
+    double df = (feq(icol,jcol) - phase[icol][jcol])/tau;    
+    return df;
+}
+
+double feq(int ipos, int jvel)
+{
+    double ex = -1.0*pow(giveVel(jvel)-velocity[ipos],2)/(2.0*energy[ipos]);
+    double other = density[ipos] / sqrt(2.0*PI*energy[ipos]);
+    return other * exp(ex);    
+}
+
+double feq2(int ipos, int jvel)
+{
+    double ex = -1.0*pow(giveVel(jvel),2)/(2.0*energy[ipos]);
+    double other = density[ipos] / sqrt(2*PI*energy[ipos]);
+    double lowMach = 1.0 + giveVel(jvel)*velocity[ipos]/energy[ipos] + pow(giveVel(jvel)*velocity[ipos],2)/(2.0*energy[ipos]) - pow(velocity[ipos],2)/(2.0*energy[ipos]);
+    return other * exp(ex)* lowMach;
+    
+}
 
 
 

@@ -62,21 +62,23 @@ for i in ran3:
 #                diff[z][y] = 0
 
 
-    plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow
+    plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]])
     plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]")
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
     plt.title("Gauss Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU))
         
+    
+    plt.clim(-0.0006,0.0006)
     #cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+
     #cbar = plt.colorbar(format = '%.0f%%')
     cbar=plt.colorbar(cmap='plasma')
     
     #cbar.set_ticks([0, .2, .4, .6, .8, 1])
     #cbar.set_ticklabels(['0', '20%','40%','60%', '80%', '100%'])
     cbar.set_label("Percentual difference")
-    cbar.set_clim(-0.001,0.001)
     plt.savefig("./dif/phase{:d}.png".format(i), dpi=dpII)
     plt.clf()
 
@@ -103,7 +105,7 @@ for i in ran3:
     plt.xlabel("Position [kpc]")
     
     plt.ylabel("Porcentual difference")
-    plt.ylim(-0.20, 0.45)
+    plt.ylim(-0.20, 0.5)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     

@@ -14,7 +14,6 @@ import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
-
 JEANS = -137
 GAUSS = -127
 
@@ -44,7 +43,8 @@ dpII = 150
 #plt.pcolormesh(dat)
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
-    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], interpolation='none', aspect='auto') #Es mucho más rápido imshow
+    dat = dat#/np.max(dat)/7
+    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], interpolation='nearest', aspect='auto') #Es mucho más rápido imshow
     #plt.pcolormesh(dat)
     #plt.pcolor(dat) Nunca usar para grandes grillas	
     plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
@@ -55,24 +55,28 @@ for i in range(int(constantes[6])):
         plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU))
     elif(constantes[7] == GAUSS):
         plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU))
+        #plt.title('Densidad de probabilidad ')
+        #plt.title("Inicialización del espacio de fase")
+        
+    plt.clim(0,1.35e5)
+    #plt.clim(0,0.0005)
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-    cbar.set_label("Mass density $M_{\odot}$ / kpc  $\\frac{km}{s}$")
-    plt.savefig("./images/phase{:d}.png".format(i))
-    cbar.set_clim(0,1e5)
-    
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]")
+    #plt.colorbar()
+    #cbar.set_label("Probability Density")
     plt.savefig("./images/phase{:d}.png".format(i), dpi = dpII)
     plt.clf()
     
     
     dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))    
-    #plt.xticks(str(plt.xticks()[0]*200), [str(t*200) for t in plt.xticks()[0]])
+    
     plt.plot(x,dens)
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
     plt.ylabel("Linear Density $M_{\odot}$/kpc")
     plt.title("Density $\\tau =$ {:d}".format(TAU))
-    plt.ylim(-0.75e9,2.6e10)
+    #plt.title("Initial Density")
+    plt.ylim(-0.75e9,5.5e10)
     #plt.plot((0, 0), (-1, 1), 'k-')
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
     plt.clf()
