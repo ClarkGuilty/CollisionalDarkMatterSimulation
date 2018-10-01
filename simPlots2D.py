@@ -108,7 +108,8 @@ def giveGridY(i,n):
 #
 #dpi = 300
 #
-for i in range(0,Nt,2):
+interval = 1
+for i in range(0,Nt,interval):
     dens = np.loadtxt(giveDens(i,0)).T
     h0 = plt.figure()
     plt.imshow(dens)
@@ -118,7 +119,7 @@ for i in range(0,Nt,2):
     plt.savefig(giveDens(i,1),dpi=dpi)
 #
 #
-for i in range(0,Nt,2):
+for i in range(0,Nt,interval):
     phasex = np.loadtxt(giveGridX(i,0)).T
     h0 = plt.figure()
     plt.imshow(phasex)
@@ -126,7 +127,7 @@ for i in range(0,Nt,2):
     plt.title('phaseX t = %d' %(i))
     plt.savefig(giveGridX(i,1),dpi=dpi)
 #
-for i in range(0,Nt,2):
+for i in range(0,Nt,interval):
     phasey = np.loadtxt(giveGridY(i,0)).T
     h0 = plt.figure()
     plt.imshow(phasey)

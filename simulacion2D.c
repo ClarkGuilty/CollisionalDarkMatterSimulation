@@ -54,11 +54,17 @@ Javier Alejandro Acevedo Barroso
 //#define G 0.2729448134597113
 
 
+#define TAU 100
+
+
 //Arreglos
 //static double phase[Nx][Ny][Nvx][Nvy] = {0};
 double *phase;
 double *phaseTemp;
 double *density;
+double *velocityx;
+double *velocityy;
+double *energy;
 double *pot;
 double *accex;
 double *accey;
@@ -107,27 +113,22 @@ double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
 double dt = 0.25;
-int Nt = 50;
+int Nt = 75;
 
 double totalPerdido;
 
 
 FILE *constantes;
-void printPhase(char *name); //TODO: debe replantearse lo que se va a imprimir.
-void printPhaseX(char *name, int corteY, int corteVy);
-void printPhaseY(char *name, int corteX, int corteVx);
+
 double gaussD(double x,double y, double vx, double vy, double sr, double sv, double amplitude); 
 double calDensity();
-void printDensity(char *name);
-void printConstant(char *name, double value);
+void calAcce(); 
+double potencial(); 
 double giveDensity(int in1,int in2);
 double giveAccex(int in1, int in2);
 double giveAccey(int in1, int in2);
-double potencial(); 
 double calcK2(double i2, double j2);
 double convertir(double valor, int unidad);
-void calAcce(); 
-void printAcce(char *namex, char *namey);
 double newij(int iinx, int jinx, int iiny, int jiny); 
 void step(); 
 int mod(int p, int q);
@@ -136,10 +137,26 @@ int ind(int in1, int in2, int in3, int in4);
 int in(int in1, int in2);
 double calcK4(double i2, double j2);
 double feq2(int ipos, int jvel); //TODO
-double feq(int ipos, int jvel); //TODO
-double collision(int icol, int jcol, double tau); //TODO
-void collisionStep();//Modificado sin terminar //TODO
-double newijCol(int iin, int jin);//TODO
+double feq(int iposx, int iposy, int jvelx, int jvely);
+double collision(int icolx, int icoly, int jcolx, int jcoly, double tau);
+void collisionStep();
+double newijCol(int iinx, int iiny, int jinx, int jiny);
+void calMacro();
+
+//Métodos para pasar de enteros a valor coordenado.
+double darX(int input);
+double darY(int input);
+double darVx(int input);
+double darVy(int input);
+
+//Métodos de impresión.
+void printPhaseX(char *name, int corteY, int corteVy);
+void printPhaseY(char *name, int corteX, int corteVx);
+void printDensity(char *name);
+void printConstant(char *name, double value);
+void printAcce(char *namex, char *namey);
+
+
 
 int main()
 {
@@ -152,7 +169,10 @@ int main()
     density = malloc((sizeof(double)*Nx*Ny));
     accex = malloc((sizeof(double)*Nx*Ny));
     accey = malloc((sizeof(double)*Nx*Ny));
+    velocityx = malloc((sizeof(double)*Nx*Ny));
+    velocityy = malloc((sizeof(double)*Nx*Ny));
     pot = malloc((sizeof(double)*Nx*Ny));
+    energy = malloc((sizeof(double)*Nx*Ny));
 
 	constantes = fopen("constants.dat","w+");
 	printConstant("Xmin",Xmin);
@@ -210,14 +230,14 @@ int main()
         //printf("aun sirve\n");
         calAcce();
         totalPerdido = 0;
-        step();
-        printPhaseX("./datFiles/gridx1.dat", Ny/2, Nvy/2);
-        printPhaseY("./datFiles/gridy1.dat", Nx/2, Nvx/2);
-        double mass1 = calDensity();
-        printDensity("./datFiles/density1.dat");
-        printf("Masa2 = %f\n", mass1/mass0);
-        printf("Total = %f\n", (mass1+totalPerdido)/mass0);
-        printDensity("Density1.dat");
+        //step();
+        //printPhaseX("./datFiles/gridx1.dat", Ny/2, Nvy/2);
+        //printPhaseY("./datFiles/gridy1.dat", Nx/2, Nvx/2);
+        //double mass1 = calDensity();
+        //printDensity("./datFiles/density1.dat");
+        //printf("Masa2 = %f\n", mass1/mass0);
+        //printf("Total = %f\n", (mass1+totalPerdido)/mass0);
+        //printDensity("Density1.dat");
         printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
         //fclose(constantes);
         
@@ -229,18 +249,18 @@ int main()
         char *grid = (char*) malloc(200* sizeof(char));
         //printf("Error Mesage00\n");
 		
-		//step();
+		step();
         
         //Descomentar para versión colisional --
-        //if(TAU != 0){
-        //calDensity();  //La impresión calcula la densidad.
-        //collisionStep();
-        //}
+        if(TAU != 0){
+        calMacro(); 
+        collisionStep();
+        }
         //--
 		
         
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
-        printf("%d %f\n",suprai,calDensity()*100/mass0);
+        printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
 		printDensity(grid);
 
 		potencial();
@@ -257,7 +277,7 @@ int main()
         free(grid);
         
         
-        step();
+        //step();
         
                 
 	}
@@ -270,25 +290,6 @@ int main()
 }
 
 
-
-//Imprime el espacio de fase con el String name como nombre.
-void printPhase(char *name)//no
-{
-	FILE *output = fopen(name, "w+");
-	for(i=0;i<Nx;i+=1) {
-		for(j=0;j<Ny;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", giveDensity(i,j));
-        //printf("Error MesagenoIgno\n");
-        }
-		fprintf(output,"\n");
-		//printf("%d\n", i);
-			}
-
-	fclose(output);
-
-}
 
 //Imprime el corte y = corteY , Vy = corteVy del espacio de fase (un plano 2d).
 void printPhaseX(char *name, int corteY, int corteVy)
@@ -356,6 +357,31 @@ double gaussD(double x,double y, double vx, double vy, double sr, double sv, dou
 	//return amplitude*exp(-sqrt(fabs(ex)));
         return amplitude*exp(ex);
 
+}
+
+void calMacro()
+{
+	for(k1=0; k1<Nx;k1+=1){
+        for(k2=0; k2< Ny; k2+=1){
+            density[in(k1,k2)] = 0;
+            velocityx[in(k1,k2)] = 0;
+            velocityy[in(k1,k2)] = 0;
+            energy[in(k1,k2)] = 0;
+            for(k3=0; k3< Nvx; k3+=1){
+                for(k4=0; k4< Nvy; k4+=1){
+                    density[in(k1,k2)] = giveDensity(k1,k2)+ phase[ind(k1,k2,k3,k4)]*dvy*dvx;
+                    velocityx[in(k1,k2)] = velocityx[in(k1,k2)]+ phase[ind(k1,k2,k3,k4)]*dvy*dvx*darVx(k3);
+                    velocityy[in(k1,k2)] = velocityy[in(k1,k2)]+ phase[ind(k1,k2,k3,k4)]*dvy*dvx*darVy(k4);
+                    energy[in(k1,k2)] = energy[in(k1,k2)]+ phase[ind(k1,k2,k3,k4)]*dvy*dvx*(pow(darVx(k3) - velocityx[in(k1,k2)],2) + pow(darVy(k4) - velocityy[in(k1,k2)],2))/2.0;
+                }
+            }
+            velocityx[in(k1,k2)] = velocityx[in(k1,k2)] / density[in(k1,k2)];
+            velocityy[in(k1,k2)] = velocityy[in(k1,k2)] / density[in(k1,k2)];
+            energy[in(k1,k2)] = energy[in(k1,k2)] / density[in(k1,k2)];
+            totalMass += density[in(k1,k2)]*dx*dy;
+        }
+    }
+    
 }
 
 //Calcula la densidad. Actualiza el arreglo density
@@ -690,81 +716,110 @@ void collisionStep()//Modificado sin terminar
             for(k2 = 0; k2<Ny; k2++){
                 for(k3= 0; k3<Nvx; k3++){
                     for(k4= 0; k4<Nvy; k4++){
-                        if(newijCol(k,l) ==0){
-				//phaseOld[k][l] = phase[k][l];
-				//phaseTemp[i2][j2] += phase[k][l];
-                            phaseTemp[i2][l] += collision(k,l,TAU) + phase[k][l] ;//+ dt*feq2(k,l)*acce[k]*(giveVel(l)-velocity[k])/energy[k];
+                        if(newijCol(k1,k2,k3,k4) ==0){
+                            phaseTemp[ind(i2x,i2y,k3,k4)] += collision(k1,k2,k3,k4,TAU) + phase[ind(k1,k2,k3,k4)] ;//+ dt*feq2(k,l)*acce[k]*(darVx(l)-velocity[k])/energy[k];
                         }
                     }
 			}
 		}
 	}
 
-	for(i = 0; i<Nx; i++){
-		for(j= 0; j<Nv; j++){
-			phase[i][j] = phaseTemp[i][j];
-			phaseTemp[i][j] = 0;
+    	for(k1 = 0; k1<Nx; k1++){
+            for(k2 = 0; k2<Ny; k2++){
+                for(k3= 0; k3<Nvx; k3++){
+                    for(k4= 0; k4<Nvy; k4++){
+                        if(newijCol(k1,k2,k3,k4) ==0){
+                            phase[ind(k1,k2,k3,k4)] = phaseTemp[ind(k1,k2,k3,k4)] ;
+                            phaseTemp[ind(k1,k2,k3,k4)] = 0;
+                        }
+                    }
+			}
 		}
 	}
+	
 }
 
 
 //Calcula el cambio en r. Ignora j.
-double newijCol(int iin, int jin)
+double newijCol(int iinx, int iiny, int jinx, int jiny)
 {
-        double x = Xmin*1.0+dx*iin; //Inicialización
-
-
-        double v = acce[iin]*dt;
-        //double dj = v/dv;
-        //dj = (int)dj;
-        j2 = jin; 
-
-        if(j2 < 0 || j2 >= Nv) return -1;
-//        if(i2 >= Nx){
-//            printf("i = %d\n", i2);
-//        }
-        v = giveVel(j2);
+        double x = Xmin*1.0+dx*iinx; //Inicialización
+        double vx = accex[iinx]*dt;
         
-        x = v*dt*scale;
-        double di = x/dx;
-        di = (int) di;
+        double y = Ymin*1.0+dy*iiny; //Inicialización
+        double vy = accey[iiny]*dt;
 
-        i2 = iin + di;
-        i2 = mod(i2,Nx);
+        
+        j2x = jinx; 
+        j2y = jiny; 
+
+        if((j2x < 0 || j2x >= Nvx) && (j2y < 0 || j2y >= Nvy) ) return -1;
+
+        vx = darVx(j2x);
+        vy = darVy(j2y);
+        
+        x = vx*dt*scale; 
+        double dix = x/dx;
+        dix = (int) dix;
+        
+        y = vy*dt*scale;
+        double diy = y/dy;
+        diy = (int) diy;
+        
+
+        i2x = iinx + dix;
+        i2x = mod(i2x,Nx);
+        
+        i2y = iiny + diy;
+        i2y = mod(i2y,Ny);
 //	printf("%d\n",j2);
     return 0;
 }
 
 //Calcula la contribución colisional en phase[icol][jcol] con un Tau dado.
-double collision(int icol, int jcol, double tau)
+double collision(int icolx, int icoly, int jcolx, int jcoly, double tau)
 {
     if(TAU==0) return 0;
-    double df = (feq(icol,jcol) - phase[icol][jcol])/tau;    
+    double df = (feq(icolx,icoly,jcolx,jcoly) - phase[ind(icolx,icoly,jcolx,jcoly)])/tau;    
     return df;
+    return 0;
 }
-
-double feq(int ipos, int jvel)
+double feq(int iposx, int iposy, int jvelx, int jvely)
 {
-    double ex = -1.0*pow(giveVel(jvel)-velocity[ipos],2)/(2.0*energy[ipos]);
-    double other = density[ipos] / sqrt(2.0*PI*energy[ipos]);
+    double ex = -1.0*(pow(darVx(jvelx)-velocityx[in(iposx,iposy)],2) + pow(darVy(jvely)-velocityy[in(iposx,iposy)],2) )/(2.0*energy[in(iposx,iposy)]);
+    double other = giveDensity(iposx,iposy) / pow(2.0*PI*energy[in(iposx,iposy)],3/2);
     return other * exp(ex);    
 }
 
 double feq2(int ipos, int jvel)
 {
-    double ex = -1.0*pow(giveVel(jvel),2)/(2.0*energy[ipos]);
-    double other = density[ipos] / sqrt(2*PI*energy[ipos]);
-    double lowMach = 1.0 + giveVel(jvel)*velocity[ipos]/energy[ipos] + pow(giveVel(jvel)*velocity[ipos],2)/(2.0*energy[ipos]) - pow(velocity[ipos],2)/(2.0*energy[ipos]);
-    return other * exp(ex)* lowMach;
+    //double ex = -1.0*pow(darVx(jvel),2)/(2.0*energy[ipos]);
+    //double other = density[ipos] / sqrt(2*PI*energy[ipos]);
+    //double lowMach = 1.0 + darVx(jvel)*velocity[ipos]/energy[ipos] + pow(darVx(jvel)*velocity[ipos],2)/(2.0*energy[ipos]) - pow(velocity[ipos],2)/(2.0*energy[ipos]);
+    //return other * exp(ex)* lowMach;
+    return 0;
     
 }
 
 
 
-
-
-
+//Métodos para pasar de enteros a valor coordenado.
+double darX(int input)
+{
+ return Xmin*1.0+dx*input;   
+}
+double darY(int input)
+{
+ return Ymin*1.0+dy*input;   
+}
+double darVx(int input)
+{
+ return Vxmin*1.0+dvx*input;
+}
+double darVy(int input)
+{
+ return Vymin*1.0+dvy*input;   
+}
 
 
 
