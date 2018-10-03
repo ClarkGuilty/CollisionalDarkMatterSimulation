@@ -8,6 +8,7 @@ Primer Bosquejo. 1D con método de fourier.
 #include <math.h>
 #include <complex.h>
 #include <fftw3.h>
+#include <time.h>
 
 //Constantes de la simulación.
 #define PI 3.14159265359
@@ -15,8 +16,8 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -0.5
-#define Vmax 0.5
+#define Vmin -1.0
+#define Vmax 1.0
 #define scale 1 //Re escala la velocidad para tener mejores gráficas.
 
 //Tamaño del espacio.
@@ -32,14 +33,14 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 10.0
+#define TAU 0
 
 //Primer intento Via Láctea.
 #define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
 #define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
-#define G 0.959572 //G en estas unidades. Se calcula con sPlots.py
-
+//#define G 0.959572 //G en estas unidades. Se calcula con sPlots.py
+#define G 0.959572 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
 //#define solarMases 1e15
@@ -72,8 +73,11 @@ double Lv = Vmax- Vmin;
 double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
+clock_t tiempo0;
+clock_t tiempoExec;
+
 double dt = 0.25; 
-int Nt = 100;
+int Nt = 5;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -131,7 +135,7 @@ int main()
     
     //Gauss
     double vSx = 0.2;
-    double vSv = 0.05;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
+    double vSv = 0.13;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
     double ampl = 1.0;
     
     //Jeans
@@ -193,12 +197,25 @@ int main()
     
     printAcce("./datFiles/acce0.dat");
     printf("G es %lf\n", G*1.0);
+    
 
 
+
+    tiempo0 = clock();
+    clock_t tdens=tiempo0;
+    clock_t tpot=tiempo0;
+    clock_t tacce=tiempo0;
+    clock_t tstep=tiempo0;
+
+    clock_t tmem=tiempo0;
+    
+    
+    
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *grid = (char*) malloc(200* sizeof(char));
         //printf("Error Mesage00\n");
 		
+        tmem = clock(); //Contar tiempo durante step
 		step();
         
         //Descomentar para versión colisional --
@@ -207,16 +224,31 @@ int main()
         collisionStep();
         }
         //--
+        tstep += clock();
+        tstep -= tmem;
+        
+        tmem = clock();
         totalMass = calDensity();
+        tdens += clock();
+        tdens -= tmem;
 		printf("%d %f\n",suprai,totalMass*100/mass);
         
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
 
+        tmem = clock();
 		potencial();
-		sprintf(grid, "./datFiles/potential%d.dat", suprai);
+        tpot += clock();
+        tpot -= tmem;
+        
+        sprintf(grid, "./datFiles/potential%d.dat", suprai);
 		printPot(grid);
+        
+        tmem = clock();
 		calAcceG();
+        tacce += clock();
+        tacce -= tmem;        
+        
 		sprintf(grid, "./datFiles/acce%d.dat", suprai);
 		printAcce(grid);
                 sprintf(grid, "./datFiles/grid%d.dat", suprai);
@@ -224,8 +256,18 @@ int main()
                 free(grid);
                 
 	}
-
-
+	tdens -=tiempo0;
+    tstep -=tiempo0;
+    tpot -=tiempo0;
+    tacce -=tiempo0;
+    
+    Nt= 1;
+	
+    printf("tiempo en la integral de densidad: %f\n", 1.0*tdens/Nt/CLOCKS_PER_SEC);
+    printf("tiempo en el cálculo del potencial: %f\n", 1.0*tpot/Nt/CLOCKS_PER_SEC);
+    printf("tiempo en el cálculo de la aceleración: %f\n", 1.0*tacce/Nt/CLOCKS_PER_SEC);
+    printf("tiempo en el step: %f\n", 1.0*tstep/Nt/CLOCKS_PER_SEC);
+    printf("tiempo total de cálculos en la ejecución: %f\n", 1.0*(tstep + tdens + tpot + tacce)/Nt/CLOCKS_PER_SEC);
 	fclose(constantes);
 	fclose(simInfo);
 	return 0;

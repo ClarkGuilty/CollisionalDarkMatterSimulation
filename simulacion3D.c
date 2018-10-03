@@ -258,7 +258,7 @@ int main()
 	double vz;
 
     int nx = 1;
-    int ny = 0;
+    int ny = 7;
     int nz = 4  ;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
@@ -276,14 +276,14 @@ int main()
                 for(k3=0;k3<Nz;k3+=1) {
                     z = Zmin*1.0+ dz*k3;
                 
-                    //density[in(k1,k2,k3)] = densidadTeorica2(k1,k2,k3,nx,ny,nz);
+                    density[in(k1,k2,k3)] = densidadTeorica2(k1,k2,k3,nx,ny,nz);
                     
-                    density[in(k1,k2,k3)] = gaussD2Dens(x,y,z,sr,sv,ampl);
+                 //   density[in(k1,k2,k3)] = gaussD2Dens(x,y,z,sr,sv,ampl);
                     
-                    //pot[in(k1,k2,k3)] = potencialTeorico2(k1,k2,k3,nx,ny,nz);
+                    pot[in(k1,k2,k3)] = potencialTeorico2(k1,k2,k3,nx,ny,nz);
                     
                     
-                    pot[in(k1,k2,k3)] = gaussD2(x,y,z,sr,sv,ampl);
+               //     pot[in(k1,k2,k3)] = gaussD2(x,y,z,sr,sv,ampl);
 
                     totalMass += density[in(k1,k2,k3)]*dx*dy*dz;// + 2.0/PI/Nx/Ny;
             }

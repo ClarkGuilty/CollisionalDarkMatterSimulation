@@ -14,7 +14,7 @@ import scipy as sc
 import decimal as dec
 D=dec.Decimal
     
-
+#retorna el valor de G en mis unidades
 def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
     x0 = 3.0857e+22 #un megaparsec en metros.
     m0 = 1.988e30  #Masa solar en kg.
@@ -53,7 +53,7 @@ print("Las unidades")
 print(unidadesDec(20e-3,1e12,3e-3)/1000)
 
 #newG = unidades(5,1e15,2e-1) #Clusters
-newG = unidades(200e-3,1e12,3e-3) #Galaxia 
+newG = unidades(20e-3,1e12,3e-3) #Galaxia 
 dmmass = 1000
 print("El 4*Pi*G = %f" % (4*np.pi*newG))
 print("El G = %f" % (newG))

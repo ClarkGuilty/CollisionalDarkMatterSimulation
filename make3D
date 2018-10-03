@@ -9,7 +9,8 @@ images: simulacion.c
 #	cd datFiles/
 #	ls
 #	./datFiles/heh.a
-	cd ~/Tesis/datFiles
+
+#	cd ~/Tesis/datFiles
 	./heh.a
 #	cd ..
 
