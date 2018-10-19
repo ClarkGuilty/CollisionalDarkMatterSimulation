@@ -268,29 +268,34 @@ int main()
         //printf("Masa = %f\n", mass0);
         
 //        radius = 0.1;
-        totalMass = 0;
-        for(k1=0;k1<Nx;k1+=1) {
-            x = Xmin*1.0+dx*k1;
+
+        
+    for(k1=0;k1<Nx;k1+=1) {
+        x =  Xmin*1.0+dx*k1;
             for(k2=0;k2<Ny;k2+=1) {
                 y = Ymin*1.0+ dy*k2;
                 for(k3=0;k3<Nz;k3+=1) {
-                    z = Zmin*1.0+ dz*k3;
-                
-                    density[in(k1,k2,k3)] = densidadTeorica2(k1,k2,k3,nx,ny,nz);
-                    
-                 //   density[in(k1,k2,k3)] = gaussD2Dens(x,y,z,sr,sv,ampl);
-                    
-                    pot[in(k1,k2,k3)] = potencialTeorico2(k1,k2,k3,nx,ny,nz);
-                    
-                    
-               //     pot[in(k1,k2,k3)] = gaussD2(x,y,z,sr,sv,ampl);
+                    z= darZ(k3);
+                    density[in(k1,k2,k3)] = 0;
+                    for(k4=0;k4<Nvx;k4+=1) {
+                        vx = darVx(k4);
+                        for(k5=0;k5<Nvy;k5+=1) {
+                            vy = darVy(k5);
+                            for(k6;k6<Nvz;k6){
+                                vz = darVz(k6);
+                        //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
 
-                    totalMass += density[in(k1,k2,k3)]*dx*dy*dz;// + 2.0/PI/Nx/Ny;
+                        //phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
+                                phase[ind(k1,k2,k3,k4,k5,k6)] = gaussD(x,y,z,vx,vy,vz,sr,sv,ampl);
+                        //printf("(%d,%d,%d,%d) %f\n", k1,k2,k3,k4,phase[ind(k1,k2,k3,k4)]);
+                        //phaseTemp[ind(k1,k2,k3,k4)] = 0;
+                            }
+                        }
+                    }
+                }
             }
             //printf("%d\n",k1);
         }
-        }
-        
 
         
     
@@ -564,6 +569,37 @@ double calDensity()
         }
         return totalMass;
 }
+
+//Calcula las variables macroscópicas para la función de equilibrio.
+double calDensity()
+{
+    totalMass = 0;
+        for(k1=0; k1<Nx;k1+=1){
+            for(k2=0; k2< Ny; k2+=1){
+                for(k3=0; k3< Nz; k3+=1){
+                    density[in(k1,k2,k3)] = 0;
+                    velocityx[in(k1,k2,k3)] = 0;
+                    velocityy[in(k1,k2,k3)] = 0;
+                    velocityz[in(k1,k2,k3)] = 0;
+                    for(k4=0; k4< Nvx; k4+=1){
+                        for(k5=0; k5<Nvy;k5+=1){
+                            for(k6=0; k6<Nvz;k6+=1){
+                                density[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz;
+                                velocityx += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVx(k4);
+                                velocityy += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVy(k5);
+                                velocityz += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVz(k6);
+                                //TODO:energy
+                                //density[in(k1,k2,k3)] = giveDensity(k1,k2,k3)+ phase[ind(k1,k2,k3,k4,k5,k6)];
+                            }
+                        }
+                    }
+                    totalMass += density[in(k1,k2,k3)]*dz*dy*dx;
+                }
+            }
+        }
+        return totalMass;
+}
+
 
 //Retorna la densidad en (in1,in2,in3).
 double giveDensity(int in1, int in2, int in3)
@@ -931,7 +967,26 @@ double darAcceTheo(double x, double y, double z, int xyz)
     
 }
 
-
+// double old(int heh){
+//     
+//             totalMass = 0;
+//         for(k1=0;k1<Nx;k1+=1) {
+//             x = Xmin*1.0+dx*k1;
+//             for(k2=0;k2<Ny;k2+=1) {
+//                 y = Ymin*1.0+ dy*k2;
+//                 for(k3=0;k3<Nz;k3+=1) {
+//                     z = Zmin*1.0+ dz*k3;
+//                     density[in(k1,k2,k3)] = densidadTeorica2(k1,k2,k3,nx,ny,nz);
+//                  //   density[in(k1,k2,k3)] = gaussD2Dens(x,y,z,sr,sv,ampl);
+//                     pot[in(k1,k2,k3)] = potencialTeorico2(k1,k2,k3,nx,ny,nz);
+//                //     pot[in(k1,k2,k3)] = gaussD2(x,y,z,sr,sv,ampl);
+//                     totalMass += density[in(k1,k2,k3)]*dx*dy*dz;// + 2.0/PI/Nx/Ny;
+//             }
+//         }
+//     }
+//     
+// }
+// 
 
 
 

@@ -77,7 +77,7 @@ clock_t tiempo0;
 clock_t tiempoExec;
 
 double dt = 0.25; 
-int Nt = 5;
+int Nt = 10;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -242,6 +242,7 @@ int main()
         tpot -= tmem;
         
         sprintf(grid, "./datFiles/potential%d.dat", suprai);
+        
 		printPot(grid);
         
         tmem = clock();
@@ -263,11 +264,11 @@ int main()
     
     Nt= 1;
 	
-    printf("tiempo en la integral de densidad: %f\n", 1.0*tdens/Nt/CLOCKS_PER_SEC);
-    printf("tiempo en el cálculo del potencial: %f\n", 1.0*tpot/Nt/CLOCKS_PER_SEC);
-    printf("tiempo en el cálculo de la aceleración: %f\n", 1.0*tacce/Nt/CLOCKS_PER_SEC);
-    printf("tiempo en el step: %f\n", 1.0*tstep/Nt/CLOCKS_PER_SEC);
-    printf("tiempo total de cálculos en la ejecución: %f\n", 1.0*(tstep + tdens + tpot + tacce)/Nt/CLOCKS_PER_SEC);
+    printf("tiempo en la integral de densidad: %f s\n", 1.0*tdens/Nt/CLOCKS_PER_SEC);
+    printf("tiempo en el cálculo del potencial: %f s\n", 1.0*tpot/Nt/CLOCKS_PER_SEC);
+    printf("tiempo en el cálculo de la aceleración: %f s\n", 1.0*tacce/Nt/CLOCKS_PER_SEC);
+    printf("tiempo en el step: %f s\n", 1.0*tstep/Nt/CLOCKS_PER_SEC);
+    printf("tiempo total de cálculos en la ejecución: %f s\n", 1.0*(tstep + tdens + tpot + tacce)/Nt/CLOCKS_PER_SEC);
 	fclose(constantes);
 	fclose(simInfo);
 	return 0;

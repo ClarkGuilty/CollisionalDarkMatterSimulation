@@ -88,6 +88,7 @@ int k1;
 int k2;
 int k3;
 int k4;
+int suprai;
 
 double totalMass = 0;
 
@@ -251,7 +252,7 @@ int main()
            printf("G es %lf\n", G*1.0);
 
 
-	for(int suprai = 1; suprai<Nt;suprai+=1){
+	for(suprai = 1; suprai<Nt;suprai+=1){
         char *grid = (char*) malloc(200* sizeof(char));
         //printf("Error Mesage00\n");
 		
@@ -698,6 +699,7 @@ int ind(int in1, int in2, int in3, int in4)
     
 }
 
+
 //Calcula la posición del elemento (in1, in2) en los arreglos bidimensionales.
 int in(int in1, int in2)
 {
@@ -790,6 +792,7 @@ double collision(int icolx, int icoly, int jcolx, int jcoly, double tau)
     return df;
     return 0;
 }
+
 double feq(int iposx, int iposy, int jvelx, int jvely)
 {
     double ex = -1.0*(pow(darVx(jvelx)-velocityx[in(iposx,iposy)],2) + pow(darVy(jvely)-velocityy[in(iposx,iposy)],2) )/(2.0*energy[in(iposx,iposy)]);
