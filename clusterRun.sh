@@ -1,3 +1,3 @@
 make -f clean
-make -f makeCluster3D
+make -f makeCluster1D
 #./gif.sh
