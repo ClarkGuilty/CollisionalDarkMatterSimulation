@@ -310,7 +310,7 @@ int main()
     printThr2(printAcceXY,"./datFiles/accex0XY",0);
 
     potencial(); 
-        //loadPot(4*PI*G*MASSo,2);
+
         
     printThr(printDensityXY,"./datFiles/densXY");
     printThr(printPotXY,"./datFiles/pot1XY");
