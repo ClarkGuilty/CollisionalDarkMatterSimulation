@@ -300,20 +300,21 @@ int main()
         
     
         
-    printDensityXY("./datFiles/densXY0.dat",0);
-    printDensityYZ("./datFiles/densYZ0.dat",0);
-    printDensityXZ("./datFiles/densXZ0.dat",0);
+    //printDensityXY("./datFiles/densXY0.dat",0);
+    //printDensityYZ("./datFiles/densYZ0.dat",0);
+    //printDensityXZ("./datFiles/densXZ0.dat",0);
     
-    printThr(printPotXY,"./datFiles/pot0XY");
+    //printThr(printPotXY,"./datFiles/pot0XY");
 
-    calAcce();
-    printThr2(printAcceXY,"./datFiles/accex0XY",0);
+    //calAcce();
+    //printThr2(printAcceXY,"./datFiles/accex0XY",0);
+    calDensity()
 
     potencial(); 
 
         
-    printThr(printDensityXY,"./datFiles/densXY");
-    printThr(printPotXY,"./datFiles/pot1XY");
+  //  printThr(printDensityXY,"./datFiles/densXY");
+    //printThr(printPotXY,"./datFiles/pot1XY");
     calAcce();
     
    // printThr(printPotXY,"./datFiles/pot1XY");
@@ -681,14 +682,20 @@ double newij(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz)
         djy = deltavy/dvy;
         djy = (int)djy;
         j2y = jiny+djy;
+
+        deltavz = giveAcce(iinx,iiny, iinz, 2)*dt;
+        djz = deltavz/dvz;
+        djz = (int)djz;
+        j2z = jinz+djz;
         
-        if(j2x < 0 || j2x >= Nvx || j2y < 0 || j2y >= Nvy)
+        if(j2x < 0 || j2x >= Nvx || j2y < 0 || j2y >= Nvy || j2z < 0 || j2z >= Nvy)
         {
             totalPerdido += phase[ind(iinx,iiny,iinz,jinx,jiny,jinz)];
             return -1;
         }
         deltavx = Vxmin*1.0+dvx*j2x;
         deltavy = Vymin*1.0+dvy*j2y;
+        deltavz = Vzmin*1.0+dvz*j2z;
         
         deltax = deltavx*dt;
         dix = deltax/dx*scale;
@@ -698,11 +705,18 @@ double newij(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz)
         diy = deltay/dy*scale;
         diy = (int) diy;
         
+        deltaz = deltavz*dt;
+        diz = deltaz/dz*scale;
+        diz = (int) diz;
+        
         i2x = iinx + dix;
         i2x = mod(i2x,Nx);
         
         i2y = iiny + diy;
         i2y = mod(i2y,Ny);
+        
+        i2z = iinz + diz;
+        i2z = mod(i2z,Nz);
 //	printf("%d\n",j2);
     return 0;
 }
