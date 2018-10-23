@@ -438,6 +438,8 @@ double potencial()
  fftw_free(mem);
  fftw_free(out2);
  
+ return -1;
+ 
 }
 
 double calcK3(double i2, double j2, double k2)
@@ -571,6 +573,7 @@ double calDensity()
 }
 
 //Calcula las variables macroscópicas para la función de equilibrio.
+/*
 double calDensity()
 {
     totalMass = 0;
@@ -599,7 +602,7 @@ double calDensity()
         }
         return totalMass;
 }
-
+*/
 
 //Retorna la densidad en (in1,in2,in3).
 double giveDensity(int in1, int in2, int in3)
@@ -641,6 +644,7 @@ double convertir(double valor, int unidad )
     if( unidad == aSegundos){
         return valor*cont0s*fracT0;
     }
+    return -1;
 }
 
 //Deriva el potencial y carga la aceleración en el arreglo acce.
