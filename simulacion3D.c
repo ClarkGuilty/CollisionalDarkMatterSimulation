@@ -308,7 +308,7 @@ int main()
 
     //calAcce();
     //printThr2(printAcceXY,"./datFiles/accex0XY",0);
-    calDensity()
+    calDensity();
 
     potencial(); 
 
