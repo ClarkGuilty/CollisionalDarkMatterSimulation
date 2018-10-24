@@ -281,7 +281,7 @@ int main()
                         vx = darVx(k4);
                         for(k5=0;k5<Nvy;k5+=1) {
                             vy = darVy(k5);
-                            for(k6;k6<Nvz;k6){
+                            for(k6=0;k6<Nvz;k6+=1){
                                 vz = darVz(k6);
                         //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
 
