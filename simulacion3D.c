@@ -300,9 +300,9 @@ int main()
         
     
         
-    //printDensityXY("./datFiles/densXY0.dat",0);
-    //printDensityYZ("./datFiles/densYZ0.dat",0);
-    //printDensityXZ("./datFiles/densXZ0.dat",0);
+    printDensityXY("./datFiles/densXY0.dat",0);
+    printDensityYZ("./datFiles/densYZ0.dat",0);
+    printDensityXZ("./datFiles/densXZ0.dat",0);
     
     //printThr(printPotXY,"./datFiles/pot0XY");
 
