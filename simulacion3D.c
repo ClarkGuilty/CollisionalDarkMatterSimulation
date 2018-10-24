@@ -34,7 +34,7 @@ Javier Alejandro Acevedo Barroso
 
 
 //Tamaño del espacio.
-#define tamano 32
+#define tamano 16
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano
@@ -727,26 +727,38 @@ void step()
 {
     for(k1=0;k1<Nx;k1+=1) {
         for(k2=0;k2<Ny;k2+=1) {
-            for(k3=0;k3<Nvx;k3+=1) {
-                for(k4=0;k4<Nvy;k4+=1) {
-                    if(newij(k1,k2,k3,k4,k5,k6) == 0){
-                        phaseTemp[ind(i2x,i2y,i2z,j2x,j2y,j2z)] += phase[ind(k1,k2,k3,k4,k5,k6)];
+            for(k3=0;k3<Nz;k3+=1) {
+                for(k4=0;k4<Nvx;k4+=1) {
+                    for(k5=0;k5<Nvy;k5+=1) {
+                        for(k6=0;k6<Nvz;k6+=1) {
+                            if(newij(k1,k2,k3,k4,k5,k6) == 0){
+                                phaseTemp[ind(i2x,i2y,i2z,j2x,j2y,j2z)] += phase[ind(k1,k2,k3,k4,k5,k6)];
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
+    
+    
     for(k1=0;k1<Nx;k1+=1) {
         for(k2=0;k2<Ny;k2+=1) {
-            for(k3=0;k3<Nvx;k3+=1) {
-                for(k4=0;k4<Nvy;k4+=1) {
-                    phase[ind(k1,k2,k3,k4,k5,k6)] = phaseTemp[ind(k1,k2,k3,k4,k5,k6)];
-                    phaseTemp[ind(k1,k2,k3,k4,k5,k6)] = 0;
+            for(k3=0;k3<Nz;k3+=1) {
+                for(k4=0;k4<Nvx;k4+=1) {
+                    for(k5=0;k5<Nvy;k5+=1) {
+                        for(k6=0;k6<Nvz;k6+=1) {
+                            if(newij(k1,k2,k3,k4,k5,k6) == 0){
+                                phase[ind(k1,k2,k3,k4,k5,k6)] = phaseTemp[ind(k1,k2,k3,k4,k5,k6)];
+                                phaseTemp[ind(k1,k2,k3,k4,k5,k6)] = 0;
+                            }
+                        }
+                    }
                 }
             }
         }
     }
+    
 }
 
 //Calcula la posición del elemento (in1,in2,in3,in4,in5,in6) del espacio de fase (x,y,z,vx,vy,vz).
