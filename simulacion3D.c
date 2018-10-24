@@ -34,7 +34,7 @@ Javier Alejandro Acevedo Barroso
 
 
 //Tamaño del espacio.
-#define tamano 16
+#define tamano 32
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano

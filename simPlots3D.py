@@ -19,7 +19,7 @@ def fastShow(image, title="none"):
     cbar = plt.colorbar()
     plt.title(title)
 
-    plt.savefig(title+".png",dpi=dpiT)
+    plt.savefig("./Images/"+title+".png",dpi=dpiT)
 
 
 def fmt(x, pos):
