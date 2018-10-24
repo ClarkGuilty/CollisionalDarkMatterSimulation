@@ -217,8 +217,8 @@ int main()
 {
     dt = dt*dx*dy*dz/dvx/dvy/dvz;
     //phase = malloc((sizeof(double)*Nx*Ny*Nz*Nvx*Nvy*Nz));
-    phase = malloc((sizeof(double)*1));
-    phaseTemp = malloc((sizeof(double)*1));
+    phase = malloc((sizeof(double)*Nx*Ny*Nz*Nvx*Nvy*Nvz));
+    phaseTemp = malloc((sizeof(double)*Nx*Ny*Nz*Nvx*Nvy*Nvz));
     //phaseTemp = malloc((sizeof(double)*Nx*Ny*Nz*Nvx*Nvy*Nvz));
     if(phase == NULL){
         printf("phase es Null\n");   
