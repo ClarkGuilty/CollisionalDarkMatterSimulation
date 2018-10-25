@@ -328,8 +328,8 @@ int main()
     //printAcceXY(char *name, int corteZ, int xyz);
     //printAcceYZ(char *name, int corteX, int xyz);
     //printAcceXZ(char *name, int corteY, int xyz);
-
-    
+    //TODO:Añadir el streaming.
+    step();
     fclose(constantes);
 	//fclose(simInfo);
 	return 0;
