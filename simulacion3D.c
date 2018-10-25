@@ -367,13 +367,13 @@ int main()
         //printPhase(grid);
         free(grid);
         
-  */      
+        
         //step();
         
                 
 	}
 
-    
+  */  
     
     
     
@@ -622,8 +622,7 @@ double calDensity()
 }
 
 //Calcula las variables macroscópicas para la función de equilibrio.
-/*
-double calDensity()
+void calMacro()
 {
     totalMass = 0;
         for(k1=0; k1<Nx;k1+=1){
@@ -633,6 +632,7 @@ double calDensity()
                     velocityx[in(k1,k2,k3)] = 0;
                     velocityy[in(k1,k2,k3)] = 0;
                     velocityz[in(k1,k2,k3)] = 0;
+                    energy[in(k1,k2,k3)] = 0;
                     for(k4=0; k4< Nvx; k4+=1){
                         for(k5=0; k5<Nvy;k5+=1){
                             for(k6=0; k6<Nvz;k6+=1){
@@ -640,8 +640,7 @@ double calDensity()
                                 velocityx += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVx(k4);
                                 velocityy += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVy(k5);
                                 velocityz += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVz(k6);
-                                //TODO:energy
-                                //density[in(k1,k2,k3)] = giveDensity(k1,k2,k3)+ phase[ind(k1,k2,k3,k4,k5,k6)];
+                                energy[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvz*dvy*dvx*(pow(darVx(k4) - velocityx[in(k1,k2,k3)],2) + pow(darVy(k5) - velocityy[in(k1,k2,k3)],2) + pow(darVz(k6) - velocityz[in(k1,k2,k3)],2))/2.0;
                             }
                         }
                     }
@@ -651,7 +650,6 @@ double calDensity()
         }
         return totalMass;
 }
-*/
 
 //Retorna la densidad en (in1,in2,in3).
 double giveDensity(int in1, int in2, int in3)
