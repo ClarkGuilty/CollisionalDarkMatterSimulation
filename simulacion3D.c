@@ -268,7 +268,9 @@ int main()
         //printf("Masa = %f\n", mass0);
         
 //        radius = 0.1;
-
+    sr = 0.5;
+    sv = 0.5;
+    ampl = 1;
         
     for(k1=0;k1<Nx;k1+=1) {
         x =  Xmin*1.0+dx*k1;
