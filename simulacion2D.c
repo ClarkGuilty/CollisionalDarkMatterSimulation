@@ -366,6 +366,7 @@ double gaussD(double x,double y, double vx, double vy, double sr, double sv, dou
 
 }
 
+//Actualiza los arreglos de las variables macroscópicas (densidad, velocidad del fluido y energía interna).
 void calMacro()
 {
 	for(k1=0; k1<Nx;k1+=1){
