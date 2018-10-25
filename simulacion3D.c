@@ -300,7 +300,7 @@ int main()
         }
 
         
-    
+    calDensity();
         
     printDensityXY("./datFiles/densXY0.dat",0);
     printDensityYZ("./datFiles/densYZ0.dat",0);
@@ -310,20 +310,19 @@ int main()
 
     //calAcce();
     //printThr2(printAcceXY,"./datFiles/accex0XY",0);
-    calDensity();
 
-    potencial(); 
+   // potencial(); 
 
         
   //  printThr(printDensityXY,"./datFiles/densXY");
     //printThr(printPotXY,"./datFiles/pot1XY");
-    calAcce();
+   // calAcce();
     
    // printThr(printPotXY,"./datFiles/pot1XY");
  //   printThr(printPotXY,"./datFiles/pot1XY");
  //   printThr(printPotXY,"./datFiles/pot1XY");
     
-    printThr2(printAcceXY,"./datFiles/accex1XY",0);
+   // printThr2(printAcceXY,"./datFiles/accex1XY",0);
 
 
     //printAcceXY(char *name, int corteZ, int xyz);
