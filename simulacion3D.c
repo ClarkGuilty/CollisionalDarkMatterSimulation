@@ -330,6 +330,10 @@ int main()
     //printAcceXZ(char *name, int corteY, int xyz);
     //TODO:Añadir el streaming.
     step();
+    printDensityXY("./datFiles/densXY1.dat",0);
+    printDensityYZ("./datFiles/densYZ1.dat",0);
+    printDensityXZ("./datFiles/densXZ1.dat",0);
+    calDensity();
     fclose(constantes);
 	//fclose(simInfo);
 	return 0;
