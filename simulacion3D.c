@@ -316,13 +316,13 @@ int main()
         
   //  printThr(printDensityXY,"./datFiles/densXY");
     //printThr(printPotXY,"./datFiles/pot1XY");
-   // calAcce();
+    calAcce();
     
     printThr(printPotXY,"./datFiles/pot0XY");
  //   printThr(printPotXY,"./datFiles/pot1XY");
  //   printThr(printPotXY,"./datFiles/pot1XY");
     
-  //  printThr2(printAcceXY,"./datFiles/accex0XY",0);
+    printThr2(printAcceXY,"./datFiles/accex0XY",0);
 
 
     //printAcceXY(char *name, int corteZ, int xyz);
