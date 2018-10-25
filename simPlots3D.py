@@ -55,10 +55,11 @@ for i in range(0,Nt,Nt//imagenes):
     potXY0 = np.loadtxt("./datFiles/pot0XY{:d}.dat".format(i)).T
     #potXY1 = np.loadtxt("./datFiles/pot1XY{:d}.dat".format(i)).T
     #diff = potXY0 - potXY1
-    #accexXY0 = np.loadtxt("./datFiles/accex0XY{:d}.dat".format(i)).T
+    accexXY0 = np.loadtxt("./datFiles/accex0XY{:d}.dat".format(i)).T
     #accexXY1 = np.loadtxt("./datFiles/accex1XY{:d}.dat".format(i)).T
     #diff1 = accexXY0 -accexXY1
     fastShow( potXY0 , "potXY{:d}".format(i) )
+    fastShow( accexXY0 , "accex0XY{:d}".format(i) )
     
 
 
