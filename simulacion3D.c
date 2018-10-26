@@ -641,9 +641,9 @@ void calMacro()
                         for(k5=0; k5<Nvy;k5+=1){
                             for(k6=0; k6<Nvz;k6+=1){
                                 density[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz;
-                                velocityx += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVx(k4);
-                                velocityy += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVy(k5);
-                                velocityz += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dv*darVz(k6);
+                                velocityx += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz*darVx(k4);
+                                velocityy += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz*darVy(k5);
+                                velocityz += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz*darVz(k6);
                                 energy[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvz*dvy*dvx*(pow(darVx(k4) - velocityx[in(k1,k2,k3)],2) + pow(darVy(k5) - velocityy[in(k1,k2,k3)],2) + pow(darVz(k6) - velocityz[in(k1,k2,k3)],2))/2.0;
                             }
                         }
@@ -652,7 +652,6 @@ void calMacro()
                 }
             }
         }
-        return totalMass;
 }
 
 //Retorna la densidad en (in1,in2,in3).
