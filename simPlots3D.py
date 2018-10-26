@@ -29,7 +29,8 @@ def fmt(x, pos):
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 print(constantes)
-Nt = int(constantes[-1])
+#Nt = int(constantes[-1])
+Nt = 5
 
 
 
