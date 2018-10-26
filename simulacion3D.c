@@ -254,9 +254,9 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
-    double grid0;
-    double grid1;
-    double grid2;
+    char grid0;
+    char grid1;
+    char grid2;
 	double x;
 	double vx;
     double y;
@@ -264,11 +264,6 @@ int main()
     double z;
 	double vz;
 
-    
-    
-    int nx = 1;
-    int ny = 7;
-    int nz = 4  ;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
         //phase[0][0][0][1] = 1;
