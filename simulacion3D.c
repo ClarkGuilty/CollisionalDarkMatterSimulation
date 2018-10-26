@@ -304,7 +304,7 @@ int main()
         }
 
         
-    calDensity();
+    double mass0 = calDensity();
         
     printDensityXY("./datFiles/densXY0.dat",0);
     printDensityYZ("./datFiles/densYZ0.dat",0);
