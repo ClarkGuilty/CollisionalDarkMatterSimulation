@@ -36,18 +36,18 @@ densidadXY0 = np.loadtxt('./datFiles/densXY0.dat').T
 densidadYZ0  = np.loadtxt('./datFiles/densYZ0.dat').T
 densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 
-densidadXY1 = np.loadtxt('./datFiles/densXY1.dat').T
-densidadYZ1  = np.loadtxt('./datFiles/densYZ1.dat').T
-densidadXZ1  = np.loadtxt('./datFiles/densXZ1.dat').T
+#densidadXY1 = np.loadtxt('./datFiles/densXY1.dat').T
+#densidadYZ1  = np.loadtxt('./datFiles/densYZ1.dat').T
+#densidadXZ1  = np.loadtxt('./datFiles/densXZ1.dat').T
 
 
 fastShow(densidadXY0, "XY0")
 fastShow(densidadYZ0, "YZ0")
 fastShow(densidadXZ0, "XZ0")
 
-fastShow(densidadXY1, "XY1")
-fastShow(densidadYZ1, "YZ1")
-fastShow(densidadXZ1, "XZ1")
+#fastShow(densidadXY1, "XY1")
+#fastShow(densidadYZ1, "YZ1")
+#fastShow(densidadXZ1, "XZ1")
 #densidadXY = np.loadtxt("./datFiles/densXY{:d}.dat".format(i)).T
 #plt.figure()
 imagenes = Nt//8
