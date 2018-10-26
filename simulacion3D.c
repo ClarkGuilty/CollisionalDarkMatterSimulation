@@ -76,6 +76,10 @@ Javier Alejandro Acevedo Barroso
 double *phase;
 double *phaseTemp;
 double *density;
+double *velocityx;
+double *velocityy;
+double *velocityz;
+double *energy;
 double *densitytheo;
 double *pot;
 double *acce;
@@ -187,8 +191,8 @@ double potencial();
 double calcK2(double i2, double j2, double k2);
 double convertir(double valor, int unidad);
 void calAcce();
-double newij(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz); //TODO:calcular añadir dimensión
-void step(); //TODO:calcular añadir dimensión
+double newij(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz);
+void step();
 int mod(int p, int q);
 int ind(int in1, int in2, int in3, int in4, int in5, int in6);
 int ina(int in1, int in2, int in3, int in4);
@@ -993,6 +997,7 @@ void printPotYZ(char *name, int corteX)
 	fclose(output);
 }
 
+//Imprime todos los cortes de una función.
 void printThr(void (*f)(char*, int), char *name)
 {
     char *copia = (char*) malloc(200* sizeof(char));
@@ -1007,6 +1012,7 @@ void printThr(void (*f)(char*, int), char *name)
     }
 }
 
+//Imprime todos los cortes de una función en la coordenada dada.
 void printThr2(void (*f)(char*, int, int), char *name, int xyz)
 {
     char *copia = (char*) malloc(200* sizeof(char));
