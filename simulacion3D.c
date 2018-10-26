@@ -338,7 +338,8 @@ int main()
     printDensityXZ("./datFiles/densXZ1.dat",0);
     //calDensity();
     
-    int suprai;
+    int suprai = 0;
+    printf("Sirve\n");
 	for(suprai = 1; suprai<Nt;suprai+=1){
         
         //printf("Error Mesage00\n");
