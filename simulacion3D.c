@@ -254,6 +254,9 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
+    double grid0;
+    double grid1;
+    double grid2;
 	double x;
 	double vx;
     double y;
@@ -261,6 +264,8 @@ int main()
     double z;
 	double vz;
 
+    
+    
     int nx = 1;
     int ny = 7;
     int nz = 4  ;
@@ -332,14 +337,13 @@ int main()
     //printAcceXY(char *name, int corteZ, int xyz);
     //printAcceYZ(char *name, int corteX, int xyz);
     //printAcceXZ(char *name, int corteY, int xyz);
-    //TODO:Añadir el streaming.
-    step();
+    //step();
     printDensityXY("./datFiles/densXY1.dat",0);
     printDensityYZ("./datFiles/densYZ1.dat",0);
     printDensityXZ("./datFiles/densXZ1.dat",0);
-    calDensity();
+    //calDensity();
     
-/*
+
 	for(suprai = 1; suprai<Nt;suprai+=1){
         char *grid = (char*) malloc(200* sizeof(char));
         //printf("Error Mesage00\n");
@@ -347,27 +351,35 @@ int main()
 		step();
         
         //Descomentar para versión colisional --
+       /*
         if(TAU != 0){
         calMacro(); 
         collisionStep();
         }
         //--
-		
+		*/
         
-		sprintf(grid, "./datFiles/density%d.dat", suprai);
+		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
+        sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
+        sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
-		printDensity(grid);
+        printDensityXY(grid0,0);
+        printDensityYZ(grid1,0);
+        printDensityXZ(grid2,0);
 
+        
 		potencial();
-		sprintf(grid, "./datFiles/potential%d.dat", suprai);
-		printPot(grid);
+		//sprintf(grid, "./datFiles/potential%d.dat", suprai);
+		//printPot(grid);
+        
+        
 		calAcce();
-		sprintf(grid, "./datFiles/acce%d.dat", suprai);
+		//sprintf(grid, "./datFiles/acce%d.dat", suprai);
 		//printAcce(grid);
-        sprintf(grid, "./datFiles/gridx%d.dat", suprai);
-        printPhaseX(grid, Ny/2, Nvy/2);
-        sprintf(grid, "./datFiles/gridy%d.dat", suprai);
-        printPhaseY(grid, Nx/2, Nvx/2);
+        //sprintf(grid, "./datFiles/gridx%d.dat", suprai);
+        //printPhaseX(grid, Ny/2, Nvy/2);
+        //sprintf(grid, "./datFiles/gridy%d.dat", suprai);
+        //printPhaseY(grid, Nx/2, Nvx/2);
         //printPhase(grid);
         free(grid);
         
@@ -377,7 +389,7 @@ int main()
                 
 	}
 
-  */  
+
     
     
     
@@ -1068,6 +1080,7 @@ double darAcceTheo(double x, double y, double z, int xyz)
 //     
 // }
 // 
+
 
 
 
