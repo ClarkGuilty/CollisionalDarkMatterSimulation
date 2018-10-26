@@ -28,7 +28,8 @@ def fmt(x, pos):
     return r'${} \times 10^{{{}}}$'.format(a, b)
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
-Nt = int(constantes[-2])
+print(constantes)
+Nt = int(constantes[-1])
 
 
 
