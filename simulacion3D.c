@@ -376,8 +376,9 @@ int main()
         //sprintf(grid, "./datFiles/gridy%d.dat", suprai);
         //printPhaseY(grid, Nx/2, Nvx/2);
         //printPhase(grid);
-        free(grid);
-        
+        free(grid0);
+        free(grid1);
+        free(grid2);
         
         //step();
         
