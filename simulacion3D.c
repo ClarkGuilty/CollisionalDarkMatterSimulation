@@ -470,7 +470,7 @@ double potencial()
     }
     
         k1 = 0;
-        printf("a0 es %f\n", creal(mem[in(0,0,0)]));
+    //    printf("a0 es %f\n", creal(mem[in(0,0,0)]));
 
     fftw_execute(pIda);
     printf("Masa total %f\n",totalMass);

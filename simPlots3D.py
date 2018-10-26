@@ -36,6 +36,10 @@ densidadXY0 = np.loadtxt('./datFiles/densXY0.dat').T
 densidadYZ0  = np.loadtxt('./datFiles/densYZ0.dat').T
 densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 
+densidadXY1 = np.loadtxt('./datFiles/densXY1.dat').T
+densidadYZ1  = np.loadtxt('./datFiles/densYZ1.dat').T
+densidadXZ1  = np.loadtxt('./datFiles/densXZ1.dat').T
+
 
 fastShow(densidadXY0, "XY0")
 fastShow(densidadYZ0, "YZ0")
@@ -56,7 +60,7 @@ for i in range(0,Nt,Nt//imagenes):
     #diff1 = accexXY0 -accexXY1
     fastShow( potXY0 , "potXY{:d}".format(i) )
     fastShow( accexXY0 , "accex0XY{:d}".format(i) )
-    fastShow( accexXY1 , "accex1XY{:d}".format(i) )
+   # fastShow( accexXY1 , "accex1XY{:d}".format(i) )
     
 
 
