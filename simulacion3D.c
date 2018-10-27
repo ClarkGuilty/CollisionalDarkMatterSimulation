@@ -259,9 +259,10 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
-    char *grid0 = (char*) malloc(200* sizeof(char));
-    char *grid1 = (char*) malloc(200* sizeof(char));
-    char *grid2 = (char*) malloc(200* sizeof(char));
+    char *grid0 = (char*) malloc(300* sizeof(char));
+    char *grid1 = (char*) malloc(300* sizeof(char));
+    char *grid2 = (char*) malloc(300* sizeof(char));
+    
     double x;
 	double vx;
     double y;
@@ -338,9 +339,9 @@ int main()
     //printAcceYZ(char *name, int corteX, int xyz);
     //printAcceXZ(char *name, int corteY, int xyz);
     //step();
-    printDensityXY("./datFiles/densXY1.dat",0);
-    printDensityYZ("./datFiles/densYZ1.dat",0);
-    printDensityXZ("./datFiles/densXZ1.dat",0);
+    //printDensityXY("./datFiles/densXY1.dat",0);
+    //printDensityYZ("./datFiles/densYZ1.dat",0);
+    //printDensityXZ("./datFiles/densXZ1.dat",0);
     //calDensity();
     
     int suprai = 0;
@@ -366,6 +367,7 @@ int main()
 		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
         sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
         sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
+        printf(grid0);
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
         printDensityXY(grid0,0);
         printDensityYZ(grid1,0);
