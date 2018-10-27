@@ -347,7 +347,7 @@ int main()
     printf("Sirve\n");
     
     
-    /*
+    
 	for(suprai = 1; suprai<Nt;suprai+=1)
     {
         //printf("Error Mesage00\n");	
@@ -355,20 +355,21 @@ int main()
         
         //Descomentar para versión colisional --
        
-        if(TAU != 0){
-        calMacro(); 
-        collisionStep();
-        }
+       // if(TAU != 0){
+        //calMacro(); 
+        //collisionStep();
+        //}
+        
         //--
 		
         
-		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
-        sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
-        sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
+		//sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
+        //sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
+        //sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
-        printDensityXY(grid0,0);
-        printDensityYZ(grid1,0);
-        printDensityXZ(grid2,0);
+        //printDensityXY(grid0,0);
+        //printDensityYZ(grid1,0);
+        //printDensityXZ(grid2,0);
 
         
 		potencial();
@@ -384,16 +385,17 @@ int main()
         //sprintf(grid, "./datFiles/gridy%d.dat", suprai);
         //printPhaseY(grid, Nx/2, Nvx/2);
         //printPhase(grid);
-        free(grid0);
-        free(grid1);
-        free(grid2);
+        
+        //free(grid0);
+        //free(grid1);
+        //free(grid2);
         
         //step();
         
                 
 	}
 
-    */
+    
     
     
     fclose(constantes);
