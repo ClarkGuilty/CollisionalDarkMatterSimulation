@@ -11,4 +11,4 @@ images: simulacion.c
 .PHONY: clean
 clean:
 	@echo eliminando archivos temporales
-	rm heh.a oI.dat oR.dat outF0.dat outF1.dat inF.dat
+	rm heh.a

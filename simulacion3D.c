@@ -52,11 +52,11 @@ Javier Alejandro Acevedo Barroso
 
 
 
-#define mParsecs 200e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
+#define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
 #define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 //#define G 0.00096 //G en estas unidades. Se calcula con calculations.py
-#define G 1.0
+#define G 0.959572
 
 #define radius 0.5
 #define MASSo 10.0
@@ -149,7 +149,7 @@ double dvx = (Vxmax - Vxmin)*1.0/(Nvx);
 double dvy = (Vymax - Vymin)*1.0/(Nvy);
 double dvz = (Vzmax - Vzmin)*1.0/(Nvz);
 
-double dt = 0.5;
+double dt = 0.25;
 int Nt = 5;
 
 double totalPerdido;
@@ -212,9 +212,9 @@ double darAcceTheo(double x, double y, double z, int xyz);
 
 
 
-double sr = 0.2;
-double sv = 0.13;
-double ampl = 1.0;
+double sr = 0.1;
+double sv = 0.1;
+double ampl = 0.5;
 
 
 int main()
