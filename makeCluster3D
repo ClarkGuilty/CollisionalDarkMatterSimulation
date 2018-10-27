@@ -6,7 +6,7 @@ images: simulacion.c
 	mkdir images
 	gcc -std=gnu99 -o heh.a -I/usr/local/include -I/hpcfs/apps/libs/fftw/3.3.6/double/include -L/usr/local/lib/ -L/hpcfs/apps/libs/fftw/3.3.6/double/lib simulacion3D.c -Wall -lfftw3 -lm 
 	./heh.a
-	# python simPlots3D.py
+	python simPlots3D.py
 
 .PHONY: clean
 clean:
