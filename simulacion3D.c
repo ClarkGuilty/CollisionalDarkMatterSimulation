@@ -812,10 +812,9 @@ void step()
                 for(k4=0;k4<Nvx;k4+=1) {
                     for(k5=0;k5<Nvy;k5+=1) {
                         for(k6=0;k6<Nvz;k6+=1) {
-                            if(newij(k1,k2,k3,k4,k5,k6) == 0){
                                 phase[ind(k1,k2,k3,k4,k5,k6)] = phaseTemp[ind(k1,k2,k3,k4,k5,k6)];
                                 phaseTemp[ind(k1,k2,k3,k4,k5,k6)] = 0;
-                            }
+                            
                         }
                     }
                 }
@@ -823,7 +822,7 @@ void step()
         }
     }
     
-}
+} 
 
 //Calcula la posición del elemento (in1,in2,in3,in4,in5,in6) del espacio de fase (x,y,z,vx,vy,vz).
 int ind(int in1, int in2, int in3, int in4, int in5, int in6)

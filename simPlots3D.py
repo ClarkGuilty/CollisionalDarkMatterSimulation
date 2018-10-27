@@ -29,8 +29,8 @@ def fmt(x, pos):
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 print(constantes)
-#Nt = int(constantes[-1])
-Nt = 5
+tamano = int(constantes[14])
+#Nt = 5
 
 
 
@@ -52,8 +52,8 @@ fastShow(densidadXZ0, "XZ0")
 #fastShow(densidadXZ1, "XZ1")
 #densidadXY = np.loadtxt("./datFiles/densXY{:d}.dat".format(i)).T
 #plt.figure()
-imagenes = Nt//8
-for i in range(0,Nt,Nt//imagenes):
+imagenes = tamano//8
+for i in range(0,tamano,tamano//imagenes):
     potXY0 = np.loadtxt("./datFiles/pot0XY{:d}.dat".format(i)).T
     #potXY1 = np.loadtxt("./datFiles/pot1XY{:d}.dat".format(i)).T
     #diff = potXY0 - potXY1
