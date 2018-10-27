@@ -363,13 +363,13 @@ int main()
         //--
 		
         
-		//sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
-        //sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
-        //sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
+		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
+        sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
+        sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
-        //printDensityXY(grid0,0);
-        //printDensityYZ(grid1,0);
-        //printDensityXZ(grid2,0);
+        printDensityXY(grid0,0);
+        printDensityYZ(grid1,0);
+        printDensityXZ(grid2,0);
 
         
 		potencial();
@@ -386,9 +386,9 @@ int main()
         //printPhaseY(grid, Nx/2, Nvx/2);
         //printPhase(grid);
         
-        //free(grid0);
-        //free(grid1);
-        //free(grid2);
+        free(grid0);
+        free(grid1);
+        free(grid2);
         
         //step();
         
