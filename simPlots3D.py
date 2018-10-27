@@ -30,7 +30,7 @@ def fmt(x, pos):
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 #print(constantes)
 tamano = int(constantes[14])
-#Nt = 5
+Nt = int(constantes[-1])
 
 
 
