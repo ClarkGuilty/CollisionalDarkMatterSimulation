@@ -28,7 +28,7 @@ def fmt(x, pos):
     return r'${} \times 10^{{{}}}$'.format(a, b)
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
-print(constantes)
+#print(constantes)
 tamano = int(constantes[14])
 #Nt = 5
 
@@ -65,11 +65,16 @@ for i in range(0,tamano,tamano//imagenes):
    # fastShow( accexXY1 , "accex1XY{:d}".format(i) )
     
 
+for i in range(1,Nt):
+	
 
+	densidadXY = np.loadtxt('./datFiles/densXY{:d}.dat'.format(i)).T
+	densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
+	densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
 
-
-
-
+	fastShow(densidadXY, "XY{:d}".format(i))
+	fastShow(densidadYZ, "YZ{:d}".format(i))
+	fastShow(densidadXZ, "XZ{:d}".format(i))
 
 
 

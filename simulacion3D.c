@@ -279,7 +279,7 @@ int main()
 //        radius = 0.1;
     sr = 0.5;
     sv = 0.5;
-    ampl = 1;
+    ampl = 0.5;
         
     for(k1=0;k1<Nx;k1+=1) {
         x =  Xmin*1.0+dx*k1;
@@ -401,19 +401,6 @@ int main()
     fclose(constantes);
 	//fclose(simInfo);
 	return 0;
-
-}
-
-double gaussD2(double x,double y, double z, double sr, double sv, double amplitude)
-{
-    	double ex = -x*x/(sr*sr)-y*y/(sr*sr)-z*z/(sr*sr);
-        return amplitude*exp(ex);
-}
-
-double gaussD2Dens(double x,double y, double z, double sr, double sv, double amplitude)
-{
-	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
-        return gaussD2(x,y,z,sr,sv,amplitude)*(4.0*x*x+4.0*y*y-6.0*sr*sr+4.0*z*z)/(4.0*PI*G*pow(sr,4));
 
 }
 
@@ -1062,6 +1049,20 @@ double darAcceTheo(double x, double y, double z, int xyz)
     return 0.0;
     
     
+}
+
+
+double gaussD2(double x,double y, double z, double sr, double sv, double amplitude)
+{
+    	double ex = -x*x/(sr*sr)-y*y/(sr*sr)-z*z/(sr*sr);
+        return amplitude*exp(ex);
+}
+
+double gaussD2Dens(double x,double y, double z, double sr, double sv, double amplitude)
+{
+	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);
+        return gaussD2(x,y,z,sr,sv,amplitude)*(4.0*x*x+4.0*y*y-6.0*sr*sr+4.0*z*z)/(4.0*PI*G*pow(sr,4));
+
 }
 
 // double old(int heh){
