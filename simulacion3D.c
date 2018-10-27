@@ -231,6 +231,11 @@ int main()
     densitytheo = malloc((sizeof(double)*Nx*Ny*Nz));
     acce = malloc((sizeof(double)*Nx*Ny*Nz*3));
     acceTheo = malloc((sizeof(double)*Nx*Ny*Nz*3));
+    velocityx = malloc((sizeof(double)*Nx*Ny*Nz));
+    velocityy = malloc((sizeof(double)*Nx*Ny*Nz));
+    velocityz = malloc((sizeof(double)*Nx*Ny*Nz));
+    energy = malloc((sizeof(double)*Nx*Ny*Nz));
+
 
     pot = malloc((sizeof(double)*Nx*Ny*Nz));
 
@@ -340,20 +345,22 @@ int main()
     
     int suprai = 0;
     printf("Sirve\n");
-	for(suprai = 1; suprai<Nt;suprai+=1){
-        
-        //printf("Error Mesage00\n");
-		
+    
+    
+    /*
+	for(suprai = 1; suprai<Nt;suprai+=1)
+    {
+        //printf("Error Mesage00\n");	
 		step();
         
         //Descomentar para versión colisional --
-       /*
+       
         if(TAU != 0){
         calMacro(); 
         collisionStep();
         }
         //--
-		*/
+		
         
 		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
         sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
@@ -386,8 +393,7 @@ int main()
                 
 	}
 
-
-    
+    */
     
     
     fclose(constantes);
