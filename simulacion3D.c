@@ -365,7 +365,7 @@ int main()
         //--
 		
         
-		//sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
+		/sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
         //sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
         //sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
         printf(grid0);
