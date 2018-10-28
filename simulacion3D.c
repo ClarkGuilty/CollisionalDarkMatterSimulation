@@ -34,7 +34,7 @@ Javier Alejandro Acevedo Barroso
 
 
 //Tamaño del espacio.
-#define tamano 16
+#define tamano 32
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano
@@ -277,7 +277,7 @@ int main()
 //        radius = 0.1;
     sr = 0.1;
     sv = 0.1;
-    ampl = 0.5;
+    ampl = 1;
         
     for(k1=0;k1<Nx;k1+=1) {
         x =  Xmin*1.0+dx*k1;
@@ -371,9 +371,9 @@ int main()
         printf(grid0);
         printf("\n");
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
-        printDensityXY(grid0,0);
-        printDensityYZ(grid1,0);
-        printDensityXZ(grid2,0);
+        printDensityXY(grid0,1);
+        printDensityYZ(grid1,1);
+        printDensityXZ(grid2,1);
 
         
 		potencial();
@@ -726,6 +726,7 @@ void step()
                     for(k5=0;k5<Nvy;k5+=1) {
                         for(k6=0;k6<Nvz;k6+=1) {
                                 phase[ind(k1,k2,k3,k4,k5,k6)] = phaseTemp[ind(k1,k2,k3,k4,k5,k6)];
+                                print("phase[%d,%d,%d,%d,%d,%d] = %f]",k1,k2,k3,k4,k5,k6,phase[ind(k1,k2,k3,k4,k5,k6)]);
                                 phaseTemp[ind(k1,k2,k3,k4,k5,k6)] = 0;
                             
                         }
