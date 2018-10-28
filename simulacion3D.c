@@ -430,7 +430,7 @@ double potencial()
     }
 
     
-    //fftw_execute(pIda);
+    
     fftw_execute(pIda);
     
     //Guarda out en mem. 
@@ -453,41 +453,22 @@ double potencial()
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny   ;k2 += 1){
                 for(k3 = 0; k3 <Nz   ;k3 += 1){
-            //printf("%f\n", mem[in(k1,k2)]);
-            //printf("%f %f %d %d\n",calcK2((double)k1,(double)k2), mem[in(k1,k2)],k1,k2);            
+        
              out[in(k1,k2,k3)] = -4.0*PI*1.0*(mem[in(k1,k2,k3)])*calcK2((double)k1,(double)k2,(double)k3);//Porque dx = dy y Nx = Ny.
-            //printf("%f\n", mem[in(k1,k2)]);
-            //out[in(k1,k2)] = -PI*G*mem[in(k1,k2)]/(creal(cpow(I*PI*dx*k1,2))+ creal(cpow(I*PI*dy*k2,2)));//Random plan b que parece fallar.
-            //printf("%f\n", creal(cpow(I*PI*dx*k2,2)));
+
             
         //out[in(k1,k2)] = mem[in(k1,k2)]; //Descomentar esta línea para obtener la distribucion original.
                 }
         }
     }
-    
-    
-
-     for(k1=0;k1<Nx;k1+=1){
-        for(k2 = 0; k2 <Ny;k2 += 1){
-            for(k3 = 0; k3 <Nz;k3 += 1){
-        //acce[ina(k1,k2,k3,0)] = creal(out[in(k1,k2,k3)]); //Voy a guardar en accex mi espacio de fourier
-       // acce[ina(k1,k2,k3,1)] = cimag(out[in(k1,k2,k3)]); //Voy a guardar en accey mi espacio de fourier
-      //  acce[ina(k1,k2,k3,2)] = cimag(out[in(k1,k2,k3)]); //Voy a guardar en accez mi espacio de fourier
-            }
-        }
-    }
-    
-        k1 = 0;
-    //    printf("a0 es %f\n", creal(mem[in(0,0,0)]));
 
     fftw_execute(pIda);
-    printf("Masa total %f\n",totalMass);
 
 
     for(k1=0;k1<Nx;k1+=1){
         for(k2 = 0; k2 <Ny;k2 += 1){
             for(k3 = 0; k3 <Ny;k3 += 1){
-        pot[in(k1,k2,k3)] = creal(inR[in(k1,k2,k3)]/Nx/Ny/Nz);//+ totalMass/((Xmax-Xmin)*(Ymax-Ymin));
+                pot[in(k1,k2,k3)] = creal(inR[in(k1,k2,k3)]/Nx/Ny/Nz);//+ totalMass/((Xmax-Xmin)*(Ymax-Ymin));
             }
         }
     }
@@ -502,49 +483,6 @@ double potencial()
  return -1;
  
 }
-
-double calcK3(double i2, double j2, double k2)
-{
-    //if( ( (j2 == 0) || (j2 == Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2) )  ){
- //   if( ( (j2 == 0) || (j2==  Nx/2) )  && ( (i2 == 0) || (i2 == Nx/2)   ) && ( (k2 == 0) || (k2 == Nx/2)   ) ){
- //       return 0;
- //   }
-    
-    if( (i2 == 0) && (j2 == 0) && (k2 == 0)){
-     return 0;   
-    }
-     if(i2<Nx/2+1){
-         i2 = i2/Nx*PI;
-     }
-     if(j2<Nx/2+1){
-         j2 = j2/Nx*PI;
-     }
-     if(j2<Nx/2+1){
-         k2 = k2/Nx*PI;
-     }
-     if(i2>=Nx/2+1){
-         i2 = (Nx-i2)/Nx*PI;
-     }
-     if(j2>=Nx/2+1){
-         j2 = (Nx-j2)/Nx*PI;
-     }
-     if(j2>=Nx/2+1){
-         k2 = (Nx-k2)/Nx*PI;
-     }
-    double rta1= 2*sin(j2)/dx;
-    double rta2= 2*sin(i2)/dx;
-    double rta3= 2*sin(k2)/dx;
-//     double rta1= -4*Nx*sin(PI*i2/Nx)/PI;
-//     double rta2= -4*Nx*sin(PI*j2/Nx)/PI;
-
-    
-    //printf(" (%.0f, %.0f) = %f\n",i2,j2, -1.0/(pow(rta1,2)+pow(rta2,2)));
-
-    return 1.0/(pow(rta1,2)+pow(rta2,2)+pow(rta3,2));
-    //return 1.0/(i2*i2+j2*j2);
-
-}
-
 
 double calcK2(double i2, double j2, double k2)
 {
@@ -579,20 +517,7 @@ double calcK2(double i2, double j2, double k2)
 }
 
 
-double densidadTeorica2(int inx, int iny, int inz, int nx, int ny, int nz)
-{
-    
- return -(pow(PI*0.5*2.0*nx,2)*sin(PI*darX(inx)*0.5*nx*2.0)+pow(PI*0.5*nz*2.0,2)*sin(PI*darZ(inz)*0.5*nz*2.0)+pow(PI*0.5*ny*2.0,2)*sin(PI*darY(iny)*0.5*ny*2.0))/(4.0*PI);
 
-}
-
-//POtencial con sin(nx*pi*x/Nx) + sin(ny*pi*y/Ny)
-double potencialTeorico2(int inx, int iny, int inz, int nx, int ny, int nz)
-{
- return sin(PI*darX(inx)*0.5*nx*2)+sin(PI*darY(iny)*0.5*ny*2.0)+sin(PI*darZ(inz)*0.5*nz*2.0);
- //np.sin(np.pi*xin*nx*2.0/L)+np.sin(np.pi*yin*ny*2.0/L)
-
-}
 
 //Imprime las constantes de la simulación para referencia fuera del C.
 void printConstant(char *name, double value)
@@ -714,11 +639,6 @@ void calAcce()
     acce[ina(k1,k2,k3,0)] =  (-givePot(mod(k1-2,Nx),k2,k3) + 8*givePot(mod(k1-1,Nx),k2,k3)-8*givePot(mod(k1+1,Nx),k2,k3)+givePot(mod(k1+2,Nx),k2,k3))/(12*dx);
     acce[ina(k1,k2,k3,1)] =  (-givePot(k1,mod(k2-2,Ny),k3) + 8*givePot(k1,mod(k2-1,Ny),k3)-8*givePot(k1,mod(k2+1,Ny),k3)+givePot(k1,mod(k2+2,Ny),k3))/(12*dy);
     acce[ina(k1,k2,k3,2)] =  (-givePot(k1,k2,mod(k3-2,Nz)) + 8*givePot(k1,k2,mod(k3-1,Nz))-8*givePot(k1,k2,mod(k3+1,Nz))+givePot(k1,k2,mod(k3+2,Nz)))/(12*dz);
-    
-    //acceTheo[ina(k1,k2,k3,0)] =  (-gaussD2(mod(k1-2,Nx),k2,k3, 0.2, 0.13, 1.0) + 8*gaussD2(mod(k1-1,Nx),k2,k3, 0.2, 0.13, 1.0)-8*gaussD2(mod(k1+1,Nx),k2,k3, 0.2, 0.13, 1.0)+gaussD2(mod(k1+2,Nx),k2,k3, 0.2, 0.13, 1.0))/(12*dx);
-    //acceTheo[ina(k1,k2,k3,1)] =  (-gaussD2(k1,mod(k2-2,Ny),k3, 0.2, 0.13, 1.0) + 8*gaussD2(k1,mod(k2-1,Ny),k3, 0.2, 0.13, 1.0)-8*gaussD2(k1,mod(k2+1,Ny),k3, 0.2, 0.13, 1.0)+gaussD2(k1,mod(k2+2,Ny),k3, 0.2, 0.13, 1.0))/(12*dy);
-    //acceTheo[ina(k1,k2,k3,2)] =  (-gaussD2(k1,k2,mod(k3-2,Nz), 0.2, 0.13, 1.0) + 8*gaussD2(k1,k2,mod(k3-1,Nz), 0.2, 0.13, 1.0)-8*gaussD2(k1,k2,mod(k3+1,Nz), 0.2, 0.13, 1.0)+gaussD2(k1,k2,mod(k3+2,Nz), 0.2, 0.13, 1.0))/(12*dz);
-            //printf("%d %d\n" ,k1, mod(k2-2,Ny));
             }
         }
     }
@@ -1034,6 +954,11 @@ void printThr2(void (*f)(char*, int, int), char *name, int xyz)
 }
 
 
+
+
+
+//Funciones de prueba para el poisson solver.
+
 double darAcceTheo(double x, double y, double z, int xyz)
 {
         double rta = 2.0*gaussD2(x,y,z,sr,sv,ampl)/(sv*sv);
@@ -1052,7 +977,6 @@ double darAcceTheo(double x, double y, double z, int xyz)
         }
     return 0.0;
     
-    
 }
 
 
@@ -1069,28 +993,20 @@ double gaussD2Dens(double x,double y, double z, double sr, double sv, double amp
 
 }
 
-// double old(int heh){
-//     
-//             totalMass = 0;
-//         for(k1=0;k1<Nx;k1+=1) {
-//             x = Xmin*1.0+dx*k1;
-//             for(k2=0;k2<Ny;k2+=1) {
-//                 y = Ymin*1.0+ dy*k2;
-//                 for(k3=0;k3<Nz;k3+=1) {
-//                     z = Zmin*1.0+ dz*k3;
-//                     density[in(k1,k2,k3)] = densidadTeorica2(k1,k2,k3,nx,ny,nz);
-//                  //   density[in(k1,k2,k3)] = gaussD2Dens(x,y,z,sr,sv,ampl);
-//                     pot[in(k1,k2,k3)] = potencialTeorico2(k1,k2,k3,nx,ny,nz);
-//                //     pot[in(k1,k2,k3)] = gaussD2(x,y,z,sr,sv,ampl);
-//                     totalMass += density[in(k1,k2,k3)]*dx*dy*dz;// + 2.0/PI/Nx/Ny;
-//             }
-//         }
-//     }
-//     
-// }
-// 
+double densidadTeorica2(int inx, int iny, int inz, int nx, int ny, int nz)
+{
+    
+ return -(pow(PI*0.5*2.0*nx,2)*sin(PI*darX(inx)*0.5*nx*2.0)+pow(PI*0.5*nz*2.0,2)*sin(PI*darZ(inz)*0.5*nz*2.0)+pow(PI*0.5*ny*2.0,2)*sin(PI*darY(iny)*0.5*ny*2.0))/(4.0*PI);
 
+}
 
+//Potencial con sin(nx*pi*x/Nx) + sin(ny*pi*y/Ny)
+double potencialTeorico2(int inx, int iny, int inz, int nx, int ny, int nz)
+{
+ return sin(PI*darX(inx)*0.5*nx*2)+sin(PI*darY(iny)*0.5*ny*2.0)+sin(PI*darZ(inz)*0.5*nz*2.0);
+ //np.sin(np.pi*xin*nx*2.0/L)+np.sin(np.pi*yin*ny*2.0/L)
+
+}
 
 
 
