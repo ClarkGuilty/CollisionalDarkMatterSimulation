@@ -34,7 +34,7 @@ Javier Alejandro Acevedo Barroso
 
 
 //Tamaño del espacio.
-#define tamano 32
+#define tamano 16
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano
@@ -342,7 +342,7 @@ int main()
     //calDensity();
     
     int suprai = 0;
-    printf("Sirve\n");
+    printf("La masa es %f\n", mass0);
     
     
     
