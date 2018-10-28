@@ -259,10 +259,7 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
-    char *grid0 = (char*) malloc(300* sizeof(char));
-    char *grid1 = (char*) malloc(300* sizeof(char));
-    char *grid2 = (char*) malloc(300* sizeof(char));
-    
+
     double x;
 	double vx;
     double y;
@@ -350,7 +347,11 @@ int main()
     
     
 	for(suprai = 1; suprai<Nt;suprai+=1)
-    {
+    {    
+        char *grid0 = (char*) malloc(300* sizeof(char));
+    char *grid1 = (char*) malloc(300* sizeof(char));
+    char *grid2 = (char*) malloc(300* sizeof(char));
+    
         //printf("Error Mesage00\n");	
 		step();
         
