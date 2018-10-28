@@ -368,7 +368,8 @@ int main()
 		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
         sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
         sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
-        printf(grid0+"\ņ");
+        printf(grid0);
+        printf("\n")
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
         printDensityXY(grid0,0);
         printDensityYZ(grid1,0);
