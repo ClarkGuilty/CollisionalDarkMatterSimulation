@@ -348,9 +348,9 @@ int main()
     
 	for(suprai = 1; suprai<Nt;suprai+=1)
     {    
-        char *grid0 = (char*) malloc(300* sizeof(char));
-    char *grid1 = (char*) malloc(300* sizeof(char));
-    char *grid2 = (char*) malloc(300* sizeof(char));
+        char *grid0 = (char*) malloc(200* sizeof(char));
+    char *grid1 = (char*) malloc(200* sizeof(char));
+    char *grid2 = (char*) malloc(200* sizeof(char));
     
         //printf("Error Mesage00\n");	
 		step();
@@ -365,14 +365,14 @@ int main()
         //--
 		
         
-		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
+		//sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
         //sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
         //sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
         printf(grid0);
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
-        printDensityXY(grid0,0);
-        printDensityYZ(grid1,0);
-        printDensityXZ(grid2,0);
+        //printDensityXY(grid0,0);
+        //printDensityYZ(grid1,0);
+        //printDensityXZ(grid2,0);
 
         
 		potencial();
