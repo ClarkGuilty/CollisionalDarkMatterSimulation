@@ -484,6 +484,7 @@ double potencial()
  
 }
 
+//Calcula los coeficientes de Fourier en la aproximación pseudoespectral.
 double calcK2(double i2, double j2, double k2)
 {
     if( ( (j2 == 0)   )  && ( (i2 == 0)  ) && ( k2 == 0 ) ){
@@ -726,7 +727,7 @@ void step()
                     for(k5=0;k5<Nvy;k5+=1) {
                         for(k6=0;k6<Nvz;k6+=1) {
                                 phase[ind(k1,k2,k3,k4,k5,k6)] = phaseTemp[ind(k1,k2,k3,k4,k5,k6)];
-                                print("phase[%d,%d,%d,%d,%d,%d] = %f]",k1,k2,k3,k4,k5,k6,phase[ind(k1,k2,k3,k4,k5,k6)]);
+                                //printf("phase[%d,%d,%d,%d,%d,%d] = %f]",k1,k2,k3,k4,k5,k6,phase[ind(k1,k2,k3,k4,k5,k6)]);
                                 phaseTemp[ind(k1,k2,k3,k4,k5,k6)] = 0;
                             
                         }
