@@ -371,9 +371,9 @@ int main()
         printf(grid0);
         printf("\n");
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
-        printDensityXY(grid0,1);
-        printDensityYZ(grid1,1);
-        printDensityXZ(grid2,1);
+        printDensityXY(grid0,tamano/2);
+        printDensityYZ(grid1,0);
+        printDensityXZ(grid2,tamano);
 
         
 		potencial();
