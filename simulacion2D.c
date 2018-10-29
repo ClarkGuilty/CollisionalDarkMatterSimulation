@@ -795,7 +795,7 @@ double collision(int icolx, int icoly, int jcolx, int jcoly, double tau)
 double feq(int iposx, int iposy, int jvelx, int jvely)
 {
     double ex = -1.0*(pow(darVx(jvelx)-velocityx[in(iposx,iposy)],2) + pow(darVy(jvely)-velocityy[in(iposx,iposy)],2) )/(2.0*energy[in(iposx,iposy)]);
-    double other = giveDensity(iposx,iposy) / pow(2.0*PI*energy[in(iposx,iposy)],3/2);
+    double other = giveDensity(iposx,iposy) / (2.0*PI*energy[in(iposx,iposy)]);
     return other * exp(ex);    
 }
 

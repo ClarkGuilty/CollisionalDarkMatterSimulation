@@ -158,7 +158,7 @@ double dvy = (Vymax - Vymin)*1.0/(Nvy);
 double dvz = (Vzmax - Vzmin)*1.0/(Nvz);
 
 double dt = 0.5;
-int Nt = 30;
+int Nt = 50;
 
 double totalPerdido;
 
@@ -225,7 +225,7 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 
 double sr = 0.1;
 double sv = 0.1;
-double ampl = 0.5;
+double ampl = 1;
 
 
 int main()
@@ -703,7 +703,7 @@ double newij(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz)
 }
 
 
-//Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. 
+//Calcula un paso de streaming. Guarda una copia del phase actual en phaseOld. Actualiza phase. 
 void step()
 {
     for(k1=0;k1<Nx;k1+=1) {
@@ -743,7 +743,7 @@ void step()
 } 
 
 
-
+//Calcula un paso colisional. Guarda una copia del phase actual en phaseOld. Actualiza phase. 
 void collisionStep()
 {
     for(k1=0;k1<Nx;k1+=1) {
@@ -823,6 +823,13 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 {
     if(TAU==0) return 0;
     return (feq(icolx,icoly,icolz,jcolx,jcoly,jcolz) - phase[ind(icolx,icoly,icolz,jcolx,jcoly,jcolz)])/tau; 
+}
+
+double feq(int iposx, int iposy, int iposz, int jvelx, int jvely, int jvelz)
+{
+    double ex = -1.0*(pow(darVx(jvelx)-velocityx[in(iposx,iposy,iposz)],2) + pow(darVy(jvely)-velocityy[in(iposx,iposy,iposz)],2) + pow(darVy(jvelz)-velocityy[in(iposx,ipos,iposz)],2) )/(2.0*energy[in(iposx,iposy,iposz)]);
+    double other = giveDensity(iposx,iposy,iposz) / pow(2.0*PI*energy[in(iposx,iposy,iposz)],3/2);
+    return other * exp(ex);    
 }
 
 //Calcula la posición del elemento (in1,in2,in3,in4,in5,in6) del espacio de fase (x,y,z,vx,vy,vz).

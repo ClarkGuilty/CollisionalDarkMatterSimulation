@@ -318,9 +318,6 @@ void printConstant(char *name, double value)
 double gaussD(double x, double v, double sx, double sv, double amplitude)
 {
 	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
-//	double ex = -x*x/(sx*sx)-v*v/(sv*sv);
-
-	//return amplitude*exp(ex)/(2*PI*sx*sv);
 	return amplitude*exp(ex);
 
 }
@@ -329,20 +326,6 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 double jeans(double x, double v, double rho, double sigma, double A, double k)
 {
  return rho*pow(2*PI*sigma*sigma,-0.5)*exp(-v*v/(2*sigma*sigma))*(1.0+A*cos(k*x));
-}
-
-//Interesante pero no tan útil de implementar en 1D.
-double einasto(double x, double v, double sx, double sv, double amplitude)
-{
-        //double x0 = 1.0; //EN vía lactea 20kpc.
-        double gamma = 0.17;
-        double in = pow(x/sx,gamma)-1.0;
-        double exx = -2.0*in/gamma;
-        //double eina = amplitude*exp(exx);
-        //double exv = -v*v/(2*sv*sv);
-        //double max = sqrt(2/PI)*exp(exv); //Para la velocidad se una una gaussiana
-        return exx;
-    
 }
 
 //Calcula la densidad, la velocidad macroscópica (u) y la energía libre (e) y los carga en los correspondientes arreglos.
@@ -385,7 +368,6 @@ void potencial()
         in[i] = giveDensity(i) - totalMass/(Xmax-Xmin);
         inR[i] = -1.0;
         out[i] = 0;
-        //in[i] = sin(2.0*PI*i*deltax);//Actualmente funciona para sin(x) confirmado. (se esperaba que la parte real de out fuera 0 y la imaginaria tuviera los picos, sin embargo solo el módulo cumple esto)
     }
     fftw_execute(pIda);
 
@@ -400,7 +382,6 @@ void potencial()
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
       out[i] = -4.0*PI*G*mem[i]*calcK2(i);
-      //printf("%f %f \n",creal(out[i]), calcK2((double)i));
     //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
     }
     fftw_execute(pIda);
@@ -408,8 +389,6 @@ void potencial()
     
     for(i=0;i<Nx;i+=1){
         pot[i] = creal(inR[i]/Nx);
-    //    fprintf(oR, "%f\n",creal(inR[i])/Nx);
-    //    fprintf(oI, "%f\n",cimag(inR[i])/Nx);
     }
 }
 
@@ -514,21 +493,13 @@ double newij(int iin, int jin)
         j2 = jin+dj;
 
         if(j2 < 0 || j2 >= Nv) return -1;
-//        if(i2 >= Nx){
-//            printf("i = %d\n", i2);
-//        }
         v = Vmin*1.0+dv*j2;
-        
-        //parte colisional.
-//        v += collision(iin, jin, TAU);
-        //
         x = v*dt;
         double di = x/dx*scale;
         di = (int) di;
 
         i2 = iin + di;
         i2 = mod(i2,Nx);
-//	printf("%d\n",j2);
     return 0;
 }
 
@@ -538,10 +509,7 @@ void step()
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
 			if(newij(k,l) ==0){
-				//phaseOld[k][l] = phase[k][l];// TODO:No se usa
 				phaseTemp[i2][j2] += phase[k][l];
-                    //phaseTemp[i2][l] += collision(k,mod(l,1024),TAU);
-                    //phaseTemp[k][l] -= collision(k,l,TAU);
 			}
 		}
 	}
@@ -559,8 +527,6 @@ void collisionStep()
     	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
 			if(newijCol(k,l) ==0){
-				//phaseOld[k][l] = phase[k][l];
-				//phaseTemp[i2][j2] += phase[k][l];
                 phaseTemp[i2][l] += collision(k,l,TAU) + phase[k][l] ;//+ dt*feq2(k,l)*acce[k]*(giveVel(l)-velocity[k])/energy[k];
 			}
 		}
@@ -581,14 +547,9 @@ double newijCol(int iin, int jin)
 
 
         double v = acce[iin]*dt;
-        //double dj = v/dv;
-        //dj = (int)dj;
         j2 = jin; 
 
         if(j2 < 0 || j2 >= Nv) return -1;
-//        if(i2 >= Nx){
-//            printf("i = %d\n", i2);
-//        }
         v = giveVel(j2);
         
         x = v*dt*scale;
@@ -597,7 +558,6 @@ double newijCol(int iin, int jin)
 
         i2 = iin + di;
         i2 = mod(i2,Nx);
-//	printf("%d\n",j2);
     return 0;
 }
 
