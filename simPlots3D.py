@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
-dpiT = 500
+dpiT = 300
 
 def fastShow(image, title="none",clim=None):
     plt.clf()
