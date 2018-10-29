@@ -115,6 +115,14 @@ fftw_complex *inE, *out, *inR, *mem, *out2;
 fftw_plan pIda;
 fftw_plan pVuelta;
 
+
+double x;
+double vx;
+double y;
+double vy;
+double z;
+double vz;
+
 double ix;
 double iy;
 double iz;
@@ -209,8 +217,8 @@ double densidadTeorica2(int inx, int iny, int inz, int nx, int ny, int nz);
 double calcK3(double i2, double j2, double k2);
 double calcK4(double i2, double j2);
 double darAcceTheo(double x, double y, double z, int xyz);
-
-
+void collisionStep();
+double newijCol(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz);
 
 double sr = 0.1;
 double sv = 0.1;
@@ -260,12 +268,6 @@ int main()
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
 
-    double x;
-	double vx;
-    double y;
-	double vy;
-    double z;
-	double vz;
 
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
@@ -736,6 +738,85 @@ void step()
     }
     
 } 
+
+
+
+void collisionStep()
+{
+    for(k1=0;k1<Nx;k1+=1) {
+        for(k2=0;k2<Ny;k2+=1) {
+            for(k3=0;k3<Nz;k3+=1) {
+                for(k4=0;k4<Nvx;k4+=1) {
+                    for(k5=0;k5<Nvy;k5+=1) {
+                        for(k6=0;k6<Nvz;k6+=1) {
+                            if(newijCol(k1,k2,k3,k4,k5,k6) == 0){
+                                phaseTemp[ind(i2x,i2y,i2z,k4,k5,k6)] += collision(k1,k2,k3,k4,k5,k6,TAU) + phase[ind(k1,k2,k3,k4,k5,k6)];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+	
+    for(k1=0;k1<Nx;k1+=1) {
+        for(k2=0;k2<Ny;k2+=1) {
+            for(k3=0;k3<Nz;k3+=1) {
+                for(k4=0;k4<Nvx;k4+=1) {
+                    for(k5=0;k5<Nvy;k5+=1) {
+                        for(k6=0;k6<Nvz;k6+=1) {
+                                phase[ind(k1,k2,k3,k4,k5,k6)] = phaseTemp[ind(k1,k2,k3,k4,k5,k6)];
+                                phaseTemp[ind(k1,k2,k3,k4,k5,k6)] = 0;
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+	
+}
+
+
+//Calcula el cambio en r. Ignora j.
+double newijCol(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz)
+{        
+        j2x = jinx; 
+        j2y = jiny; 
+        j2z = jinz; 
+
+        if((j2x < 0 || j2x >= Nvx) && (j2y < 0 || j2y >= Nvy) && (j2z < 0 || j2z >= Nvz) ) return -1;
+
+        vx = darVx(j2x);
+        vy = darVy(j2y);
+        vz = darVz(j2z);
+        
+        x = vx*dt*scale; 
+        x = x/dx;
+        x = (int) x;
+        
+        y = vy*dt*scale; 
+        y = y/dy;
+        y = (int) y;
+        
+        z = vz*dt*scale; 
+        z = z/dz;
+        z = (int) z;
+        
+
+        i2x = iinx + x;
+        i2x = mod(i2x,Nx);
+        
+        i2y = iiny + y;
+        i2y = mod(i2x,Nx);
+        
+        i2z = iinz + z;
+        i2z = mod(i2z,Nz);
+//	printf("%d\n",j2);
+    return 0;
+}
+
+
 
 //Calcula la posición del elemento (in1,in2,in3,in4,in5,in6) del espacio de fase (x,y,z,vx,vy,vz).
 int ind(int in1, int in2, int in3, int in4, int in5, int in6)

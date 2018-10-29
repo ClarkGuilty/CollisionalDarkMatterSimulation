@@ -719,7 +719,7 @@ int mod(int p, int q)
 }
 
 
-void collisionStep()//Modificado sin terminar
+void collisionStep()
 {
     	for(k1 = 0; k1<Nx; k1++){
             for(k2 = 0; k2<Ny; k2++){
@@ -737,11 +737,9 @@ void collisionStep()//Modificado sin terminar
             for(k2 = 0; k2<Ny; k2++){
                 for(k3= 0; k3<Nvx; k3++){
                     for(k4= 0; k4<Nvy; k4++){
-                        if(newijCol(k1,k2,k3,k4) ==0){
                             phase[ind(k1,k2,k3,k4)] = phaseTemp[ind(k1,k2,k3,k4)] ;
                             phaseTemp[ind(k1,k2,k3,k4)] = 0;
-                        }
-                    }
+                }
 			}
 		}
 	}
