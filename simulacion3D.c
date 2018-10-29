@@ -150,7 +150,7 @@ double dvy = (Vymax - Vymin)*1.0/(Nvy);
 double dvz = (Vzmax - Vzmin)*1.0/(Nvz);
 
 double dt = 0.5;
-int Nt = 15;
+int Nt = 30;
 
 double totalPerdido;
 

@@ -44,7 +44,7 @@ densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 #densidadXZ1  = np.loadtxt('./datFiles/densXZ1.dat').T
 
 
-fastShow(densidadXY0, "XY0")
+fastShow(densidadXY0, "XY0",clim=[0,0.018])
 fastShow(densidadYZ0, "YZ0")
 fastShow(densidadXZ0, "XZ0")
 
@@ -73,7 +73,7 @@ for i in range(1,Nt):
 	#densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
 	#densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
 
-	fastShow(densidadXY, "XY{:d}".format(i), clim=[0,0.020])
+	fastShow(densidadXY, "XY{:d}".format(i), clim=[0,0.018])
 	#fastShow(densidadYZ, "YZ{:d}".format(i))
 	#fastShow(densidadXZ, "XZ{:d}".format(i))
 
