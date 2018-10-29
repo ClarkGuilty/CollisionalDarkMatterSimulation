@@ -270,16 +270,8 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
-
-
-        //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
-        //phase[0][0][0][1] = 1;
-        //double mass0 = calDensity();
-        
-        //printf("Masa = %f\n", mass0);
-        
-//        radius = 0.1;
+
     sr = 0.1;
     sv = 0.1;
     ampl = 1;
@@ -519,9 +511,6 @@ double calcK2(double i2, double j2, double k2)
     return 1.0/(i2*i2+j2*j2+k2*k2);
 
 }
-
-
-
 
 //Imprime las constantes de la simulación para referencia fuera del C.
 void printConstant(char *name, double value)
@@ -819,12 +808,14 @@ double newijCol(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz)
     return 0;
 }
 
+//Calcula la contribución del término colisional.
 double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau)
 {
     if(TAU==0) return 0;
     return (feq(icolx,icoly,icolz,jcolx,jcoly,jcolz) - phase[ind(icolx,icoly,icolz,jcolx,jcoly,jcolz)])/tau; 
 }
 
+//Distribución de equilibrio usada para calcular la contribución del término colisional.
 double feq(int iposx, int iposy, int iposz, int jvelx, int jvely, int jvelz)
 {
     double ex = -1.0*(pow(darVx(jvelx)-velocityx[in(iposx,iposy,iposz)],2) + pow(darVy(jvely)-velocityy[in(iposx,iposy,iposz)],2) + pow(darVy(jvelz)-velocityy[in(iposx,iposy,iposz)],2) )/(2.0*energy[in(iposx,iposy,iposz)]);
@@ -1052,7 +1043,7 @@ void printThr2(void (*f)(char*, int, int), char *name, int xyz)
 
 
 
-//Funciones de prueba para el poisson solver.
+//Funciones de prueba para el poisson solver. TODO: borrar cuando sea seguro.
 
 double darAcceTheo(double x, double y, double z, int xyz)
 {
