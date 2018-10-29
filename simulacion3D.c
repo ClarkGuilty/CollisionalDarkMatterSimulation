@@ -309,7 +309,7 @@ int main()
         
     double mass0 = calDensity();
         
-    printDensityXY("./datFiles/densXY0.dat",0);
+    printDensityXY("./datFiles/densXY0.dat",tamano/2);
     printDensityYZ("./datFiles/densYZ0.dat",0);
     printDensityXZ("./datFiles/densXZ0.dat",0);
     
@@ -366,14 +366,12 @@ int main()
 		
         
 		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
-        sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
-        sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
-        printf(grid0);
-        printf("\n");
+        //sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
+        //sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
         printDensityXY(grid0,tamano/2);
-        printDensityYZ(grid1,0);
-        printDensityXZ(grid2,tamano);
+        //printDensityYZ(grid1,0);
+        //printDensityXZ(grid2,tamano);
 
         
 		potencial();

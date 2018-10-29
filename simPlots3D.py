@@ -13,12 +13,13 @@ from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 dpiT = 500
 
-def fastShow(image, title="none"):
+def fastShow(image, title="none",clim=None):
     plt.clf()
     plt.imshow(image)
+    if(clim != None):
+        plt.clim(clim[0],clim[1])
     cbar = plt.colorbar()
-    plt.title(title)
-
+    plt.title(title)	
     plt.savefig("./images/"+title+".png",dpi=dpiT)
 
 
@@ -69,12 +70,12 @@ for i in range(1,Nt):
 	
 
 	densidadXY = np.loadtxt('./datFiles/densXY{:d}.dat'.format(i)).T
-	densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
-	densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
+	#densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
+	#densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
 
-	fastShow(densidadXY, "XY{:d}".format(i))
-	fastShow(densidadYZ, "YZ{:d}".format(i))
-	fastShow(densidadXZ, "XZ{:d}".format(i))
+	fastShow(densidadXY, "XY{:d}".format(i), clim=[0,0.020])
+	#fastShow(densidadYZ, "YZ{:d}".format(i))
+	#fastShow(densidadXZ, "XZ{:d}".format(i))
 
 
 
