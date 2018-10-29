@@ -1,6 +1,6 @@
 /*
 Javier Alejandro Acevedo Barroso
-
+Simulación del espacio de fase de un fluido tridimensional de Materia Oscura colisional con un tiempo de relajación TAU fijable.
 */
 
 #include <stdio.h>
@@ -20,10 +20,6 @@ Javier Alejandro Acevedo Barroso
 #define Ymax 1.0
 #define Zmin -1.0
 #define Zmax 1.0
-//#define Xmin 0
-//#define Xmax 2.0
-//#define Ymin 0
-//#define Ymax 2.0
 
 #define Vxmin -1.0
 #define Vxmax 1.0
@@ -108,8 +104,9 @@ int k4;
 int k5;
 int k6;
 
-
+//Para las funciones.
 double totalMass = 0;
+double totalPerdido;
 
 fftw_complex *inE, *out, *inR, *mem, *out2;
 fftw_plan pIda;
@@ -158,9 +155,7 @@ double dvy = (Vymax - Vymin)*1.0/(Nvy);
 double dvz = (Vzmax - Vzmin)*1.0/(Nvz);
 
 double dt = 0.5;
-int Nt = 5;
-
-double totalPerdido;
+int Nt = 25;
 
 double sigma = MASSo/(PI*radius*radius);
 double lambda = MASSo/2;
