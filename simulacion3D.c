@@ -219,6 +219,9 @@ double calcK4(double i2, double j2);
 double darAcceTheo(double x, double y, double z, int xyz);
 void collisionStep();
 double newijCol(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz);
+double feq(int iposx, int iposy, int iposz, int jvelx, int jvely, int jvelz);
+double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau);
+
 
 double sr = 0.1;
 double sv = 0.1;
@@ -816,7 +819,13 @@ double newijCol(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz)
     return 0;
 }
 
-
+double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau)
+{
+    
+  return 0.0;  
+    
+    
+}
 
 //Calcula la posición del elemento (in1,in2,in3,in4,in5,in6) del espacio de fase (x,y,z,vx,vy,vz).
 int ind(int in1, int in2, int in3, int in4, int in5, int in6)
