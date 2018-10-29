@@ -62,7 +62,7 @@ Javier Alejandro Acevedo Barroso
 #define MASSo 10.0
 #define scale 1.0 //1.0 es el valor estandar, modificarlo para mejorar visualización.
 
-
+#define TAU 0
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -821,10 +821,8 @@ double newijCol(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz)
 
 double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau)
 {
-    
-  return 0.0;  
-    
-    
+    if(TAU==0) return 0;
+    return (feq(icolx,icoly,icolz,jcolx,jcoly,jcolz) - phase[ind(icolx,icoly,icolz,jcolx,jcoly,jcolz)])/tau; 
 }
 
 //Calcula la posición del elemento (in1,in2,in3,in4,in5,in6) del espacio de fase (x,y,z,vx,vy,vz).
