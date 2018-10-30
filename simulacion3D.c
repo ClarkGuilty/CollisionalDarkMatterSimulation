@@ -67,8 +67,11 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 //#define G 0.2729448134597113
 
 
+//Aspectos temporales de la ejecución.
+double dt = 0.5;
+int Nt = 3;
+
 //Arreglos
-//static double phase[Nx][Ny][Nvx][Nvy] = {0};
 double *phase;
 double *phaseTemp;
 double *density;
@@ -154,8 +157,6 @@ double dvx = (Vxmax - Vxmin)*1.0/(Nvx);
 double dvy = (Vymax - Vymin)*1.0/(Nvy);
 double dvz = (Vzmax - Vzmin)*1.0/(Nvz);
 
-double dt = 0.5;
-int Nt = 25;
 
 double sigma = MASSo/(PI*radius*radius);
 double lambda = MASSo/2;
@@ -218,9 +219,9 @@ double feq(int iposx, int iposy, int iposz, int jvelx, int jvely, int jvelz);
 double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau);
 
 
-double sr = 0.1;
+double sr = 0.2;
 double sv = 0.1;
-double ampl = 1;
+double ampl = 4;
 
 
 int main()
@@ -349,10 +350,10 @@ int main()
         
         //Descomentar para versión colisional --
        
-       // if(TAU != 0){
-        //calMacro(); 
-        //collisionStep();
-        //}
+        if(TAU != 0){
+        calMacro(); 
+        collisionStep();
+        }
         
         //--
 		

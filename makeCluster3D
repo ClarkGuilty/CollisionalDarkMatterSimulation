@@ -1,6 +1,6 @@
 all: images .PHONY
 
-images: simulacion.c
+images: simulacion3D.c
 	@echo Preparando y corriendo la simulación:
 	mkdir datFiles
 	mkdir images
