@@ -13,14 +13,23 @@ from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 dpiT = 300
 
-def fastShow(image, title="none",clim=None):
+def fastShow(image, title="none",clim=None, clabel=None):
     plt.clf()
     plt.imshow(image)
     if(clim != None):
         plt.clim(clim[0],clim[1])
+    if(clabel != None):
+        cbar.set_label(clabel)
     cbar = plt.colorbar()
     plt.title(title)	
+    plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
+    plt.ylabel("Velocity [km/s]")
+    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]")
+
     plt.savefig("./images/"+title+".png",dpi=dpiT)
+
+
 
 
 def fmt(x, pos):
@@ -44,7 +53,7 @@ densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 #densidadXZ1  = np.loadtxt('./datFiles/densXZ1.dat').T
 
 
-fastShow(densidadXY0, "XY0",clim=[0,0.018])
+fastShow(densidadXY0, "XY0",clim=[0,0.018],clabel="Mass density [$M_{\odot}$ / kp$c^3$]", title="Corte Z = 0 de la densidad. Nt = {:d}".format(0))
 fastShow(densidadYZ0, "YZ0")
 fastShow(densidadXZ0, "XZ0")
 
@@ -73,7 +82,7 @@ for i in range(1,Nt):
 	#densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
 	#densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
 
-	fastShow(densidadXY, "XY{:d}".format(i), clim=[0,0.018])
+	fastShow(densidadXY, "XY{:d}".format(i), clim=[0,0.018],clabel="Mass density [$M_{\odot}$ / kp$c^3$]", title="Corte Z = 0 de la densidad. Nt = {:d}".format(i))
 	#fastShow(densidadYZ, "YZ{:d}".format(i))
 	#fastShow(densidadXZ, "XZ{:d}".format(i))
 
