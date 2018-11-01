@@ -69,7 +69,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 //Aspectos temporales de la ejecución.
 double dt = 0.5;
-int Nt = 50;
+int Nt = 5;
 
 //Arreglos
 double *phase;
@@ -349,12 +349,12 @@ int main()
 		step();
         
         //Descomentar para versión colisional --
-       
+       /*
         if(TAU != 0){
         calMacro(); 
         collisionStep();
         }
-        
+        */
         //--
 		
         
