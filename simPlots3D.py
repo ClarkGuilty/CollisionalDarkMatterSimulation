@@ -18,9 +18,9 @@ def fastShow(image, title="none",clim=None, clabel=None):
     plt.imshow(image,interpolation='nearest', aspect='auto')
     if(clim != None):
         plt.clim(clim[0],clim[1])
-    cbar = plt.colorbar()
-    if(clabel != None):
-        cbar.set_label(clabel)
+#    cbar = plt.colorbar()
+#    if(clabel != None):
+#        cbar.set_label(clabel)
     plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]")
     plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
