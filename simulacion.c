@@ -580,8 +580,8 @@ double feq2(int ipos, int jvel)
     double other = density[ipos] / sqrt(2*PI*energy[ipos]);
     double lowMach = 1.0 + giveVel(jvel)*velocity[ipos]/energy[ipos] + pow(giveVel(jvel)*velocity[ipos],2)/(2.0*energy[ipos]) - pow(velocity[ipos],2)/(2.0*energy[ipos]);
     return other * exp(ex)* lowMach;
-    
 }
+
 
 double givePos(int ito)
 {

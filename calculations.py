@@ -14,16 +14,24 @@ import scipy as sc
 import decimal as dec
 D=dec.Decimal
     
+
+#1.05457148 × 10-34 m2 kg / s
 #retorna el valor de G en mis unidades
 def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times en fracción de la edad del universo.
-    x0 = 3.0857e+22 #un megaparsec en metros.
-    m0 = 1.988e30  #Masa solar en kg.
-    t0 = 13.772*1000000000 #Edad del universo en años.
-    t0 = t0*365.24*24*60*60 #Ahora en segundos.
-    G =  6.67408e-11*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2) #G en mis unidades.
-    hubble = 70/(x*x0*1e-3)*(times*t0)*x #La constante de hubble en las unidades.
-    sv = 3e-26* np.power(x*x0*0.01,-3) * times*t0 
+    x = D(x)
+    mass = D(mass)
+    times = D(times)
+    x0 = D('3.0857e+22') #un megaparsec en metros.
+    m0 = D('1.988e30')  #Masa solar en kg.
+    t0 = D('13.772')*1000000000 #Edad del universo en años.
+    t0 = t0*D('365.24')*24*60*60 #Ahora en segundos.
+    G =  D('6.67408e-11')*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2) #G en mis unidades.
+    hubble = 70/(x*x0*D('1e-3'))*(times*t0)*x #La constante de hubble en las unidades.
+    #sv = 3e-26* np.power(x*x0*0.01,-3) * times*t0 
+    h = D('1.05457148e-34')*np.power((x*x0),-2)/(m0*mass)*D(times*t0)
     print("La constante de Hubble es: %f" % hubble)
+    print("La constante de Planck/2pi es:")
+    print(h)
     print("La constante gravitacional es %f" % G)
     return G
     
@@ -54,6 +62,19 @@ def unidadesAcce(x,mass,times):
     sv = x/ t**2
     return sv
 
+#Retorna el valor de un metro^2 / segundo^2 en mis unidades.
+def unidadesPot(x,mass,times):
+    x = D(x)
+    mass = D(mass)
+    times = D(times)
+    x0 = D('3.0857e+22' )
+    t0 = D('13.772e9') * D('365.24')*24*60*60
+    t = times*t0
+    x = x*x0
+    #sv = D('3e-26')*(x**(-3) ) *times*t0
+    sv = x/ t
+    return sv**2
+
 #Calcula la masa de la materia oscura en mis unidades, massValue siendo la masa en eV.
 def unidadesMass(massValue, mass):
     mass = D(mass)
@@ -69,10 +90,13 @@ x = 50e-3
 m = 0.1e12
 t= 3e-3
 
-print("El valor de una unidad de velocidad es")
+print("El valor de una unidad de velocidad es [km/s]}")
 print(unidadesVel(x,m,t)/1000)
 
-print("El valor de una unidad de aceleración es")
+print("El valor de una unidad de potencial es [J/kg]")
+print(unidadesPot(x,m,t))
+
+print("El valor de una unidad de aceleración es [km/s²]")
 print(unidadesAcce(x,m,t)/1000)
 
 #newG = unidades(5,1e15,2e-1) #Clusters

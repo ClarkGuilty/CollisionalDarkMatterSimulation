@@ -39,6 +39,8 @@ figure = plt.figure(figsize=(7,5))
 dpII = 300
 velUnit = 1183 #m/s
 estUnit = 50 #kpc
+potUnit = 1400318153625 #J/kg
+acceUnit = 9.0761782e-13 #km/s²
 
 
 #plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], interpolation='nearest', aspect='auto') #Es mucho más rápido imshow	
@@ -79,9 +81,11 @@ estUnit = 50 #kpc
 potential = np.loadtxt("./datFiles/potential{:d}.dat".format(0))
 plt.plot(x,potential)
 plt.ylabel("Potential [J /kg]",fontsize=fsize)
-plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+plt.title("Potential at t=0".format(TAU),fontsize=fsize)
 #plt.ylim(-6.6e10,-5.8e10)
 plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+#plt.yticks(plt.yticks()[0], [str(np.round(t*potUnit)) for t in plt.yticks()[0]]) 
+plt.yticks(plt.yticks()[0], [fmt(np.round(t*potUnit),1) for t in plt.yticks()[0]]) 
 plt.xlabel("Position [kpc]",fontsize=fsize)
 plt.savefig("1dInitPot.png", dpi = dpII)
 plt.clf()
@@ -89,16 +93,16 @@ plt.clf()
 
 acce = np.loadtxt("./datFiles/acce{:d}.dat".format(0))
 plt.plot(x,acce)
-plt.ylabel("Acceleration [kpc / $(mYears)^2$]",fontsize=fsize)
-plt.title("Acceleration $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+plt.ylabel("Acceleration [km / $s^2$]",fontsize=fsize)
+plt.title("Acceleration at t=0".format(TAU),fontsize=fsize)
 #plt.yticks(plt.yticks()[0], [str(t*2754463327) for t in plt.yticks()[0]])
 plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-
-plt.ylim(-0.009,0.009)
+plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
+plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
 
 plt.xlabel(" [kpc]",fontsize=fsize)
 plt.savefig("1dInitAcce.png", dpi = dpII)
-p#lt.clf()
+#plt.clf()
 
 
 
