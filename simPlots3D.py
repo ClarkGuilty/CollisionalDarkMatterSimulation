@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
-rcParams.update({'font.size': 11})
+rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'plasma'
 dpiT = 300
 fsize = 16
