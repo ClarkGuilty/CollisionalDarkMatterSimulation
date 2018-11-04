@@ -28,7 +28,8 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.imshow(image,interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
     if(clim != None):
-        plt.clim(clim[0],clim[1])
+#        plt.clim(clim[0],clim[1])
+	print("Satan")
     if(clabel != None):
         cbar.set_label(clabel)
     plt.yticks(plt.yticks()[0], [str(np.round(t*50)) for t in plt.yticks()[0]]) 
@@ -36,7 +37,7 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.xticks(plt.xticks()[0], [str(t*50) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
     plt.title(title)	
-    print("SATAN")
+#    print("SATAN")
     plt.savefig("./images/"+saveN+".png",dpi=dpiT)
 
 
