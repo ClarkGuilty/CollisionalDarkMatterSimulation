@@ -90,7 +90,7 @@ imagenes = tamano//8
 
 for i in range(1,Nt):
 	densidadXY = np.loadtxt('./datFiles/densXY{:d}.dat'.format(i)).T
-    densidad2 = np.log(densidadXY)
+	densidad2 = np.log(densidadXY)
 #	densidad2 = densidad2[densidad2 != -inf
 	#densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
 	#densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
