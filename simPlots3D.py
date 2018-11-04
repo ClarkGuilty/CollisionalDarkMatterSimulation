@@ -11,8 +11,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
+rcParams.update({'font.size': 11})
+plt.rcParams['image.cmap'] = 'plasma'
 dpiT = 300
-
+fsize = 16
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 #print(constantes)
@@ -31,11 +33,11 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
 #        plt.clim(clim[0],clim[1])
 	print("Satan")
     if(clabel != None):
-        cbar.set_label(clabel)
-    plt.yticks(plt.yticks()[0], [str(np.round(t*50)) for t in plt.yticks()[0]]) 
-    plt.ylabel("Position [kpc]")
-    plt.xticks(plt.xticks()[0], [str(t*50) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
+        cbar.set_label(clabel,fontsize=fsize)
+    plt.yticks(plt.yticks()[0], [str(np.round(darV(t)*50)) for t in plt.yticks()[0]]) 
+    plt.ylabel("Position [kpc]",fontsize=fsize)
+    plt.xticks(plt.xticks()[0], [str(darV(t)*50) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.title(title)	
 #    print("SATAN")
     plt.savefig("./images/"+saveN+".png",dpi=dpiT)
