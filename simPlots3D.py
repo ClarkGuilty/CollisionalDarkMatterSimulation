@@ -61,8 +61,8 @@ densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 
 
 fastShow(densidadXY0, title="Corte Z = 0 de la densidad. Nt = {:d}".format(0),clim=[0,0.016],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY0" )
-fastShow(densidadYZ0, "YZ0")
-fastShow(densidadXZ0, "XZ0")
+#fastShow(densidadYZ0, "YZ0")
+#fastShow(densidadXZ0, "XZ0")
 
 #fastShow(densidadXY1, "XY1")
 #fastShow(densidadYZ1, "YZ1")
