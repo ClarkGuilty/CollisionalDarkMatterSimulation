@@ -70,7 +70,7 @@ fastShow(densidadXZ0, "XZ0")
 #densidadXY = np.loadtxt("./datFiles/densXY{:d}.dat".format(i)).T
 #plt.figure()
 imagenes = tamano//8
-for i in range(0,tamano,tamano//imagenes):
+#for i in range(0,tamano,tamano//imagenes):
 #    potXY0 = np.loadtxt("./datFiles/pot0XY{:d}.dat".format(i)).T
     #potXY1 = np.loadtxt("./datFiles/pot1XY{:d}.dat".format(i)).T
  #   accexXY0 = np.loadtxt("./datFiles/accex0XY{:d}.dat".format(i)).T
