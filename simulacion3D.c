@@ -30,7 +30,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 
 //Tamaño del espacio.
-#define tamano 32
+#define tamano 16
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano
@@ -268,9 +268,7 @@ int main()
 	printConstant("Nt", Nt);
         printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
 
-    sr = 0.1;
-    sv = 0.1;
-    ampl = 1;
+
         
     for(k1=0;k1<Nx;k1+=1) {
         x =  Xmin*1.0+dx*k1;
