@@ -417,8 +417,6 @@ double potencial()
             }
         }
     }
-
-    
     
     fftw_execute(pIda);
     
@@ -435,8 +433,6 @@ double potencial()
     //Se debe usar el mismo plan sí o sí al parecer.
 
     //Devuelve carga a out Î(Chi).
-    
-    
     
     //out[0] = -4*PI*G*mem[0] ;
     for(k1=0;k1<Nx;k1+=1){
@@ -899,6 +895,7 @@ void printDensityXZ(char *name, int corteY)
 			}
 	fclose(output);
 }
+
 //Imprime el plano YZ en el corte x=corteX.
 void printDensityYZ(char *name, int corteX)
 {
