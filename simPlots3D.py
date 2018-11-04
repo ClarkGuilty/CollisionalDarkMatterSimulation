@@ -30,7 +30,7 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.imshow(image,interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
     if(clim != None):
-	print("Satan")
+		print("Satan")
 #        plt.clim(clim[0],clim[1])
     if(clabel != None):
         cbar.set_label(clabel,fontsize=fsize)
