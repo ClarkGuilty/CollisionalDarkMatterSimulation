@@ -28,7 +28,7 @@ def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times e
     return G
     
 #Retorna el valor de un metro / segundo en mis unidades.
-def unidadesDec(x,mass,times):
+def unidadesVel(x,mass,times):
     x = D(x)
     mass = D(mass)
     times = D(times)
@@ -40,6 +40,20 @@ def unidadesDec(x,mass,times):
     sv = x/ t
     return sv
 
+
+#Retorna el valor de un metro / segundo^2 en mis unidades.
+def unidadesAcce(x,mass,times):
+    x = D(x)
+    mass = D(mass)
+    times = D(times)
+    x0 = D('3.0857e+22' )
+    t0 = D('13.772e9') * D('365.24')*24*60*60
+    t = times*t0
+    x = x*x0
+    #sv = D('3e-26')*(x**(-3) ) *times*t0
+    sv = x/ t**2
+    return sv
+
 #Calcula la masa de la materia oscura en mis unidades, massValue siendo la masa en eV.
 def unidadesMass(massValue, mass):
     mass = D(mass)
@@ -49,20 +63,31 @@ def unidadesMass(massValue, mass):
     return massValue*val/(m0*mass)
     
     
-print("Las unidades")
-print(unidadesDec(20e-3,1e12,3e-3)/1000)
+
+
+x = 50e-3
+m = 0.1e12
+t= 3e-3
+
+print("El valor de una unidad de velocidad es")
+print(unidadesVel(x,m,t)/1000)
+
+print("El valor de una unidad de aceleración es")
+print(unidadesAcce(x,m,t)/1000)
 
 #newG = unidades(5,1e15,2e-1) #Clusters
-newG = unidades(20e-3,1e12,3e-3) #Galaxia 
+#newG = unidades(20e-3,1e12,3e-3) #Galaxia 
+newG = unidades(x,m,t) 
 dmmass = 1000
-print("El 4*Pi*G = %f" % (4*np.pi*newG))
+#print("El 4*Pi*G = %f" % (4*np.pi*newG))
 print("El G = %f" % (newG))
 
 #print("La masa a usar es %f eV = %f" % (dmmass, unidadesMass(dmmass, 1e11)))
-print(unidadesMass(dmmass, 1e11))
+#print(unidadesMass(dmmass, 1e11))
 
 
 def jeans(x,v,rho,sigma,A,k):
     return rho/np.sqrt(2*np.pi*sigma*sigma)*np.exp(-v*v/(2*sigma*sigma))*(1.0+A*np.cos(k*x))
     
-print(jeans(-0.57,-0.46, 10, 0.1, 4 , 2*np.pi))
+#print(jeans(-0.57,-0.46, 10, 0.1, 4 , 2*np.pi))
+

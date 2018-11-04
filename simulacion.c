@@ -36,11 +36,13 @@ Primer Bosquejo. 1D con método de fourier.
 #define TAU 0
 
 //Primer intento Via Láctea.
-#define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
+#define mParsecs 50e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
+#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 //#define G 0.959572 //G en estas unidades. Se calcula con sPlots.py
-#define G 0.959572 
+//#define G 0.959572 
+#define G 0.006141
+
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
 //#define solarMases 1e15
@@ -76,8 +78,8 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 clock_t tiempo0;
 clock_t tiempoExec;
 
-double dt = 0.25; 
-int Nt = 10;
+double dt = 0.5; 
+int Nt = 50;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -135,8 +137,8 @@ int main()
     
     //Gauss
     double vSx = 0.2;
-    double vSv = 0.13;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
-    double ampl = 1.0;
+    double vSv = 0.2;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
+    double ampl = 50.0;
     
     //Jeans
     double rho = 0.1;
@@ -147,8 +149,6 @@ int main()
     
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
-                //printf("x es %f en %d\n", x,i);
-                //x = fabs(x);
                     for(j=0;j<Nv;j+=1){
                         v = Vmin*1.0+dv*j;
                         if(initCon == GAUSS)
@@ -158,7 +158,6 @@ int main()
                         if(initCon == JEANS)
                         {
                             phase[i][j] = jeans(x, v, rho, sigma, A, k);
-                            //if(phase[i][j]<0) printf("(%d,%.2f) (%d,%.2f) = %.2f\n",i,j, givePos(i),giveVel(i), phase[i][j]);
                         }
                         phaseOld[i][j] = 0;
                         phaseTemp[i][j] = 0;
@@ -213,7 +212,6 @@ int main()
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *grid = (char*) malloc(200* sizeof(char));
-        //printf("Error Mesage00\n");
 		
         tmem = clock(); //Contar tiempo durante step
 		step();

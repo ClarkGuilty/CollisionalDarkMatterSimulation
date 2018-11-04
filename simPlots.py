@@ -14,6 +14,14 @@ import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
+#plt.rcParams['image.cmap'] = 'PuBu'
+#plt.rcParams['image.cmap'] = 'YlGnBu'
+plt.rcParams['image.cmap'] = 'plasma'
+rcParams.update({'font.size': 11})
+plt.rcParams['image.cmap'] = 'plasma'
+fsize = 16
+
+
 JEANS = -137
 GAUSS = -127
 
@@ -38,46 +46,44 @@ x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 figu = plt.gcf()
 #figu.set_size_inches(18.5, 10.5)
 #figu.set_dpi(300)
-dpII = 150
-#figu.tight_layout()
-#plt.pcolormesh(dat)
+dpII = 300
+velUnit = 1183 #m/s
+estUnit = 50 #kpc
+
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
     dat = dat#/np.max(dat)/7
-    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], interpolation='nearest', aspect='auto') #Es mucho más rápido imshow
-    #plt.pcolormesh(dat)
-    #plt.pcolor(dat) Nunca usar para grandes grillas	
-    plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
-    plt.ylabel("Velocity [km/s]")
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
+    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], interpolation='nearest', aspect='auto') #Es mucho más rápido imshow	
+    plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
+    plt.ylabel("Velocity [km/s]",fontsize=fsize)
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
     if(constantes[7] == JEANS):
-        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU))
+        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     elif(constantes[7] == GAUSS):
-        plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU))
+        plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         #plt.title('Densidad de probabilidad ')
         #plt.title("Inicialización del espacio de fase")
         
-    plt.clim(0,1.35e5)
-    #plt.clim(0,0.0005)
+    #plt.clim(0,1.35e5)
+    plt.clim(0,1e5)
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-    cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]")
+    cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
     #plt.colorbar()
     #cbar.set_label("Probability Density")
     plt.savefig("./images/phase{:d}.png".format(i), dpi = dpII)
     plt.clf()
     
     
-    dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))    
+    dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))
     
     plt.plot(x,dens)
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
-    plt.ylabel("Linear Density $M_{\odot}$/kpc")
-    plt.title("Density $\\tau =$ {:d}".format(TAU))
-    #plt.title("Initial Density")
-    plt.ylim(-0.75e9,5.5e10)
-    #plt.plot((0, 0), (-1, 1), 'k-')
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.ylabel("Linear Density $M_{\odot}$/kpc",fontsize=fsize)
+    plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+    plt.ylim(-0.75e9,6e10)   
+
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
     plt.clf()
     
@@ -87,7 +93,7 @@ for i in range(int(constantes[6])):
 #    plt.ylabel("Potential [J /kg]")
 #    plt.title("Potential $\\tau =$ {:d}".format(TAU))
 #    #plt.ylim(-6.6e10,-5.8e10)
-#    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
+#    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 #    plt.xlabel("Position [kpc]")
 #    plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
 #    plt.clf()
@@ -98,7 +104,7 @@ for i in range(int(constantes[6])):
 #    plt.ylabel("Acceleration [kpc / $(mYears)^2$]")
 #    plt.title("Acceleration $\\tau =$ {:d}".format(TAU))
 #    #plt.yticks(plt.yticks()[0], [str(t*2754463327) for t in plt.yticks()[0]])
-#    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
+#    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 #    
 #    plt.ylim(-0.0037,0.0037)
 #    
@@ -106,31 +112,4 @@ for i in range(int(constantes[6])):
 #    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
 #    plt.clf()
     
-xf = np.linspace(0,1-1/constantes[4],int(constantes[4])) #Espacio de frecuencias senoidal
-#plt.plot(x,density)
-#plt.savefig("densidad.png")
-#plt.figure()
-#sns.distplot(density, kde=False, rug=True);
 
-#plt.plot(x,inF)
-#plt.plot(x,oR, color = 'black')
-#plt.savefig("potencial.png")
-#plt.scatter(x,density, color ='g')
-
-#Verifica que el arreglo final luego de un loop sea igual al inicial.
-#diffPorc = sum(np.abs(oR -density)/density)*100
-#print diffPorc
-#print "La diferencia porcentual entre el arreglo original y el arreglo un loop de fourier después es: "+ str(np.floor(diffPorc*10000)/10000)+"%"
-
-
-#h = plt.figure()
-#plt.plot(outF)
-#plt.savefig("Fourier.png")
-#h = plt.figure()
-#plt.plot(x,oR)
-#plt.savefig("Potencial.png")
-#h = plt.figure()
-#plt.plot(x,acce)
-#plt.savefig("Aceleracion.png")
-
-#simps(simps(z, y), x)
