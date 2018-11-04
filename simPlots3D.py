@@ -20,7 +20,7 @@ constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 #print(constantes)
 tamano = int(constantes[14])
 Nt = int(constantes[-1])
-wMin = constantes[-2]
+wMin = constantes[1]
 
 def darV(i):
     return wMin+tamano*i

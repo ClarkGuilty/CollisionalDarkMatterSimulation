@@ -384,13 +384,8 @@ int main()
         free(grid2);
         
         //step();
-        
-                
 	}
 
-    
-    
-    
     fclose(constantes);
 	//fclose(simInfo);
 	return 0;
