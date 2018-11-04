@@ -29,11 +29,11 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     cbar = plt.colorbar()
     if(clim != None):
         plt.clim(clim[0],clim[1])
-#    if(clabel != None):
-#        cbar.set_label(clabel)
-    plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
-    plt.ylabel("Velocity [km/s]")
-    plt.xticks(plt.xticks()[0], [str(t*20) for t in plt.xticks()[0]])
+    if(clabel != None):
+        cbar.set_label(clabel)
+    plt.yticks(plt.yticks()[0], [str(np.round(t*50)) for t in plt.yticks()[0]]) 
+    plt.ylabel("Position [kpc]")
+    plt.xticks(plt.xticks()[0], [str(t*50) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]")
     plt.title(title)	
     print("SATAN")
@@ -82,12 +82,9 @@ imagenes = tamano//8
     
 
 for i in range(1,Nt):
-	
-
 	densidadXY = np.loadtxt('./datFiles/densXY{:d}.dat'.format(i)).T
 	#densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
 	#densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
-
 	fastShow(densidadXY,title="Corte Z = 0 de la densidad. Nt = {:d}".format(i), clim=[0,0.016],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY{:d}".format(i) )
 	#fastShow(densidadYZ, "YZ{:d}".format(i))
 	#fastShow(densidadXZ, "XZ{:d}".format(i))
