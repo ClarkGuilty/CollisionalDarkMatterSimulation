@@ -30,8 +30,8 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.imshow(image,interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
     if(clim != None):
-#        plt.clim(clim[0],clim[1])
 	print("Satan")
+#        plt.clim(clim[0],clim[1])
     if(clabel != None):
         cbar.set_label(clabel,fontsize=fsize)
     plt.yticks(plt.yticks()[0], [str(np.round(darV(t)*50)) for t in plt.yticks()[0]]) 
@@ -54,7 +54,7 @@ def fmt(x, pos):
 
 
 
-densidadXY0 = np.loadtxt('./datFiles/densXY0.dat').T
+densidadXY0  = np.loadtxt('./datFiles/densXY0.dat').T
 densidadYZ0  = np.loadtxt('./datFiles/densYZ0.dat').T
 densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 
