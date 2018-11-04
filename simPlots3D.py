@@ -27,19 +27,17 @@ def darV(i):
 
 def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.clf()
-    plt.imshow(image,interpolation='nearest', aspect='auto')
+    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
     if(clim != None):
-        print("Satan")
-#        plt.clim(clim[0],clim[1])
+        plt.clim(clim[0],clim[1])
     if(clabel != None):
         cbar.set_label(clabel,fontsize=fsize)
-    plt.yticks(plt.yticks()[0], [str(np.round(darV(t)*50)) for t in plt.yticks()[0]]) 
+    plt.yticks(plt.yticks()[0], [str(np.round(t*50)) for t in plt.yticks()[0]])
     plt.ylabel("Position [kpc]",fontsize=fsize)
-    plt.xticks(plt.xticks()[0], [str(darV(t)*50) for t in plt.xticks()[0]])
+    plt.xticks(plt.xticks()[0], [str(t) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
-    plt.title(title)	
-#    print("SATAN")
+    plt.title(title)
     plt.savefig("./images/"+saveN+".png",dpi=dpiT)
 
 
