@@ -94,7 +94,7 @@ for i in range(1,Nt):
 #	densidad2 = densidad2[densidad2 != -inf
 	#densidadYZ = np.loadtxt('./datFiles/densYZ{:d}.dat'.format(i)).T
 	#densidadXZ = np.loadtxt('./datFiles/densXZ{:d}.dat'.format(i)).T
-	fastShow(densidad2,title="Corte Z = 0 de la densidad. Nt = {:d}".format(i), clim=[0,5],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY{:d}".format(i) )
+	fastShow(densidadXY,title="Corte Z = 0 de la densidad. Nt = {:d}".format(i), clim=[0,5],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY{:d}".format(i) )
 	#fastShow(densidadYZ, "YZ{:d}".format(i))
 	#fastShow(densidadXZ, "XZ{:d}".format(i))
 
