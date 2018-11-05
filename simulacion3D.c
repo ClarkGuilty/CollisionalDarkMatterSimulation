@@ -30,7 +30,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 
 //Tamaño del espacio.
-#define tamano 16
+#define tamano 32
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano
@@ -69,7 +69,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 //Aspectos temporales de la ejecución.
 double dt = 0.5;
-int Nt = 15;
+int Nt = 20;
 
 //Arreglos
 double *phase;
