@@ -33,7 +33,8 @@ def darV(i):
 
 def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.clf()
-    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.LogNorm(),interpolation='nearest', aspect='auto')
+#    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.LogNorm(),interpolation='nearest', aspect='auto')
+    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
     if(clim != None):
         #plt.clim(clim[0],clim[1])

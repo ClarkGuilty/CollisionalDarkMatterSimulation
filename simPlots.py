@@ -24,6 +24,7 @@ fsize = 16
 
 JEANS = -137
 GAUSS = -127
+dt = 0.25
 
 dat = np.loadtxt("./datFiles/grid0.dat").T
 #density = np.loadtxt("density.dat")
@@ -64,7 +65,7 @@ for i in range(int(constantes[6])):
         plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
-        plt.title("Phase Space Density $t =$ {:d} ut".format(i),fontsize=fsize)
+        plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     plt.clim(0,1e5)
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
@@ -79,7 +80,7 @@ for i in range(int(constantes[6])):
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.ylabel("Linear Density $M_{\odot}$/kpc",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
-    plt.title("Density $t =$ {:d} ut".format(i),fontsize=fsize)
+    plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     plt.ylim(-0.75e9,6e10)   
     plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
@@ -90,7 +91,7 @@ for i in range(int(constantes[6])):
     plt.plot(x,potential)
     plt.ylabel("Potential [J /kg]",fontsize=fsize)
     plt.xlim(-1.1,1.1)
-    plt.title("Potential $t =$ {:d} ut".format(i),fontsize=fsize)
+    plt.title("Potential $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     #plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.ylim(-1.5e11,1.1e11)
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
@@ -109,7 +110,7 @@ for i in range(int(constantes[6])):
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
 #    plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
-    plt.title("Acceleration $t =$ {:d} ut".format(i),fontsize=fsize)
+    plt.title("Acceleration $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     plt.xlabel("Position [kpc]",fontsize=fsize)
     
     plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
