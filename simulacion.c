@@ -78,8 +78,8 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 clock_t tiempo0;
 clock_t tiempoExec;
 
-double dt = 0.5; 
-int Nt = 50;
+double dt = 0.25; 
+int Nt = 100;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
