@@ -81,6 +81,7 @@ for i in range(int(constantes[6])):
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:d} ut".format(i),fontsize=fsize)
     plt.ylim(-0.75e9,6e10)   
+    plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
     plt.clf()
     
@@ -88,7 +89,7 @@ for i in range(int(constantes[6])):
     potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
     plt.plot(x,potential)
     plt.ylabel("Potential [J /kg]",fontsize=fsize)
-   
+    plt.xlim(-1.1,1.1)
     plt.title("Potential $t =$ {:d} ut".format(i),fontsize=fsize)
     #plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.ylim(-1.5e11,1.1e11)
@@ -103,15 +104,14 @@ for i in range(int(constantes[6])):
     plt.plot(x,acce)
     plt.ylabel("Acceleration [km / $s^2$]",fontsize=fsize)
     #plt.title("Acceleration $\\tau =-\\infty$",fontsize=fsize)
+    plt.ylim(-0.009,0.009)
+    plt.xlim(-1.1,1.1) 
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
 #    plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
     plt.title("Acceleration $t =$ {:d} ut".format(i),fontsize=fsize)
     plt.xlabel("Position [kpc]",fontsize=fsize)
     
-    plt.ylim(-0.009,0.009)
-    
-    plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
     plt.clf()
     
