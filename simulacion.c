@@ -79,7 +79,7 @@ clock_t tiempo0;
 clock_t tiempoExec;
 
 double dt = 0.25; 
-int Nt = 10;
+int Nt = 100;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -143,8 +143,9 @@ int main()
     //Jeans
     double rho = 10;
     double sigma = 0.1;
-    double A = 0.9999;
-    double k = 2* PI;
+    //double A = 0.9999;
+    double A = 0.001;
+    double k = 0.5;
     
     
 	for(i=0;i<Nx;i+=1) {
