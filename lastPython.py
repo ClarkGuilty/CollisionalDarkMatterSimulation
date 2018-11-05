@@ -100,7 +100,7 @@ plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
 plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
 
-plt.xlabel(" [kpc]",fontsize=fsize)
+plt.xlabel("Position [kpc]",fontsize=fsize)
 plt.savefig("1dInitAcce.png", dpi = dpII)
 #plt.clf()
 

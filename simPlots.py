@@ -49,6 +49,8 @@ figu = plt.gcf()
 dpII = 300
 velUnit = 1183 #m/s
 estUnit = 50 #kpc
+potUnit = 1400318153625 #J/kg
+acceUnit = 9.0761782e-13 #km/s²
 
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
@@ -83,33 +85,40 @@ for i in range(int(constantes[6])):
     plt.ylabel("Linear Density $M_{\odot}$/kpc",fontsize=fsize)
     plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.ylim(-0.75e9,6e10)   
-
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
     plt.clf()
     
     
-#    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
-#    plt.plot(x,potential)
-#    plt.ylabel("Potential [J /kg]")
-#    plt.title("Potential $\\tau =$ {:d}".format(TAU))
-#    #plt.ylim(-6.6e10,-5.8e10)
-#    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-#    plt.xlabel("Position [kpc]")
-#    plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
-#    plt.clf()
-#    
-#    
-#    acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
-#    plt.plot(x,acce)
-#    plt.ylabel("Acceleration [kpc / $(mYears)^2$]")
-#    plt.title("Acceleration $\\tau =$ {:d}".format(TAU))
-#    #plt.yticks(plt.yticks()[0], [str(t*2754463327) for t in plt.yticks()[0]])
-#    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-#    
-#    plt.ylim(-0.0037,0.0037)
-#    
-#    plt.xlabel(" [kpc]")
-#    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
-#    plt.clf()
+    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
+    plt.plot(x,potential)
+    plt.ylabel("Potential [J /kg]",fontsize=fsize)
+    plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+    plt.ylim(-1.5e11,1.1e11)
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.yticks(plt.yticks()[0], [fmt(t*potUnit,1) for t in plt.yticks()[0]]) 
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
+    plt.clf()
     
+    
+    acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
+    plt.plot(x,acce)
+    plt.ylabel("Acceleration [km / $s^2$]",fontsize=fsize)
+    plt.title("Acceleration $\\tau =-\\infty$",fontsize=fsize)
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
+#    plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
+
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    
+    plt.ylim(-0.009,0.009)
+    
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
+    plt.clf()
+    
+
+
+
+
 

@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
+from matplotlib.color import logNorm
 rcParams.update({'figure.autolayout': True})
 rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'plasma'
@@ -32,7 +33,7 @@ def darV(i):
 
 def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.clf()
-    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],interpolation='nearest', aspect='auto')
+    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=LogNorm(),interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
     if(clim != None):
         #plt.clim(clim[0],clim[1])
