@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
-from matplotlib.color import logNorm
+from matplotlib.colors import logNorm
 rcParams.update({'figure.autolayout': True})
 rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'plasma'
