@@ -69,7 +69,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 //Aspectos temporales de la ejecución.
 double dt = 0.5;
-int Nt = 20;
+int Nt = 100;
 
 //Arreglos
 double *phase;

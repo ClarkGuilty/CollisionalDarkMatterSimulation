@@ -62,11 +62,12 @@ for i in range(int(constantes[6])):
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
     if(constantes[7] == JEANS):
-        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+#        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+        plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.clim(0,1.3e5) #Gauss
+    plt.clim(0,1.1e5) #Gauss
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
     plt.savefig("./images/phase{:d}.png".format(i), dpi = dpII)
@@ -77,10 +78,10 @@ for i in range(int(constantes[6])):
     plt.plot(x,dens)
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
-    plt.ylabel("Linear Density $10^12 M_{\odot}$/kpc",fontsize=fsize)
+    plt.ylabel("Linear Density [$M_{\odot}$ / kpc]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    #plt.ylim(-0.75e9,6e10) #  Gauss
+    plt.ylim(-0.75e9,6e10)#Gauss
     plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
     plt.clf()
@@ -92,9 +93,9 @@ for i in range(int(constantes[6])):
     plt.xlim(-1.1,1.1)
     plt.title("Potential $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     #plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
-#    plt.ylim(-1.5e11,1.1e11) #	gauss
+    plt.ylim(-1.5e11,1.1e11)#Gauss
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-#    plt.yticks(plt.yticks()[0], [fmt(t*potUnit,1) for t in plt.yticks()[0]]) 
+   # plt.yticks(plt.yticks()[0], [fmt(t*potUnit,1) for t in plt.yticks()[0]]) 
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
     plt.clf()
@@ -102,12 +103,12 @@ for i in range(int(constantes[6])):
     
     acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
     plt.plot(x,acce)
-    plt.ylabel("Acceleration [km / $s^2$]",fontsize=fsize)
+    plt.ylabel("Acceleration [kpc / Gy$^2$]",fontsize=fsize)
     #plt.title("Acceleration $\\tau =-\\infty$",fontsize=fsize)
-#    plt.ylim(-0.009,0.009)	#Gauss
+#    plt.ylim(-0.009,0.009)#Gauss
     plt.xlim(-1.1,1.1) 
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-#    plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
+    #plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
 #    plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
     plt.title("Acceleration $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     plt.xlabel("Position [kpc]",fontsize=fsize)

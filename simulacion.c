@@ -130,7 +130,7 @@ int main()
     
     //Variable que elige condición a simular.
     initCon = GAUSS;
-    initCon = JEANS;
+    //initCon = JEANS;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
@@ -143,9 +143,10 @@ int main()
     //Jeans
     double rho = 10;
     double sigma = 0.1;
-    //double A = 0.9999;
-    double A = 0.001;
-    double k = 0.5;
+    double A = 0.9999;
+    //double A = 0.001;
+    double k = 2*PI;
+    //double k = 0.5*PI;
     
     
 	for(i=0;i<Nx;i+=1) {
@@ -175,7 +176,7 @@ int main()
 	printDensity("./datFiles/density0.dat");
 
 	FILE *simInfo = fopen("./images/simInfo.dat","w+");
-	printf("heh\n");
+	//printf("heh\n");
 	fprintf(simInfo,"Para la simulación se utilizó las siguientes condiciones:\n");
 	fprintf(simInfo,"x va de %.2f a %.2f , v va de %.2f a %.2f\n", Xmin,Xmax,Vmin,Vmax);
 	if(initCon == GAUSS)
@@ -262,12 +263,14 @@ int main()
     tacce -=tiempo0;
     
     Nt= 1;
-	
+
+    /*
     printf("tiempo en la integral de densidad: %f s\n", 1.0*tdens/Nt/CLOCKS_PER_SEC);
     printf("tiempo en el cálculo del potencial: %f s\n", 1.0*tpot/Nt/CLOCKS_PER_SEC);
     printf("tiempo en el cálculo de la aceleración: %f s\n", 1.0*tacce/Nt/CLOCKS_PER_SEC);
     printf("tiempo en el step: %f s\n", 1.0*tstep/Nt/CLOCKS_PER_SEC);
     printf("tiempo total de cálculos en la ejecución: %f s\n", 1.0*(tstep + tdens + tpot + tacce)/Nt/CLOCKS_PER_SEC);
+    */
 	fclose(constantes);
 	fclose(simInfo);
 	return 0;
@@ -466,7 +469,7 @@ void printAcce(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",convertir(acce[i], aKpc)/pow(convertir(1.0, aByear)*1000,2)); //Imprime en kpc / s^2;
+            fprintf(output, "%f\n",convertir(acce[i], aKpc)/pow(convertir(1.0, aByear)*1000,2)); //Imprime en kpc / (mAños)^2;
 			}
 	fclose(output);
 }
@@ -476,7 +479,7 @@ void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",pow(convertir(pot[i], aMetros)/convertir(1.0, aSegundos),2)/pot[i]);
+            fprintf(output, "%f\n",pow(convertir(pot[i], aMetros)/convertir(1.0, aSegundos),2)/pot[i]); //Imprime potencial en J/kg
 			}
 	fclose(output);
 }
