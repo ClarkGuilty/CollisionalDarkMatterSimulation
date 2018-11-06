@@ -220,8 +220,8 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 
 
 double sr = 0.2;
-double sv = 0.1;
-double ampl = 50;
+double sv = 0.2;
+double ampl = 500;
 
 
 int main()
