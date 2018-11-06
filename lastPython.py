@@ -86,8 +86,8 @@ plt.title("Potential at t=0".format(TAU),fontsize=fsize)
 plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 #plt.yticks(plt.yticks()[0], [fmt(np.round(t*potUnit),1) for t in plt.yticks()[0]]) 
 plt.xlabel("Position [kpc]",fontsize=fsize)
-plt.savefig("1dInitPot.png", dpi = dpII)
 plt.xlim(-1.05,1.05)
+plt.savefig("1dInitPot.png", dpi = dpII)
 plt.clf()
 
 

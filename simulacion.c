@@ -130,7 +130,7 @@ int main()
     
     //Variable que elige condición a simular.
     initCon = GAUSS;
-    //initCon = JEANS;
+    initCon = JEANS;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
