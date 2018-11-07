@@ -24,7 +24,7 @@ Nt = int(constantes[-1])
 wMin = constantes[1]
 
 figure = plt.figure(figsize=(7,5))
-gamma = 0.5
+gamma = 0.8
 #for i in range(len(constantes)):
 #    print(i,constantes[i])
 
