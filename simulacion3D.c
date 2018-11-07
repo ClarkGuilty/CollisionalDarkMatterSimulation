@@ -69,7 +69,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 //Aspectos temporales de la ejecución.
 double dt = 0.5;
-int Nt = 100;
+int Nt = 3;
 
 //Arreglos
 double *phase;
@@ -221,7 +221,7 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 
 double sr = 0.2;
 double sv = 0.2;
-double ampl = 500;
+double ampl = 100;
 
 
 int main()
