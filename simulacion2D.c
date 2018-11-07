@@ -17,10 +17,10 @@ Javier Alejandro Acevedo Barroso
 #define Xmax 1.0
 #define Ymin -1.0
 #define Ymax 1.0
-#define Vxmin -2.0
-#define Vxmax 2.0
-#define Vymin -2.0
-#define Vymax 2.0
+#define Vxmin -1.0
+#define Vxmax 1.0
+#define Vymin -1.0
+#define Vymax 1.0
 
 
 //Tamaño del espacio.
