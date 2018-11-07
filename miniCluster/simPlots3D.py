@@ -14,7 +14,7 @@ import matplotlib
 rcParams.update({'figure.autolayout': True})
 rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'plasma'
-dpiT = 300
+dpiT = 200
 fsize = 16
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)

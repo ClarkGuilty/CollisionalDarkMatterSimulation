@@ -47,7 +47,7 @@ x = np.linspace(constantes[0], constantes[1], int(constantes[4]))
 figu = plt.gcf()
 #figu.set_size_inches(18.5, 10.5)
 #figu.set_dpi(300)
-dpII = 300
+dpII = 200
 velUnit = 1183 #m/s
 estUnit = 50 #kpc
 potUnit = 1400318153625 #J/kg
@@ -67,7 +67,7 @@ for i in range(int(constantes[6])):
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.clim(0,1.1e5) #Gauss
+    plt.clim(0,1e5) #Gauss
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
     plt.savefig("./images/phase{:d}.png".format(i), dpi = dpII)
