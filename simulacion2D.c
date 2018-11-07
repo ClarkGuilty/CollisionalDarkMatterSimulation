@@ -181,7 +181,7 @@ int main()
     accext = malloc((sizeof(double)*Nx*Ny*Nt));
     acceyt = malloc((sizeof(double)*Nx*Ny*Nt));
     
-	constantes = fopen("constants.dat","w+");
+	constantes = fopen("datFiles/constantes.dat","w+");
 	printConstant("Xmin",Xmin);
 	printConstant("Ymin",Ymin);
 	printConstant("Xmax",Xmax);

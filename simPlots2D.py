@@ -119,12 +119,12 @@ dt = 0.5
 for i in range(0,Nt,interval):
     dens = np.loadtxt(giveDens(i,0)).T
     h0 = plt.figure()
-    plt.imshow(dens)
+    plt.imshow(dens,extent=[-1,1,-1,1])
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
-    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.ylabel("Position [kpc]",fontsize=fsize)
     cbar.set_label("Linear Density [$M_{\odot}$ / kpc^3]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
