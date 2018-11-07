@@ -24,7 +24,7 @@ def fmt(x, pos):
     b = int(b)
     return r'${} \times 10^{{{}}}$'.format(a, b)
 
-constantes = np.loadtxt("constants.dat", usecols = 1)
+constantes = np.loadtxt("datFiles/constants.dat", usecols = 1)
 Nt = int(constantes[-1])
 
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
