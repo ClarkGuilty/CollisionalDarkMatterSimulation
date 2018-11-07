@@ -40,10 +40,10 @@ Javier Alejandro Acevedo Barroso
 
 
 
-#define mParsecs 20e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
+#define mParsecs 50e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
+#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
-#define G 0.959572 //G en estas unidades. Se calcula con calculations.py
+#define G 0.006141 //G en estas unidades. Se calcula con calculations.py
 
 #define scale 1.0 //1.0 es el valor estandar, modificarlo para mejorar visualización.
 

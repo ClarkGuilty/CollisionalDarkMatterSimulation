@@ -41,7 +41,7 @@ Primer Bosquejo. 1D con método de fourier.
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 //#define G 0.959572 //G en estas unidades. Se calcula con sPlots.py
 //#define G 0.959572 
-#define G 0.006141
+#define G 0.006141 
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -130,7 +130,7 @@ int main()
     
     //Variable que elige condición a simular.
     initCon = GAUSS;
-    initCon = JEANS;
+    //initCon = JEANS;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);

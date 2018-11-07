@@ -220,7 +220,7 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 
 
 double sr = 0.2;
-double sv = 0.15;
+double sv = 0.1;
 double ampl = 50;
 
 
@@ -266,7 +266,7 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
-        printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
+    printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
 
 
         
@@ -864,7 +864,6 @@ double darVz(int input)
 }
 
 //Métodos para imprimir los cortes.
-
 //Imprime el plano XY en el corte z=corteZ.
 void printDensityXY(char *name, int corteZ)
 {
