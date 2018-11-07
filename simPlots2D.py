@@ -108,13 +108,27 @@ def giveGridY(i,n):
 #
 #dpi = 300
 #
+fsize=16
 interval = 1
+dpII = 300
+velUnit = 1183 #m/s
+estUnit = 50 #kpc
+potUnit = 1400318153625 #J/kg
+acceUnit = 9.0761782e-13 #km/s²
+dt = 0.5
 for i in range(0,Nt,interval):
     dens = np.loadtxt(giveDens(i,0)).T
     h0 = plt.figure()
     plt.imshow(dens)
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-    plt.title('Densidad t = %d' %(i))
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    cbar.set_label("Linear Density [$M_{\odot}$ / kpc^3]",fontsize=fsize)
+    #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+    plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+    #plt.title('Densidad t = %d' %(i))
     #cbar.set_clim(0,16)
     plt.savefig(giveDens(i,1),dpi=dpi)
 #
