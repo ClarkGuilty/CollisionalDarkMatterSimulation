@@ -116,7 +116,7 @@ double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
 double dt = 0.4;
-int Nt = 25;
+int Nt = 5;
 
 double totalPerdido;
 
@@ -247,7 +247,8 @@ int main()
         //printDensity("Density1.dat");
         printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convertir(Nt*dt,aByear)*1000,Nt, convertir(dt,aByear)*1000);
         //fclose(constantes);
-        
+
+
         
            printf("G es %lf\n", G*1.0);
 
