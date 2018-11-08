@@ -64,10 +64,12 @@ for i in range(int(constantes[6])):
     if(constantes[7] == JEANS):
 #        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+        plt.clim(0,1.3e5) #Gauss
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.clim(0,1e5) #Gauss
+        plt.clim(0,1e5) #Gauss
+
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
     plt.savefig("./images/phase{:d}.png".format(i), dpi = dpII)
@@ -82,6 +84,7 @@ for i in range(int(constantes[6])):
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     plt.ylim(-0.75e9,6e10)#Gauss
+    #plt.ylim(-0.75e9,7e10)#Jeans
     plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
     plt.clf()
@@ -94,6 +97,7 @@ for i in range(int(constantes[6])):
     plt.title("Potential $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     #plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.ylim(-1.5e11,1.1e11)#Gauss
+    #plt.ylim(-1.6e11,1.1e11)#Jeans
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
    # plt.yticks(plt.yticks()[0], [fmt(t*potUnit,1) for t in plt.yticks()[0]]) 
     plt.xlabel("Position [kpc]",fontsize=fsize)
@@ -105,7 +109,8 @@ for i in range(int(constantes[6])):
     plt.plot(x,acce)
     plt.ylabel("Acceleration [kpc / Gy$^2$]",fontsize=fsize)
     #plt.title("Acceleration $\\tau =-\\infty$",fontsize=fsize)
-#    plt.ylim(-0.009,0.009)#Gauss
+    plt.ylim(-0.009,0.009)#Gauss
+#    plt.ylim(-0.009,0.009)#Jeans
     plt.xlim(-1.1,1.1) 
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     #plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 

@@ -130,17 +130,17 @@ int main()
     
     //Variable que elige condición a simular.
     initCon = GAUSS;
-    //initCon = JEANS;
+    initCon = JEANS;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
     
-    //Gauss
+    //Gauss //NO MODIFICAR HASTA GRADUARME
     double vSx = 0.2;
     double vSv = 0.2;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
     double ampl = 50.0;
     
-    //Jeans
+    //Jeans//NO MODIFICAR HASTA GRADUARME
     double rho = 10;
     double sigma = 0.1;
     double A = 0.9999;

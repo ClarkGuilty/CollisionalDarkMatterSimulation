@@ -58,7 +58,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 #define MASSo 10.0
 #define scale 1.0 //1.0 es el valor estandar, modificarlo para mejorar visualización.
 
-#define TAU 0
+#define TAU 250
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -69,7 +69,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 //Aspectos temporales de la ejecución.
 double dt = 0.5;
-int Nt = 50;
+int Nt = 5;
 
 //Arreglos
 double *phase;
@@ -219,9 +219,9 @@ double feq(int iposx, int iposy, int iposz, int jvelx, int jvely, int jvelz);
 double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau);
 
 
-double sr = 0.25;
+double sr = 0.2;
 double sv = 0.1;
-double ampl = 100;
+double ampl = 80;
 
 
 int main()
@@ -345,7 +345,7 @@ int main()
     
         //printf("Error Mesage00\n");	
 		step();
-        
+        printf("total perdido = %f\n",totalPerdido);
         //Descomentar para versión colisional --
        /*
         if(TAU != 0){
