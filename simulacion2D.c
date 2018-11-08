@@ -166,6 +166,7 @@ int main()
     dt = dt*dx*dy/dvx/dvy;
     phase = malloc((sizeof(double)*Nx*Ny*Nvx*Nvy));
     phaseTemp = malloc((sizeof(double)*Nx*Ny*Nvx*Nvy));
+    printf("Alloqué memoria exitosamente\n");
     if(phase == NULL){
         printf("phase es Null\n");   
         }
