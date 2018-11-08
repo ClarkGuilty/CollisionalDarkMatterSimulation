@@ -266,7 +266,7 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
-    printf("%f %f %f %d %d %d\n", sr,sv,A,Nvx,Nvy,Nvz);
+    printf("%f %f %f %d %d %d\n", sr,sv,ampl,Nvx,Nvy,Nvz);
 
 
         
