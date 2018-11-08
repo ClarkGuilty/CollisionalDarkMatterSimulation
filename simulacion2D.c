@@ -181,7 +181,7 @@ int main()
     accext = malloc((sizeof(double)*Nx*Ny*Nt));
     acceyt = malloc((sizeof(double)*Nx*Ny*Nt));
     
-	constantes = fopen("datFiles/constantes.dat","w+");
+	constantes = fopen("datFiles/constants.dat","w+");
 	printConstant("Xmin",Xmin);
 	printConstant("Ymin",Ymin);
 	printConstant("Xmax",Xmax);
@@ -200,8 +200,8 @@ int main()
     double y;
 	double vy;
 	double sr = 0.2;
-    double sv = 0.13;
-	double ampl = 10.0;
+    double sv = 0.1;
+	double ampl = 50.0;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
