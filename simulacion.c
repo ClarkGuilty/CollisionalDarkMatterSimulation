@@ -14,8 +14,8 @@ Primer Bosquejo. 1D con método de fourier.
 #define PI 3.14159265359
 
 //Valores límites para la posición y velocidad.
-#define Xmin -1.0
-#define Xmax 1.0
+#define Xmin -2.0
+#define Xmax 2.0
 #define Vmin -1.0
 #define Vmax 1.0
 #define scale 1 //Re escala la velocidad para tener mejores gráficas.
@@ -33,7 +33,7 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 250
+#define TAU 0
 
 //Primer intento Via Láctea.
 #define mParsecs 50e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
