@@ -24,7 +24,7 @@ fsize = 16
 
 JEANS = -137
 GAUSS = -127
-dt = 0.25
+dt = 0.4
 
 dat = np.loadtxt("./datFiles/grid0.dat").T
 #density = np.loadtxt("density.dat")

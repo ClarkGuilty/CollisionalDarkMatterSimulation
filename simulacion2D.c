@@ -201,7 +201,7 @@ int main()
 	double vy;
 	double sr = 0.2;
     double sv = 0.1;
-	double ampl = 50.0;
+	double ampl = 5.0;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
