@@ -136,7 +136,7 @@ int main()
     printConstant("TAU", TAU);
     
     //Gauss //NO MODIFICAR HASTA GRADUARME
-    double vSx = 0.2;
+    double vSx = 0.1;
     double vSv = 0.2;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
     double ampl = 50.0;
     

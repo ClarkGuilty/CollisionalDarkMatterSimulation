@@ -14,5 +14,5 @@ do
 done
 eval $phase
 eval $dens
-eval $pot
-eval $acce
+#eval $pot
+#eval $acce

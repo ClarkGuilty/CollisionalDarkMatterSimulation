@@ -219,7 +219,7 @@ double feq(int iposx, int iposy, int iposz, int jvelx, int jvely, int jvelz);
 double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau);
 
 
-double sr = 0.2;
+double sr = 0.1;
 double sv = 0.1;
 double ampl = 10;
 
@@ -266,7 +266,7 @@ int main()
 	printConstant("Nvy",Nvy);
     printConstant("Nvz",Nvz);
 	printConstant("Nt", Nt);
-    printf("%d %d %d %d %d %d\n", Nx,Ny,Nz,Nvx,Nvy,Nvz);
+    printf("%f %f %f %d %d %d\n", sr,sv,A,Nvx,Nvy,Nvz);
 
 
         

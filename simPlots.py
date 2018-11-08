@@ -67,6 +67,10 @@ for i in range(int(constantes[6])):
         plt.clim(0,1.3e5) #Gauss
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+#        plt.suptitle("$\\tau$ = {:d}".format(TAU),fontsize=fsize)
+#        if(TAU == 0):
+#            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
+
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
         plt.clim(0,1e5) #Gauss
 
@@ -90,36 +94,36 @@ for i in range(int(constantes[6])):
     plt.clf()
     
     
-    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
-    plt.plot(x,potential)
-    plt.ylabel("Potential [J /kg]",fontsize=fsize)
-    plt.xlim(-1.1,1.1)
-    plt.title("Potential $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    #plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
-    plt.ylim(-1.5e11,1.1e11)#Gauss
-    #plt.ylim(-1.6e11,1.1e11)#Jeans
-    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-   # plt.yticks(plt.yticks()[0], [fmt(t*potUnit,1) for t in plt.yticks()[0]]) 
-    plt.xlabel("Position [kpc]",fontsize=fsize)
-    plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
-    plt.clf()
-    
-    
-    acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
-    plt.plot(x,acce)
-    plt.ylabel("Acceleration [kpc / Gy$^2$]",fontsize=fsize)
-    #plt.title("Acceleration $\\tau =-\\infty$",fontsize=fsize)
-    plt.ylim(-0.009,0.009)#Gauss
-#    plt.ylim(-0.009,0.009)#Jeans
-    plt.xlim(-1.1,1.1) 
-    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-    #plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
-#    plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
-    plt.title("Acceleration $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.xlabel("Position [kpc]",fontsize=fsize)
-    
-    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
-    plt.clf()
+#    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
+#    plt.plot(x,potential)
+#    plt.ylabel("Potential [J /kg]",fontsize=fsize)
+#    plt.xlim(-1.1,1.1)
+#    plt.title("Potential $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+#    #plt.title("Potential $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+#    plt.ylim(-1.5e11,1.1e11)#Gauss
+#    #plt.ylim(-1.6e11,1.1e11)#Jeans
+#    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+#   # plt.yticks(plt.yticks()[0], [fmt(t*potUnit,1) for t in plt.yticks()[0]]) 
+#    plt.xlabel("Position [kpc]",fontsize=fsize)
+#    plt.savefig("./images/potential{:d}.png".format(i), dpi = dpII)
+#    plt.clf()
+#    
+#    
+#    acce = np.loadtxt("./datFiles/acce{:d}.dat".format(i))
+#    plt.plot(x,acce)
+#    plt.ylabel("Acceleration [kpc / Gy$^2$]",fontsize=fsize)
+#    #plt.title("Acceleration $\\tau =-\\infty$",fontsize=fsize)
+#    plt.ylim(-0.009,0.009)#Gauss
+##    plt.ylim(-0.009,0.009)#Jeans
+#    plt.xlim(-1.1,1.1) 
+#    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+#    #plt.yticks(plt.yticks()[0], [fmt(t*acceUnit,1) for t in plt.yticks()[0]]) 
+##    plt.ylim(np.min(acce)*1.1,np.max(acce)*1.1)
+#    plt.title("Acceleration $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+#    plt.xlabel("Position [kpc]",fontsize=fsize)
+#    
+#    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
+#    plt.clf()
     
 
 
