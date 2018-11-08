@@ -116,7 +116,7 @@ double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
 double dt = 0.4;
-int Nt = 2;
+int Nt = 50;
 
 double totalPerdido;
 
