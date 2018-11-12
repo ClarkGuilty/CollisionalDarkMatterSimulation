@@ -221,7 +221,7 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 
 double sr = 0.1;
 double sv = 0.1;
-double ampl = 30;
+double ampl = 100;
 
 
 int main()
