@@ -196,6 +196,7 @@ int main()
 	printConstant("Nvx",Nvx);
 	printConstant("Nvy",Nvy);
 	printConstant("Nt", Nt);
+    printConstant("TAU", TAU);
 	double x;
 	double vx;
     double y;

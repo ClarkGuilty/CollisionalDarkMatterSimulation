@@ -140,7 +140,7 @@ int main()
     //Gauss //NO MODIFICAR HASTA GRADUARME
     double vSx = 0.06;
     double vSv = 0.06;
-    double ampl = 20.0;
+    double ampl = 40.0;
     
     //Jeans//NO MODIFICAR HASTA GRADUARME
     double rho = 10;
