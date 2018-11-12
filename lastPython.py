@@ -122,10 +122,21 @@ plt.xlabel("Position [kpc]",fontsize=fsize)
 plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 plt.ylabel("Position [kpc]",fontsize=fsize)
 cbar.set_label("Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
-plt.title("Density Initialization",fontsize=fsize)
+plt.title("2D Density Initialization",fontsize=fsize)
 plt.savefig("2dInitDens.png", dpi = dpII)
 plt.clf()
 
+phasex = np.loadtxt('./miniCluster/2D/gridx0.dat').T
+plt.imshow(phasex,extent=[-1,1,-1,1])
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+plt.xlabel("Position [kpc]",fontsize=fsize)
+plt.yticks(plt.xticks()[0], [str(t*velUnit) for t in plt.xticks()[0]])
+plt.ylabel("Velocity [km/s]",fontsize=fsize)
+plt.title("Phase Space initialization cut at y=0, Vy = 0",fontsize=fsize)
+cbar.set_label("Phase Space Density [$M_{\odot}$ / (kpc  $\\frac{km}{s}$)$^2$]",fontsize=fsize)
+plt.savefig('2dInitPhase.png',dpi=dpII)
+plt.clf()
 
 
 

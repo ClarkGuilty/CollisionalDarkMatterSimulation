@@ -202,7 +202,7 @@ int main()
     double y;
 	double vy;
 	double sr = 0.2;
-    double sv = 0.1;
+    double sv = 0.15;
 	double ampl = 5.0;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
@@ -232,6 +232,7 @@ int main()
         printPot("./datFiles/potential0.dat");
         //printf("aun sirve\n");
         calAcce();
+        printAcce("./datFiles/accex0.dat", "./datFiles/accey0.dat");
         totalPerdido = 0;
         //step();
         //printPhaseX("./datFiles/gridx1.dat", Ny/2, Nvy/2);
