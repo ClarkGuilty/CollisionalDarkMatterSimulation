@@ -16,8 +16,10 @@ Primer Bosquejo. 1D con método de fourier.
 //Valores límites para la posición y velocidad.
 #define Xmin -1.0
 #define Xmax 1.0
-#define Vmin -1.0
-#define Vmax 1.0
+//#define Vmin -1.0
+//#define Vmax 1.0
+#define Vmin -0.5
+#define Vmax 0.5
 #define scale 1 //Re escala la velocidad para tener mejores gráficas.
 
 //Tamaño del espacio.

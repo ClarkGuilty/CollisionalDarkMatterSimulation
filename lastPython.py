@@ -109,6 +109,26 @@ figure = plt.figure(figsize=(7,5))
 ################################################################### 2D ########################
 
 
+velUnit = 1183 #m/s
+estUnit = 50 #kpc
+potUnit = 1400318153625 #J/kg
+acceUnit = 9.0761782e-13 #km/s²
+
+
+dens = np.loadtxt("/home/clarkguilty/CollisionalDarkMatterSimulation/miniCluster/2D").T
+plt.imshow(dens,extent=[-1,1,-1,1])
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+plt.xlabel("Position [kpc]",fontsize=fsize)
+plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+plt.ylabel("Position [kpc]",fontsize=fsize)
+#plt.clim(0,1.3)
+cbar.set_label("Linear Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
+#plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
+plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+#plt.title('Densidad t = %d' %(i))
+plt.savefig(giveDens(i,1),dpi=dpi)
+plt.clf()
 
 
 

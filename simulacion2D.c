@@ -173,7 +173,7 @@ int main()
     density = malloc((sizeof(double)*Nx*Ny));
     accex = malloc((sizeof(double)*Nx*Ny));
     accey = malloc((sizeof(double)*Nx*Ny));
-    velocityx = malloc((sizeo   f(double)*Nx*Ny));
+    velocityx = malloc((sizeof(double)*Nx*Ny));
     velocityy = malloc((sizeof(double)*Nx*Ny));
     pot = malloc((sizeof(double)*Nx*Ny));
     energy = malloc((sizeof(double)*Nx*Ny));

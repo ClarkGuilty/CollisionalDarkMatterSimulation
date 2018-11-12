@@ -283,18 +283,12 @@ int main()
                             vy = darVy(k5);
                             for(k6=0;k6<Nvz;k6+=1){
                                 vz = darVz(k6);
-                        //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
-
-                        //phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
                                 phase[ind(k1,k2,k3,k4,k5,k6)] = gaussD(x,y,z,vx,vy,vz,sr,sv,ampl);
-                        //printf("(%d,%d,%d,%d) %f\n", k1,k2,k3,k4,phase[ind(k1,k2,k3,k4)]);
-                        //phaseTemp[ind(k1,k2,k3,k4)] = 0;
                             }
                         }
                     }
                 }
             }
-            //printf("%d\n",k1);
         }
 
         
