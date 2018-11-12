@@ -11,7 +11,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
-
+rcParams.update({'font.size': 10})
+plt.rcParams['image.cmap'] = 'plasma'
+dpiT = 200
+fsize = 16
 
 def fastShow(image, title="none"):
     plt.figure()
@@ -110,46 +113,58 @@ def giveGridY(i,n):
 #
 fsize=16
 interval = 1
-dpII = 300
+dpII = 200
 velUnit = 1183 #m/s
 estUnit = 50 #kpc
 potUnit = 1400318153625 #J/kg
 acceUnit = 9.0761782e-13 #km/s²
 dt = 0.5
+plt.figure()
 for i in range(0,Nt,interval):
     dens = np.loadtxt(giveDens(i,0)).T
-    h0 = plt.figure()
     plt.imshow(dens,extent=[-1,1,-1,1])
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.ylabel("Position [kpc]",fontsize=fsize)
-    cbar.set_label("Linear Density [$M_{\odot}$ / kpc^3]",fontsize=fsize)
+    plt.clim(0,1.3)
+    cbar.set_label("Linear Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     #plt.title('Densidad t = %d' %(i))
-    #cbar.set_clim(0,16)
     plt.savefig(giveDens(i,1),dpi=dpi)
-#
+    plt.clf()
+
 #
 for i in range(0,Nt,interval):
     phasex = np.loadtxt(giveGridX(i,0)).T
-    h0 = plt.figure()
-    plt.imshow(phasex)
+    plt.imshow(phasex,extent=[-1,1,-1,1])
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-    plt.title('phaseX t = %d' %(i))
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.yticks(plt.xticks()[0], [str(t*velUnit) for t in plt.xticks()[0]])
+    plt.ylabel("Velocity [km/s]",fontsize=fsize)
+    plt.title("Phase Space $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+    cbar.set_label("Linear Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
     plt.savefig(giveGridX(i,1),dpi=dpi)
+    plt.clf()
+
 #
 for i in range(0,Nt,interval):
     phasey = np.loadtxt(giveGridY(i,0)).T
-    h0 = plt.figure()
-    plt.imshow(phasey)
+    plt.imshow(phasey,extent=[-1,1,-1,1])
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.yticks(plt.xticks()[0], [str(t*velUnit) for t in plt.xticks()[0]])
+    plt.ylabel("Velocity [km/s]",fontsize=fsize)
     #plt.clim(0,1e-4)
-    plt.title('phaseY t = %d' %(i))
+    plt.title("Phase space $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+    cbar.set_label("Linear Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
     plt.savefig(giveGridY(i,1),dpi=dpi)
-#
+    plt.clf()
+
 #
 #
 #

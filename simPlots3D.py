@@ -24,6 +24,7 @@ Nt = int(constantes[-1])
 wMin = constantes[1]
 
 figure = plt.figure(figsize=(7,5))
+gamma = 0.3
 
 for i in range(len(constantes)):
     print(i,constantes[i])
@@ -33,8 +34,9 @@ def darV(i):
 
 def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.clf()
+    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]], interpolation='nearest', aspect='auto')
 #    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.LogNorm(vmin = clim[0], vmax = clim[1]), interpolation='nearest', aspect='auto')
-    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.PowerNorm(0.3),interpolation='nearest', aspect='auto')
+#    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.PowerNorm(gamma),interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
     if(clim != None):
         #plt.clim(clim[0],clim[1])

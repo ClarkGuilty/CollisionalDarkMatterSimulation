@@ -28,7 +28,8 @@ def fmt(x, pos):
     return r'${} \times 10^{{{}}}$'.format(a, b)
 
 constantes = np.loadtxt("datFiles/constants.dat", usecols = 1)
-Nt = int(constantes[-1])
+Nt = int(constantes[-2])
+TAU = int(constantes[-1])
 
 #x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 dpi = 200
@@ -128,11 +129,11 @@ for i in range(0,Nt,interval):
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.ylabel("Position [kpc]",fontsize=fsize)
+    plt.clim(0,1.3)
     cbar.set_label("Linear Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
     #plt.title('Densidad t = %d' %(i))
-    #cbar.set_clim(0,16)
     plt.savefig(giveDens(i,1),dpi=dpi)
     plt.clf()
 

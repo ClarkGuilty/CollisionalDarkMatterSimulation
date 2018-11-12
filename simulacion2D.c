@@ -54,7 +54,7 @@ Javier Alejandro Acevedo Barroso
 //#define G 0.2729448134597113
 
 
-#define TAU 0
+#define TAU 250
 
 
 //Arreglos
@@ -173,7 +173,7 @@ int main()
     density = malloc((sizeof(double)*Nx*Ny));
     accex = malloc((sizeof(double)*Nx*Ny));
     accey = malloc((sizeof(double)*Nx*Ny));
-    velocityx = malloc((sizeof(double)*Nx*Ny));
+    velocityx = malloc((sizeo   f(double)*Nx*Ny));
     velocityy = malloc((sizeof(double)*Nx*Ny));
     pot = malloc((sizeof(double)*Nx*Ny));
     energy = malloc((sizeof(double)*Nx*Ny));
@@ -215,13 +215,7 @@ int main()
                     vx = Vxmin*1.0+ dvx*k3;
                     for(k4=0;k4<Nvy;k4+=1) {
                         vy = Vymin*1.0 + dvy*k4;
-                        //printf("indices: %d %d %d %d\n", k1,k2,k3,k4);
-
-                        //phase[k1][k2][k3][k4] = gaussD(x,y,vx,vy,sr,sv,ampl);
-                        phase[ind(k1,k2,k3,k4)] = gaussD(x,y,vx,vy,sr,sv,ampl);
-                        //printf("(%d,%d,%d,%d) %f\n", k1,k2,k3,k4,phase[ind(k1,k2,k3,k4)]);
-                        //phaseTemp[ind(k1,k2,k3,k4)] = 0;
-                        
+                        phase[ind(k1,k2,k3,k4)] = gaussD(x,y,vx,vy,sr,sv,ampl); 
                     }
                 }
             }
@@ -274,7 +268,7 @@ int main()
 
 		potencial();
 		sprintf(grid, "./datFiles/potential%d.dat", suprai);
-		printPot(grid);
+//		printPot(grid);
 		calAcce();
 		sprintf(grid, "./datFiles/acce%d.dat", suprai);
 		//printAcce(grid);

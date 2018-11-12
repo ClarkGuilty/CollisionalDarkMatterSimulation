@@ -86,9 +86,9 @@ def unidadesMass(massValue, mass):
     
 
 
-x = 50e-3
+x = 35e-3
 m = 0.1e12
-t= 3e-3
+t= 4e-3
 
 print("El valor de una unidad de velocidad es [km/s]}")
 print(unidadesVel(x,m,t)/1000)

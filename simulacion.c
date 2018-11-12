@@ -14,8 +14,8 @@ Primer Bosquejo. 1D con método de fourier.
 #define PI 3.14159265359
 
 //Valores límites para la posición y velocidad.
-#define Xmin -2.0
-#define Xmax 2.0
+#define Xmin -1.0
+#define Xmax 1.0
 #define Vmin -1.0
 #define Vmax 1.0
 #define scale 1 //Re escala la velocidad para tener mejores gráficas.
@@ -33,15 +33,15 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 0
+#define TAU 100
 
 //Primer intento Via Láctea.
-#define mParsecs 50e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
-#define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
+#define mParsecs 35e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
+#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
+#define fracT0 4e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 //#define G 0.959572 //G en estas unidades. Se calcula con sPlots.py
 //#define G 0.959572 
-#define G 0.006141 
+#define G 0.031830 
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -79,7 +79,7 @@ clock_t tiempo0;
 clock_t tiempoExec;
 
 double dt = 0.4; 
-int Nt = 100;
+int Nt = 100 ;
 FILE *constantes;
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
@@ -136,9 +136,9 @@ int main()
     printConstant("TAU", TAU);
     
     //Gauss //NO MODIFICAR HASTA GRADUARME
-    double vSx = 0.2;
-    double vSv = 0.2;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
-    double ampl = 50.0;
+    double vSx = 0.05;
+    double vSv = 0.05;//Se reescala la velocidad al momento del drift, esto para mayor nitidez.
+    double ampl = 20.0;
     
     //Jeans//NO MODIFICAR HASTA GRADUARME
     double rho = 10;
@@ -252,9 +252,9 @@ int main()
         
 		sprintf(grid, "./datFiles/acce%d.dat", suprai);
 		printAcce(grid);
-                sprintf(grid, "./datFiles/grid%d.dat", suprai);
-                printPhase(grid);
-                free(grid);
+        sprintf(grid, "./datFiles/grid%d.dat", suprai);
+        printPhase(grid);
+        free(grid);
                 
 	}
 	tdens -=tiempo0;
@@ -567,7 +567,7 @@ double newijCol(int iin, int jin)
 double collision(int icol, int jcol, double tau)
 {
     if(TAU==0) return 0;
-    double df = (feq(icol,jcol) - phase[icol][jcol])/tau;    
+    double df = (feq(icol,jcol) - phase[icol][jcol])/(1.0*tau);    
     return df;
 }
 

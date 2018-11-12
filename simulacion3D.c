@@ -48,11 +48,11 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 
 
-#define mParsecs 50e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
+#define mParsecs 35e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
 #define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
-#define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
+#define fracT0 4e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 //#define G 0.00096      //G en estas unidades. Se calcula con calculations.py
-#define G 0.006141
+#define G 0.031830
 
 #define radius 0.5
 #define MASSo 10.0
@@ -69,7 +69,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 //Aspectos temporales de la ejecución.
 double dt = 0.5;
-int Nt = 5;
+int Nt = 10;
 
 //Arreglos
 double *phase;
@@ -221,7 +221,7 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 
 double sr = 0.1;
 double sv = 0.1;
-double ampl = 10;
+double ampl = 30;
 
 
 int main()

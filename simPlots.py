@@ -48,10 +48,10 @@ figu = plt.gcf()
 #figu.set_size_inches(18.5, 10.5)
 #figu.set_dpi(300)
 dpII = 200
-velUnit = 1183 #m/s
-estUnit = 50 #kpc
-potUnit = 1400318153625 #J/kg
-acceUnit = 9.0761782e-13 #km/s²
+velUnit = 621 #m/s
+estUnit = 35 #kpc
+potUnit = 385962691092 #J/kg
+acceUnit = 3.5737451e-13 #km/s²
 
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
@@ -64,7 +64,7 @@ for i in range(int(constantes[6])):
     if(constantes[7] == JEANS):
 #        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,1.3e5) #Gauss
+        plt.clim(0,1.8e5) #Jeans
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
 #        plt.suptitle("$\\tau$ = {:d}".format(TAU),fontsize=fsize)
@@ -72,7 +72,7 @@ for i in range(int(constantes[6])):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
 
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,1e5) #Gauss
+        plt.clim(0,5e5) #Gauss
 
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
@@ -87,7 +87,7 @@ for i in range(int(constantes[6])):
     plt.ylabel("Linear Density [$M_{\odot}$ / kpc]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.ylim(-0.75e9,6e10)#Gauss
+    plt.ylim(-0.75e9,8e10)#Gauss
     #plt.ylim(-0.75e9,7e10)#Jeans
     plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
