@@ -30,7 +30,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 
 //Tamaño del espacio.
-#define tamano 48
+#define tamano 32
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano
