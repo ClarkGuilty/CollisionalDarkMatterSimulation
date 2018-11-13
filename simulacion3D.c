@@ -298,7 +298,7 @@ int main()
     printDensityXY("./datFiles/densXY0.dat",tamano/2);
     printDensityYZ("./datFiles/densYZ0.dat",0);
     printDensityXZ("./datFiles/densXZ0.dat",0);
-    
+    printPhaseX("./datFiles/phaseX0.dat",tamano/2,tamano/2,tamano/2,tamano/2);
     //printThr(printPotXY,"./datFiles/pot0XY");
 
     //calAcce();
