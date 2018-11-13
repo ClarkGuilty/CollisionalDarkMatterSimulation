@@ -163,7 +163,8 @@ double lambda = MASSo/2;
 
 
 FILE *constantes;
-void printPhase(char *name); //TODO: debe replantearse lo que se va a imprimir. Se hará a medida que se vaya requiriendo.
+//void printPhase(char *name); //debe replantearse lo que se va a imprimir. Se hará a medida que se vaya requiriendo.
+void printPhaseX(char *name, int corteY, int corteVy, int corteZ ,int corteVz);
 
 
 void printConstant(char *name, double value);
@@ -1020,14 +1021,14 @@ void printThr2(void (*f)(char*, int, int), char *name, int xyz)
 
 
 //Imprime el corte y = corteY , Vy = corteVy del espacio de fase (un plano 2d).
-void printPhaseX(char *name, int corteY, int corteVy)
+void printPhaseX(char *name, int corteY, int corteVy, int corteZ ,int corteVz)
 {
  
    	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
 		for(j=1;j<Nvx+1;j+=1){ 
-            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
+            fprintf(output,"%f ",phase[ind(i,corteY,corteZ,Nvx-j,corteVy,corteVz)]);
         }
 		fprintf(output,"\n");
 			}
