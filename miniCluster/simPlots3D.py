@@ -14,7 +14,7 @@ import matplotlib
 rcParams.update({'figure.autolayout': True})
 rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'plasma'
-dpiT = 200
+dpiT = 300
 fsize = 16
 
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
@@ -24,29 +24,30 @@ Nt = int(constantes[-1])
 wMin = constantes[1]
 
 figure = plt.figure(figsize=(7,5))
-gamma = 0.8
-#for i in range(len(constantes)):
-#    print(i,constantes[i])
+gamma = 0.3
+
+for i in range(len(constantes)):
+    print(i,constantes[i])
 
 def darV(i):
     return wMin+tamano*i
 
 def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.clf()
+    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]], interpolation='nearest', aspect='auto')
 #    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.LogNorm(vmin = clim[0], vmax = clim[1]), interpolation='nearest', aspect='auto')
-    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.PowerNorm(gamma,vmin = 0, vmax = 4.5),interpolation='nearest', aspect='auto')
+#    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.PowerNorm(gamma),interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
-#    if(clim != None):
+    if(clim != None):
         #plt.clim(clim[0],clim[1])
-#        print("heh")
+        print("heh")
     if(clabel != None):
         cbar.set_label(clabel,fontsize=fsize)
     plt.yticks(plt.yticks()[0], [str(np.round(t*50)) for t in plt.yticks()[0]])
     plt.ylabel("Position [kpc]",fontsize=fsize)
     plt.xticks(plt.xticks()[0], [str(np.round(t*50)) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
-    #plt.title(title)
-    plt.title(r"$\gamma$ = {:.2f} ".format(gamma)+title)
+    plt.title(title)
     plt.savefig("./images/"+saveN+".png",dpi=dpiT)
 
 

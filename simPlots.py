@@ -73,7 +73,7 @@ for i in range(int(constantes[6])):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
 
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,10e5) #Gauss
+        plt.clim(0,30e5) #Gauss
 
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)

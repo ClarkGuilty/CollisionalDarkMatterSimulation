@@ -123,13 +123,13 @@ dt = 0.5
 plt.figure()
 for i in range(0,Nt,interval):
     dens = np.loadtxt(giveDens(i,0)).T
-    plt.imshow(dens,extent=[-1,1,-1,1])
+    plt.imshow(dens,extent=[-1,1,-1,1],aspect = 'auto')
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.ylabel("Position [kpc]",fontsize=fsize)
-    plt.clim(0,1.3)
+    plt.clim(0,1.0)
     cbar.set_label("Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
@@ -147,7 +147,7 @@ for i in range(0,Nt,interval):
     plt.yticks(plt.xticks()[0], [str(t*velUnit) for t in plt.xticks()[0]])
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
     plt.title("Phase Space $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    cbar.set_label("Phase Space Density [$M_{\odot}$ / (kpc  $\\frac{km}{s}$)$^2$]",fontsize=fsize)
+    cbar.set_label("Phase space density [$M_{\odot}$ / (kpc  $\\frac{km}{s}$)$^2$]",fontsize=fsize-2)
     plt.savefig(giveGridX(i,1),dpi=dpi)
     plt.clf()
 

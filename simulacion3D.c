@@ -30,7 +30,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 
 //Tamaño del espacio.
-#define tamano 32
+#define tamano 48
 #define Nx tamano
 #define Ny tamano
 #define Nz tamano
@@ -221,7 +221,7 @@ double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jco
 
 double sr = 0.1;
 double sv = 0.1;
-double ampl = 100;
+double ampl = 90;
 
 
 int main()
@@ -1017,6 +1017,37 @@ void printThr2(void (*f)(char*, int, int), char *name, int xyz)
         f(copia,k1,xyz);
     }
 }
+
+
+//Imprime el corte y = corteY , Vy = corteVy del espacio de fase (un plano 2d).
+void printPhaseX(char *name, int corteY, int corteVy)
+{
+ 
+   	FILE *output = fopen(name, "w+");
+
+	for(i=0;i<Nx;i+=1) {
+		for(j=1;j<Nvx+1;j+=1){ 
+            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
+        }
+		fprintf(output,"\n");
+			}
+	fclose(output);
+
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
