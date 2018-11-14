@@ -342,12 +342,12 @@ int main()
 		step();
         printf("total perdido = %f\n",totalPerdido);
         //Descomentar para versión colisional --
-       /*
+    
         if(TAU != 0){
         calMacro(); 
         collisionStep();
         }
-        */
+    
         //--
 		
         

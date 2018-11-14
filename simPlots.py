@@ -61,7 +61,8 @@ for i in range(int(constantes[6])):
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
-    plt.ylim(constantes[2],constantes[3])
+    plt.ylim(constantes[2]/2,constantes[3]/2)
+    plt.xlim(constantes[2]/2,constantes[3]/2)
     if(constantes[7] == JEANS):
 #        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
@@ -73,7 +74,7 @@ for i in range(int(constantes[6])):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
 
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,30e5) #Gauss
+        plt.clim(0,27e5) #Gauss
 
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
@@ -88,7 +89,7 @@ for i in range(int(constantes[6])):
     plt.ylabel("Linear Density [$M_{\odot}$ / kpc]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.ylim(-0.75e9,8e10)#Gauss
+    plt.ylim(-0.75e9,19e10)#Gauss
     #plt.ylim(-0.75e9,7e10)#Jeans
     plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)

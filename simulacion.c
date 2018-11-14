@@ -35,7 +35,8 @@ Primer Bosquejo. 1D con método de fourier.
  
 #define GAUSS -127
 #define JEANS -137
-#define TAU 100
+#define BULLET -147
+#define TAU 0
 
 //Primer intento Via Láctea.
 #define mParsecs 35e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
@@ -107,6 +108,7 @@ double giveVel(int jto);
 double collision(int icol, int jcol, double tau);
 void collisionStep();
 double newijCol(int iin, int jin);
+double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude);
 
 int main()
 {
@@ -133,6 +135,7 @@ int main()
     //Variable que elige condición a simular.
     initCon = GAUSS;
     //initCon = JEANS;
+    //initCon = BULLET;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
@@ -150,6 +153,13 @@ int main()
     double k = 2*PI;
     //double k = 0.5*PI;
     
+    //Gauss //NO MODIFICAR HASTA GRADUARME
+    double vSx1 = 0.06;
+    double vSx2 = 0.06;
+    double vSvB = 0.06;
+    double amplB = 20.0;
+    
+    
     
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
@@ -162,6 +172,10 @@ int main()
                         if(initCon == JEANS)
                         {
                             phase[i][j] = jeans(x, v, rho, sigma, A, k);
+                        }
+                        if(initCon == BULLET)
+                        {
+                            phase[i][j] = bulletC(x,v,vSx1,vSx2,vSv,ampl);
                         }
                         phaseOld[i][j] = 0;
                         phaseTemp[i][j] = 0;
@@ -191,6 +205,12 @@ int main()
         fprintf(simInfo,"Se simuló la inestabilidad de Jeans con (rho sigma A k)=\n");
         fprintf(simInfo,"(%.3f %.3f %.3f %.3f)\n", rho, sigma, A, k);
     }
+    if(initCon == BULLET)
+    {
+        fprintf(simInfo,"Se simuló el Bullet Cluster con (sx1 sx2 sv A)=\n");
+        fprintf(simInfo,"(%.3f %.3f %.3f %.3f)\n", vSx1, vSx2, vSvB,amplB);
+    }
+    
 
 	fprintf(simInfo,"Se simuló %d instantes con dt = %.3f\n", Nt,dt);
     totalMass = calDensity();
@@ -323,6 +343,15 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 {
 	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
 	return amplitude*exp(ex);
+
+}
+
+//Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
+double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude)
+{
+	double ex1 = -(x-0.45)*(x-0.45)/(2.0*sx1*sx1)-v*v/(2.0*sv*sv);
+    double ex2 = -(x+0.45)*(x+0.45)/(2.0*sx2*sx2)-v*v/(2.0*sv*sv);
+	return amplitude*exp(ex1)+amplitude*exp(ex2);
 
 }
 
