@@ -26,13 +26,13 @@ def unidades(x, mass, times):# x en megaparsecs, mass en masas solares y times e
     t0 = D('13.772')*1000000000 #Edad del universo en años.
     t0 = t0*D('365.24')*24*60*60 #Ahora en segundos.
     G =  D('6.67408e-11')*np.power(x*x0,-3)*(m0*mass)*np.power(times*t0,2) #G en mis unidades.
-    hubble = 70/(x*x0*D('1e-3'))*(times*t0)*x #La constante de hubble en las unidades.
+    #hubble = 70/(x*x0*D('1e-3'))*(times*t0)*x #La constante de hubble en las unidades.
     #sv = 3e-26* np.power(x*x0*0.01,-3) * times*t0 
     h = D('1.05457148e-34')*np.power((x*x0),-2)/(m0*mass)*D(times*t0)
-    print("La constante de Hubble es: %f" % hubble)
-    print("La constante de Planck/2pi es:")
-    print(h)
-    print("La constante gravitacional es %f" % G)
+    #print("La constante de Hubble es: %f" % hubble)
+    #print("La constante de Planck/2pi es:")
+    #print(h)
+    #print("La constante gravitacional es %f" % G)
     return G
     
 #Retorna el valor de un metro / segundo en mis unidades.
@@ -76,7 +76,7 @@ def unidadesPot(x,mass,times):
     return sv**2
 
 #Calcula la masa de la materia oscura en mis unidades, massValue siendo la masa en eV.
-def unidadesMass(massValue, mass):
+def valorMasaDM(massValue, mass):
     mass = D(mass)
     massValue = D(massValue)
     val = D('1.783e-36')
@@ -84,27 +84,54 @@ def unidadesMass(massValue, mass):
     return massValue*val/(m0*mass)
     
     
+#Densidad de materia oscura
+def valorDensidadMedia(x,mass,times):
+    G = unidades(x,mass,times)
+    
+    x = D(x)
+    mass = D(mass)
+    times = D(times)
+    x0 = D('3.0857e+22' )
+    t0 = D('13.772e9') * D('365.24')*24*60*60
+    hubble = 70/(x*x0*D('1e-3'))*(times*t0)*x #La constante de hubble en las unidades.
+    t = times*t0
+    x = x*x0
+    return 3*hubble**2/(8*D(np.pi)*G)*D('0.26')
+    
+def valorSigmaV(x,mass,times):
+    x = D(x)
+    mass = D(mass)
+    times = D(times)
+    x0 = D('3.0857e+22' )
+    t0 = D('13.772e9') * D('365.24')*24*60*60
+    t = times*t0
+    x = x*x0
+    sv = D('3e-26')*np.power(x,-3) * t
+    return sv
 
+#massvalue en Electronvolts
+def TAU(x,mass,times, massvalue):
+    return valorMasaDM(massvalue,mass)/(valorDensidadMedia(x,mass,times)*
+                       valorSigmaV(x,mass,times))
 
 x = 35e-3
 m = 0.1e12
 t= 4e-3
 
-print("El valor de una unidad de velocidad es [km/s]}")
-print(unidadesVel(x,m,t)/1000)
+#print("El valor de una unidad de velocidad es [km/s]}")
+#print(unidadesVel(x,m,t)/1000)
+#print("El valor de una unidad de potencial es [J/kg]")
+#print(unidadesPot(x,m,t))
+#print("El valor de una unidad de aceleración es [km/s²]")
+#print(unidadesAcce(x,m,t)/1000)
 
-print("El valor de una unidad de potencial es [J/kg]")
-print(unidadesPot(x,m,t))
-
-print("El valor de una unidad de aceleración es [km/s²]")
-print(unidadesAcce(x,m,t)/1000)
-
-#newG = unidades(5,1e15,2e-1) #Clusters
-#newG = unidades(20e-3,1e12,3e-3) #Galaxia 
 newG = unidades(x,m,t) 
 dmmass = 1000
 #print("El 4*Pi*G = %f" % (4*np.pi*newG))
 print("El G = %f" % (newG))
+print("La densidad crítica %f" % (valorDensidadMedia(x,m,t)))
+print("TAU es:")
+print(TAU(x,m,t,1))
 
 #print("La masa a usar es %f eV = %f" % (dmmass, unidadesMass(dmmass, 1e11)))
 #print(unidadesMass(dmmass, 1e11))

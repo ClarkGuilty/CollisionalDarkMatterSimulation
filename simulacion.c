@@ -18,8 +18,8 @@ Primer Bosquejo. 1D con método de fourier.
 #define Xmax 1.0
 //#define Vmin -1.0
 //#define Vmax 1.0
-#define Vmin -0.5
-#define Vmax 0.5
+#define Vmin -1.0
+#define Vmax 1.0
 #define scale 1 //Re escala la velocidad para tener mejores gráficas.
 
 //Tamaño del espacio.
@@ -36,7 +36,7 @@ Primer Bosquejo. 1D con método de fourier.
 #define GAUSS -127
 #define JEANS -137
 #define BULLET -147
-#define TAU 0
+#define TAU 250
 
 //Primer intento Via Láctea.
 #define mParsecs 35e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
@@ -108,7 +108,7 @@ double giveVel(int jto);
 double collision(int icol, int jcol, double tau);
 void collisionStep();
 double newijCol(int iin, int jin);
-double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude);
+double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2);
 
 int main()
 {
@@ -120,7 +120,7 @@ int main()
     pot = malloc((sizeof(double)*Nx));
     
 
-	constantes = fopen("constants.dat","w+");
+	constantes = fopen("./datFiles/constants.dat","w+");
 	printConstant("Xmin",Xmin);
 	printConstant("Xmax",Xmax);
 	printConstant("Vmin",Vmin);
@@ -133,9 +133,9 @@ int main()
 	double v;
     
     //Variable que elige condición a simular.
-    initCon = GAUSS;
+    //initCon = GAUSS;
     //initCon = JEANS;
-    //initCon = BULLET;
+    initCon = BULLET;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
@@ -154,10 +154,11 @@ int main()
     //double k = 0.5*PI;
     
     //Gauss //NO MODIFICAR HASTA GRADUARME
-    double vSx1 = 0.06;
-    double vSx2 = 0.06;
+    double vSx1 = 0.04;
+    double vSx2 = 0.04;
     double vSvB = 0.06;
-    double amplB = 20.0;
+    double amplB1 = 30.0;
+    double amplB2 = 40.0;
     
     
     
@@ -175,7 +176,7 @@ int main()
                         }
                         if(initCon == BULLET)
                         {
-                            phase[i][j] = bulletC(x,v,vSx1,vSx2,vSv,ampl);
+                            phase[i][j] = bulletC(x,v,vSx1,vSx2,vSv,amplB1,amplB2);
                         }
                         phaseOld[i][j] = 0;
                         phaseTemp[i][j] = 0;
@@ -207,8 +208,8 @@ int main()
     }
     if(initCon == BULLET)
     {
-        fprintf(simInfo,"Se simuló el Bullet Cluster con (sx1 sx2 sv A)=\n");
-        fprintf(simInfo,"(%.3f %.3f %.3f %.3f)\n", vSx1, vSx2, vSvB,amplB);
+        fprintf(simInfo,"Se simuló el Bullet Cluster con (sx1 sx2 sv A1 A2)=\n");
+        fprintf(simInfo,"(%.3f %.3f %.3f %.3f %.3f)\n", vSx1, vSx2, vSvB,amplB1,amplB2);
     }
     
 
@@ -347,11 +348,11 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 }
 
 //Retorna el valor de la gaussiana para un x,v, sigma x, sigma v, y una amplitud dada.
-double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude)
+double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2)
 {
-	double ex1 = -(x-0.45)*(x-0.45)/(2.0*sx1*sx1)-v*v/(2.0*sv*sv);
-    double ex2 = -(x+0.45)*(x+0.45)/(2.0*sx2*sx2)-v*v/(2.0*sv*sv);
-	return amplitude*exp(ex1)+amplitude*exp(ex2);
+	double ex1 = -(x-0.40)*(x-0.40)/(2.0*sx1*sx1)-v*v/(2.0*sv*sv);
+    double ex2 = -(x+0.40)*(x+0.40)/(2.0*sx2*sx2)-v*v/(2.0*sv*sv);
+	return amplitude1*exp(ex1)+amplitude2*exp(ex2);
 
 }
 

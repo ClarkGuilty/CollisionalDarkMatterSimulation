@@ -13,8 +13,10 @@ import scipy as sc
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
+#plt.rcParams['image.cmap'] = 'nipy_spectral'
+plt.rcParams['image.cmap'] = 'seismic'
 
-constantes = np.loadtxt("./col/constants.dat", usecols = 1)
+constantes = np.loadtxt("constants.dat", usecols = 1)
 x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 TAU = int(constantes[8])
 #inF = np.loadtxt("inF.dat")
@@ -32,6 +34,14 @@ def fmt(x, pos):
 #plt.pcolormesh(dat)
 
 
+
+dt = 0.4
+velUnit = 621 #m/s
+estUnit = 35 #kpc
+potUnit = 385962691092 #J/kg
+acceUnit = 3.5737451e-13 #km/s²
+fsize = 16
+
 figu = plt.gcf()
 dpII = 150
 ran1 = [0,1]
@@ -44,7 +54,7 @@ for i in ran3:
     nocol = nocol/sum(sum(nocol))
     
     dif = nocol-col
-    dif = dif*100
+    dif = -dif*100
     
 #    for aq in range(2048):
 #        for aw in range(2048):
@@ -63,14 +73,15 @@ for i in ran3:
 
 
     plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]])
-    plt.yticks(plt.yticks()[0], [str(np.round(t*473,3)) for t in plt.yticks()[0]]) 
-    plt.ylabel("Velocity [km/s]")
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
-    plt.title("Gauss Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU))
-        
+    plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
+    plt.ylabel("Velocity [km/s]",fontsize=fsize)
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+
+    plt.title("Gauss Comparison $(\\tau = \\infty$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
+    plt.ylim(constantes[2],constantes[3])
     
-    plt.clim(-0.0006,0.0006)
+    plt.clim(-0.0035,0.0035)
     #cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 
     #cbar = plt.colorbar(format = '%.0f%%')
@@ -100,12 +111,15 @@ for i in ran3:
 #            ddif[aq]= 0
     plt.plot(x,ddif)
     #plt.plot((0, 0), (-1, 1), 'k-')
-    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU))
-    plt.xticks(plt.xticks()[0], [str(t*200) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]")
+    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+
+    plt.xlim(-1.1,1.1)
+    plt.xlabel("Position [kpc]", fontsize=fsize)
     
-    plt.ylabel("Porcentual difference")
-    plt.ylim(-0.20, 0.5)
+    plt.ylabel("Porcentual difference in density", fontsize=fsize)
+    plt.ylim(-0.45, 0.55)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     
