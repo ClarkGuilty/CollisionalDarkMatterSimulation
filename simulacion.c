@@ -133,9 +133,9 @@ int main()
 	double v;
     
     //Variable que elige condición a simular.
-    //initCon = GAUSS;
+    initCon = GAUSS;
     //initCon = JEANS;
-    initCon = BULLET;
+    //initCon = BULLET;
     
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);

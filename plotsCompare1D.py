@@ -25,7 +25,9 @@ TAU = int(constantes[8])
 #oI = np.loadtxt("oI.dat")
 #oR = np.loadtxt("oR.dat")
 #acce = np.loadtxt("acce.dat")
-
+BULLET = -147
+JEANS = -137
+GAUSS = -127
 def fmt(x, pos):
     #a = '{:2}'.format(x)
     a = "{0:.0f}".format(x)
@@ -78,7 +80,10 @@ for i in ran3:
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
 
-    plt.title("Gauss Comparison $($\\tau =$ {:d}) - (\\tau = \\infty$)".format(TAU), fontsize=fsize)
+    if(constantes[7] == GAUSS):
+        plt.title("Gauss porcentual difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+        plt.clim(0,27e5) #Gauss
+    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
     plt.ylim(constantes[2],constantes[3])
     
     plt.clim(-0.0035,0.0035)

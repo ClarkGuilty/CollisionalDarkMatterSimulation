@@ -61,7 +61,7 @@ for i in range(int(constantes[6])):
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
-    #plt.xlim(constantes[2],constantes[3])
+    plt.xlim(constantes[0]/2,constantes[1]/2)
     plt.ylim(constantes[2]/2,constantes[3]/2)
     if(constantes[7] == JEANS):
 #        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
