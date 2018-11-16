@@ -93,10 +93,11 @@ def valorDensidadMedia(x,mass,times):
     times = D(times)
     x0 = D('3.0857e+22' )
     t0 = D('13.772e9') * D('365.24')*24*60*60
-    hubble = 70/(x*x0*D('1e-3'))*(times*t0)*x #La constante de hubble en las unidades.
+    hubble = D('67.4')/(x*x0*D('1e-3'))*(times*t0)*x #La constante de hubble en las unidades.
     t = times*t0
     x = x*x0
-    return 3*hubble**2/(8*D(np.pi)*G)*D('0.26')
+    #return 3*hubble**2/(8*D(np.pi)*G)*D('0.26')
+    return 3*hubble**2/(8*D(np.pi)*G)*D('0.142')/(D(67.4)/100)**2
     
 def valorSigmaV(x,mass,times):
     x = D(x)
@@ -131,7 +132,7 @@ dmmass = 1000
 print("El G = %f" % (newG))
 print("La densidad crítica %f" % (valorDensidadMedia(x,m,t)))
 print("TAU es:")
-print(TAU(x,m,t,1))
+print(TAU(x,m,t,700))
 
 #print("La masa a usar es %f eV = %f" % (dmmass, unidadesMass(dmmass, 1e11)))
 #print(unidadesMass(dmmass, 1e11))

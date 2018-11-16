@@ -78,7 +78,7 @@ for i in ran3:
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
 
-    plt.title("Gauss Comparison $(\\tau = \\infty$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
+    plt.title("Gauss Comparison $($\\tau =$ {:d}) - (\\tau = \\infty$)".format(TAU), fontsize=fsize)
     plt.ylim(constantes[2],constantes[3])
     
     plt.clim(-0.0035,0.0035)

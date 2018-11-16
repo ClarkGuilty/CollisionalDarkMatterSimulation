@@ -36,7 +36,7 @@ Primer Bosquejo. 1D con método de fourier.
 #define GAUSS -127
 #define JEANS -137
 #define BULLET -147
-#define TAU 250
+#define TAU 0
 
 //Primer intento Via Láctea.
 #define mParsecs 35e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
