@@ -32,19 +32,18 @@ Javier Alejandro Acevedo Barroso
 
 
 //Constantes de unidades.
-#define aMetros 18
+#define aKpc 18
 #define aSegundos 14
 #define aByear 4
 #define aMasasSol 5
-
-
+#define aMetros 464
 
 
 #define mParsecs 35-3  //Cuántos megaparsecs equivalen a una unidad espacial.
 #define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 4e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 #define G 0.031830  //G en estas unidades. Se calcula con calculations.py
-
+#define scale 1.0
 
 
 //Unidades funcionales para clusters galácticos.
@@ -203,7 +202,7 @@ int main()
 	double vy;
 	double sr = 0.1;
     double sv = 0.1;
-	double ampl = 30.0;
+	double ampl = 40.0;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
