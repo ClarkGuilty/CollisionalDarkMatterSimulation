@@ -16,7 +16,7 @@ rcParams.update({'figure.autolayout': True})
 #plt.rcParams['image.cmap'] = 'nipy_spectral'
 plt.rcParams['image.cmap'] = 'seismic'
 
-constantes = np.loadtxt("constants.dat", usecols = 1)
+constantes = np.loadtxt("col/constants.dat", usecols = 1)
 x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
 TAU = int(constantes[8])
 #inF = np.loadtxt("inF.dat")
@@ -58,35 +58,26 @@ for i in ran3:
     dif = nocol-col
     dif = -dif*100
     
-#    for aq in range(2048):
-#        for aw in range(2048):
-#            if(nocol[aq][aw]>0):
-#                dif[aq][aw] = (nocol[aq][aw]-col[aq][aw])/nocol[aq][aw]*100
-#            else:
-#                dif[aq][aw] = 0
-    
-    
-#    for z in range(2047):
-#        for y in range(2047):
-#            if(nocol[z][y] != 0):
-#                diff[z][y] = (1.0)/nocol[z][y]
-#            else:
-#                diff[z][y] = 0
-
-
     plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]])
     plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
+#    print(constantes)
+    if(int(constantes[7]) == GAUSS):
+        plt.title("Gauss percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+        plt.clim(-0.0025,0.0025)
+        plt.xlim(constantes[2]/2,constantes[3]/2)
+        plt.ylim(constantes[2]/2,constantes[3]/2)
+    if(int(constantes[7]) == BULLET):
+        plt.title("\\emph{Bullet} percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+        plt.clim(-0.0025,0.0025)
+        plt.xlim(constantes[2]/2,constantes[3]/2)
+        plt.ylim(constantes[2]/2,constantes[3]/2)
+#    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
 
-    if(constantes[7] == GAUSS):
-        plt.title("Gauss porcentual difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,27e5) #Gauss
-    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
-    plt.ylim(constantes[2],constantes[3])
     
-    plt.clim(-0.0035,0.0035)
+
     #cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
 
     #cbar = plt.colorbar(format = '%.0f%%')
@@ -94,7 +85,7 @@ for i in ran3:
     
     #cbar.set_ticks([0, .2, .4, .6, .8, 1])
     #cbar.set_ticklabels(['0', '20%','40%','60%', '80%', '100%'])
-    cbar.set_label("Percentual difference")
+    cbar.set_label("Percentage difference")
     plt.savefig("./dif/phase{:d}.png".format(i), dpi=dpII)
     plt.clf()
 
@@ -108,7 +99,7 @@ for i in ran3:
     
     dcol = dcol/sum(dcol)
     dnocol = dnocol/sum(dnocol)
-    ddif = (dnocol - dcol)*100
+    ddif = -(dnocol - dcol)*100
 #    for aq in range(2047):
 #        if(dnocol[aq]>0):
 #            ddif[aq] = (dnocol[aq]-dcol[aq]/dnocol[aq])*100
@@ -116,15 +107,16 @@ for i in ran3:
 #            ddif[aq]= 0
     plt.plot(x,ddif)
     #plt.plot((0, 0), (-1, 1), 'k-')
-    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
+#    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
+
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
-
     plt.xlim(-1.1,1.1)
-    plt.xlabel("Position [kpc]", fontsize=fsize)
-    
-    plt.ylabel("Porcentual difference in density", fontsize=fsize)
-    plt.ylim(-0.45, 0.55)
+
+    if(int(constantes[7]) == GAUSS):
+        plt.title("Gauss percentage difference in density", fontsize=fsize)
+        plt.ylabel("Percentage difference",fontsize=fsize)
+        plt.ylim(-0.25, 0.25)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     
