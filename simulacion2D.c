@@ -24,7 +24,7 @@ Javier Alejandro Acevedo Barroso
 
 
 //Tamaño del espacio.
-#define tamano 128
+#define tamano 256
 #define Nx tamano
 #define Ny tamano
 #define Nvx tamano
@@ -32,19 +32,20 @@ Javier Alejandro Acevedo Barroso
 
 
 //Constantes de unidades.
-#define aKpc 18
+#define aMetros 18
 #define aSegundos 14
 #define aByear 4
 #define aMasasSol 5
-#define aMetros 464
 
 
-#define mParsecs 35-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
-#define fracT0 4e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
-#define G 0.031830  //G en estas unidades. Se calcula con calculations.py
-#define scale 1.0
 
+
+#define mParsecs 50e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
+#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
+#define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
+#define G 0.006141 //G en estas unidades. Se calcula con calculations.py
+
+#define scale 1.0 //1.0 es el valor estandar, modificarlo para mejorar visualización.
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
@@ -115,7 +116,7 @@ double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
 double dt = 0.4;
-int Nt = 10;
+int Nt = 50;
 
 double totalPerdido;
 
@@ -200,9 +201,9 @@ int main()
 	double vx;
     double y;
 	double vy;
-	double sr = 0.1;
+	double sr = 0.2;
     double sv = 0.1;
-	double ampl = 40.0;
+	double ampl = 5.0;
         //printf("size of double %lu\n", sizeof(double));
         printf("%d %d %d %d\n", Nx,Ny,Nvx,Nvy);
         //phase[0][0][0][1] = 1;
@@ -219,14 +220,17 @@ int main()
                     }
                 }
             }
+            //printf("%d\n",k1);
         }
         double mass0 = calDensity();
         printf("Masa = %f\n", mass0);
+        //printf("en 64 = %f\n", phase[ind(64,64,64,64)] );
         printDensity("./datFiles/density0.dat");
         printPhaseX("./datFiles/gridx0.dat", Ny/2, Nvy/2);
         printPhaseY("./datFiles/gridy0.dat", Nx/2, Nvx/2);
         potencial();
         printPot("./datFiles/potential0.dat");
+        //printf("aun sirve\n");
         calAcce();
         printAcce("./datFiles/accex0.dat", "./datFiles/accey0.dat");
         totalPerdido = 0;
@@ -248,35 +252,49 @@ int main()
 
 	for(suprai = 1; suprai<Nt;suprai+=1){
         char *grid = (char*) malloc(200* sizeof(char));
+        //printf("Error Mesage00\n");
+		
 		step();
+        
         //Descomentar para versión colisional --
         if(TAU != 0){
         calMacro(); 
         collisionStep();
         }
         //--
+		
+        
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
         printf("%d %f\n",suprai,calDensity()*100/mass0); //Calcula la densidad.
 		printDensity(grid);
 
 		potencial();
-		//sprintf(grid, "./datFiles/potential%d.dat", suprai);
-		//printPot(grid);
+		sprintf(grid, "./datFiles/potential%d.dat", suprai);
+//		printPot(grid);
 		calAcce();
-		//sprintf(grid, "./datFiles/accex%d.dat", suprai);
-		//printAcce(grid,grid);
+		sprintf(grid, "./datFiles/acce%d.dat", suprai);
+		//printAcce(grid);
         sprintf(grid, "./datFiles/gridx%d.dat", suprai);
         printPhaseX(grid, Ny/2, Nvy/2);
         sprintf(grid, "./datFiles/gridy%d.dat", suprai);
         printPhaseY(grid, Nx/2, Nvx/2);
         //printPhase(grid);
-        free(grid); 
+        free(grid);
+        
+        
+        //step();
+        
+                
 	}
+
+	
     fclose(constantes);
 	//fclose(simInfo);
 	return 0;
 
 }
+
+
 
 //Imprime el corte y = corteY , Vy = corteVy del espacio de fase (un plano 2d).
 void printPhaseX(char *name, int corteY, int corteVy)
@@ -294,6 +312,7 @@ void printPhaseX(char *name, int corteY, int corteVy)
 
     
 }
+
 //Imprime el corte x = corteX , Vx = corteVx del espacio de fase (un plano 2d).
 void printPhaseY(char *name, int corteX, int corteVx)
 {
@@ -527,8 +546,8 @@ double convertir(double valor, int unidad )
     if(unidad == aMasasSol){
         return valor * solarMases;
     }
-    if(unidad == aKpc){
-        return valor * mParsecs * 1000.0; //1000 = 1megaparsec en kiloparsec
+    if(unidad == aMetros){
+        return valor * conx0* mParsecs;
     }
     if( unidad == aByear){
         return valor*13.772*fracT0;
@@ -536,10 +555,6 @@ double convertir(double valor, int unidad )
     if( unidad == aSegundos){
         return valor*cont0s*fracT0;
     }
-    if(unidad == aMetros){
-        return valor * mParsecs * conx0;
-    }
-    return -1;
 }
 
 //Deriva el potencial y carga la aceleración en el arreglo acce.
