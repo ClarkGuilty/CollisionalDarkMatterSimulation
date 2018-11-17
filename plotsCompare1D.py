@@ -57,12 +57,8 @@ for i in ran3:
     
     dif = nocol-col
     dif = -dif*100
-    
-    plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]])
-    plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
-    plt.ylabel("Velocity [km/s]",fontsize=fsize)
-    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-    plt.xlabel("Position [kpc]",fontsize=fsize)
+    dif[np.abs(dif) <= 0.0003] = 0
+    plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
 #    print(constantes)
     if(int(constantes[7]) == GAUSS):
         plt.title("Gauss percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
@@ -70,22 +66,21 @@ for i in ran3:
         plt.xlim(constantes[2]/2,constantes[3]/2)
         plt.ylim(constantes[2]/2,constantes[3]/2)
     if(int(constantes[7]) == BULLET):
-        plt.title("\\emph{Bullet} percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(-0.0025,0.0025)
-        plt.xlim(constantes[2]/2,constantes[3]/2)
+        plt.title("Percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+        plt.xlim(constantes[2],constantes[3])
         plt.ylim(constantes[2]/2,constantes[3]/2)
+        plt.clim(-0.0025,0.0025)
 #    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
-
-    
-
+    plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]])
+    plt.ylabel("Velocity [km/s]",fontsize=fsize)
+    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
     #cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
-
     #cbar = plt.colorbar(format = '%.0f%%')
-    cbar=plt.colorbar(cmap='plasma')
-    
+    cbar=plt.colorbar()
     #cbar.set_ticks([0, .2, .4, .6, .8, 1])
     #cbar.set_ticklabels(['0', '20%','40%','60%', '80%', '100%'])
-    cbar.set_label("Percentage difference")
+    cbar.set_label("Percentage difference",fontsize=fsize)
     plt.savefig("./dif/phase{:d}.png".format(i), dpi=dpII)
     plt.clf()
 
