@@ -24,7 +24,7 @@ Javier Alejandro Acevedo Barroso
 
 
 //Tamaño del espacio.
-#define tamano 256
+#define tamano 128
 #define Nx tamano
 #define Ny tamano
 #define Nvx tamano
@@ -116,7 +116,7 @@ double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
 double dt = 0.4;
-int Nt = 50;
+int Nt = 25;
 
 double totalPerdido;
 
