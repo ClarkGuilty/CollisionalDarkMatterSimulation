@@ -123,12 +123,12 @@ x = 50e-3
 m = 0.1e12
 t= 3e-3
 
-#print("El valor de una unidad de velocidad es [km/s]}")
-#print(unidadesVel(x,m,t)/1000)
-#print("El valor de una unidad de potencial es [J/kg]")
-#print(unidadesPot(x,m,t))
-#print("El valor de una unidad de aceleración es [km/s²]")
-#print(unidadesAcce(x,m,t)/1000)
+print("El valor de una unidad de velocidad es [km/s]}")
+print(unidadesVel(x,m,t)/1000)
+print("El valor de una unidad de potencial es [J/kg]")
+print(unidadesPot(x,m,t))
+print("El valor de una unidad de aceleración es [km/s²]")
+print(unidadesAcce(x,m,t)/1000)
 
 newG = unidades(x,m,t) 
 dmmass = 1000
