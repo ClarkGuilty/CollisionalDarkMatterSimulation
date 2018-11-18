@@ -69,7 +69,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 //Aspectos temporales de la ejecución.
 double dt = 0.5;
-int Nt = 50;
+int Nt = 25;
 
 //Arreglos
 double *phase;
@@ -222,7 +222,7 @@ void calMacro();
 
 double sr = 0.1;
 double sv = 0.1;
-double ampl = 90;
+double ampl = 80;
 
 
 int main()

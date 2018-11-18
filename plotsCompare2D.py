@@ -16,9 +16,9 @@ rcParams.update({'figure.autolayout': True})
 #plt.rcParams['image.cmap'] = 'nipy_spectral'
 plt.rcParams['image.cmap'] = 'seismic'
 
-constantes = np.loadtxt("col/constants.dat", usecols = 1)
-x = np.linspace(constantes[0], constantes[1], int(constantes[4]))  
-TAU = int(constantes[8])
+constantes = np.loadtxt("nocol/constants.dat", usecols = 1)
+x = np.linspace(constantes[0], constantes[2], int(constantes[8]))  
+TAU = int(constantes[-1])
 #inF = np.loadtxt("inF.dat")
 #outF = np.loadtxt("outF0.dat")
 #outF1 = np.loadtxt("outF1.dat")
@@ -47,7 +47,7 @@ fsize = 16
 figu = plt.gcf()
 dpII = 150
 ran1 = [0,1]
-ran2 = list(range(2,int(constantes[6]),2))
+ran2 = list(range(2,int(constantes[-2]),2))
 ran3 = ran1+ran2
 for i in ran3:
     col = np.loadtxt("./col/gridx{:d}.dat".format(i)).T
@@ -58,11 +58,11 @@ for i in ran3:
     dif = nocol-col
     dif = -dif*100
     dif[np.abs(dif) <= 0.0003] = 0
-    plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
+    plt.imshow(dif, extent=[constantes[0],constantes[2],constantes[4],constantes[6]], aspect='auto')
     plt.title("Percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.xlim(constantes[2],constantes[3])
-    plt.ylim(constantes[2],constantes[3])
-    plt.clim(-0.0025,0.0025)
+    plt.xlim(constantes[0],constantes[2])
+    plt.ylim(constantes[4],constantes[6])
+    plt.clim(-0.15,0.15)
 #    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
     plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]])
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
@@ -80,19 +80,20 @@ for i in ran3:
 
 
 #------------------------------------
-    col = np.loadtxt("./col/grid{:d}.dat".format(i)).T
-    nocol = np.loadtxt("./nocol/grid{:d}.dat".format(i)).T
+    col = np.loadtxt("./col/density{:d}.dat".format(i)).T
+    nocol = np.loadtxt("./nocol/density{:d}.dat".format(i)).T
     col = col/sum(sum(col))
     nocol = nocol/sum(sum(nocol))
     
     dif = nocol-col
     dif = -dif*100
     dif[np.abs(dif) <= 0.0003] = 0
-    plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
-    plt.title("Percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.xlim(constantes[2],constantes[3])
-    plt.ylim(constantes[2],constantes[3])
-    plt.clim(-0.0025,0.0025)
+    plt.imshow(dif, extent=[constantes[0],constantes[2],constantes[4],constantes[6]], aspect='auto')
+    #plt.title("Percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+    plt.title("Density percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
+    plt.xlim(constantes[0],constantes[2])
+    plt.ylim(constantes[4],constantes[6])
+    plt.clim(-0.08,0.08)
 #    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
     plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
@@ -104,11 +105,9 @@ for i in ran3:
     #cbar.set_ticks([0, .2, .4, .6, .8, 1])
     #cbar.set_ticklabels(['0', '20%','40%','60%', '80%', '100%'])
     cbar.set_label("Percentage difference",fontsize=fsize)
-    plt.savefig("./dif/phase{:d}.png".format(i), dpi=dpII)
-    plt.clf()
-
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
+
     
     
 #----------------------------------

@@ -38,9 +38,9 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
 #    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.LogNorm(vmin = clim[0], vmax = clim[1]), interpolation='nearest', aspect='auto')
 #    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]],norm=matplotlib.colors.PowerNorm(gamma),interpolation='nearest', aspect='auto')
     cbar = plt.colorbar()
-    if(clim != None):
+#    if(clim != None):
         #plt.clim(clim[0],clim[1])
-        print("heh")
+#        print("heh")
     if(clabel != None):
         cbar.set_label(clabel,fontsize=fsize)
     plt.yticks(plt.yticks()[0], [str(np.round(t*50)) for t in plt.yticks()[0]])
