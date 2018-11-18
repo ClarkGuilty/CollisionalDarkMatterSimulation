@@ -218,7 +218,7 @@ void collisionStep();
 double newijCol(int iinx, int iiny, int iinz, int jinx, int jiny, int jinz);
 double feq(int iposx, int iposy, int iposz, int jvelx, int jvely, int jvelz);
 double collision(int icolx, int icoly, int icolz,  int jcolx, int jcoly, int jcolz, double tau);
-
+void calMacro();
 
 double sr = 0.1;
 double sv = 0.1;
