@@ -222,7 +222,7 @@ void calMacro();
 
 double sr = 0.1;
 double sv = 0.1;
-double ampl = 90;
+double ampl = 80;
 
 
 int main()
@@ -551,10 +551,14 @@ void calMacro()
                                 velocityx[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz*darVx(k4);
                                 velocityy[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz*darVy(k5);
                                 velocityz[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvx*dvy*dvz*darVz(k6);
-                                energy[in(k1,k2,k3)] += phase[ind(k1,k2,k3,k4,k5,k6)]*dvz*dvy*dvx*(pow(darVx(k4) - velocityx[in(k1,k2,k3)],2) + pow(darVy(k5) - velocityy[in(k1,k2,k3)],2) + pow(darVz(k6) - velocityz[in(k1,k2,k3)],2))/2.0;
+                                energy[in(k1,k2,k3)] += 0.5*phase[ind(k1,k2,k3,k4,k5,k6)]*dvz*dvy*dvx*(pow(darVx(k4) - velocityx[in(k1,k2,k3)],2) + pow(darVy(k5) - velocityy[in(k1,k2,k3)],2) + pow(darVz(k6) - velocityz[in(k1,k2,k3)],2));
                             }
                         }
                     }
+                    velocityx[in(k1,k2,k3)] = velocityx[in(k1,k2,k3)] / density[in(k1,k2,k3)];
+                    velocityy[in(k1,k2,k3)] = velocityy[in(k1,k2,k3)] / density[in(k1,k2,k3)];
+                    velocityz[in(k1,k2,k3)] = velocityz[in(k1,k2,k3)] / density[in(k1,k2,k3)];
+                    energy[in(k1,k2,k3)] = energy[in(k1,k2,k3)] / density[in(k1,k2,k3)];
                     totalMass += density[in(k1,k2,k3)]*dz*dy*dx;
                 }
             }
