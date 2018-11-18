@@ -12,7 +12,7 @@ do
 #    dens+="images/density$i.png "
 
     phasex+="images/images/gridx$i.png "
-    phasey+="images/images/gridy$i.png "
+#    phasey+="images/images/gridy$i.png "
     dens+="images/images/density$i.png "
 #    pot+="images/potential$i.png "
 #    acce+="images/acce$i.png "
