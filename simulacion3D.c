@@ -49,7 +49,7 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 
 #define mParsecs 35e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
+#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 4e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 //#define G 0.00096      //G en estas unidades. Se calcula con calculations.py
 #define G 0.031830
