@@ -112,7 +112,7 @@ estUnit = 50 #kpc
 potUnit = 1400318153625 #J/kg
 acceUnit = 9.0761782e-13 #km/s²
 
-
+#
 dens = np.loadtxt("./miniCluster/2D/density0.dat").T
 plt.imshow(dens,extent=[-1,1,-1,1])
 cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
@@ -121,9 +121,23 @@ plt.xlabel("Position [kpc]",fontsize=fsize)
 plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 plt.ylabel("Position [kpc]",fontsize=fsize)
 cbar.set_label("Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
-plt.title("2D Density Initialization",fontsize=fsize)
-plt.savefig("2dInitDens.png", dpi = dpII)
+#plt.title("2D Density Initialization",fontsize=fsize)
+#plt.savefig("2dInitDens.png", dpi = dpII)
+#plt.clf()
+
+x, y= np.meshgrid(np.arange(-1, 1, 2.0/128),
+                      np.arange(-1, 1, 2.0/128))
+accex = np.loadtxt('./miniCluster/2D/accex0.dat')
+accey = np.loadtxt('./miniCluster/2D/accey0.dat')
+
+everyN = 6
+#plt.quiver(x[::everyN, ::everyN], y[::everyN, ::everyN], accex[::everyN, ::everyN],accey[::everyN, ::everyN], color = 'xkcd:green')
+#plt.quiver(x[::everyN, ::everyN], y[::everyN, ::everyN], accex[::everyN, ::everyN],accey[::everyN, ::everyN], color = 'xkcd:pink')
+plt.quiver(x[::everyN, ::everyN], y[::everyN, ::everyN], accex[::everyN, ::everyN],accey[::everyN, ::everyN], color = 'xkcd:white',pivot='mid')
+plt.title("Density and acceleretion at t=0",fontsize=fsize)
+plt.savefig("2dInitAcceDens", dpi=dpII)
 plt.clf()
+
 
 phasex = np.loadtxt('./miniCluster/2D/gridx0.dat').T
 plt.imshow(phasex,extent=[-1,1,-1,1])
@@ -132,18 +146,26 @@ plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 plt.xlabel("Position [kpc]",fontsize=fsize)
 plt.yticks(plt.xticks()[0], [str(t*velUnit) for t in plt.xticks()[0]])
 plt.ylabel("Velocity [km/s]",fontsize=fsize)
-plt.title("Phase Space initialization cut at y=0, Vy = 0",fontsize=fsize)
+#plt.title("Phase Space initialization cut at y=0, Vy = 0",fontsize=fsize)
+plt.title("$f$ $(x,y=0,vx,vy=0,t=0$)",fontsize=fsize)
 cbar.set_label("Phase Space Density [$M_{\odot}$ / (kpc  $\\frac{km}{s}$)$^2$]",fontsize=fsize)
 plt.savefig('2dInitPhase.png',dpi=dpII)
 plt.clf()
 
 
-x, y= np.meshgrid(np.arange(-1, 1, 2.0/128),
-                      np.arange(-1, 1, 2.0/128))
-accex = np.loadtxt('./miniCluster/2D/accex0.dat')
-accey = np.loadtxt('./miniCluster/2D/accey0.dat')
+potential = np.loadtxt('./miniCluster/2D/potential0.dat').T
+plt.imshow(potential,extent=[-1,1,-1,1])
+cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
+plt.title("Potential at t=0",fontsize=fsize)
+plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+plt.xlabel("Position [kpc]",fontsize=fsize)
+plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+plt.ylabel("Position [kpc]",fontsize=fsize)
+cbar.set_label("Potential [J /kg]",fontsize=fsize)
+plt.savefig('2dInitPot.png',dpi=dpII)
+plt.clf()
 
-plt.quiver(x, y, accex,accey, length=0.1)
+
 
 #phasex = np.loadtxt('./miniCluster/2D/gridx0.dat').T
 #plt.imshow(phasex,extent=[-1,1,-1,1])

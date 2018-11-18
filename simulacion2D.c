@@ -1,6 +1,5 @@
 /*
 Javier Alejandro Acevedo Barroso
-
 */
 
 #include <stdio.h>
@@ -41,7 +40,7 @@ Javier Alejandro Acevedo Barroso
 
 
 #define mParsecs 50e-3  //Cuántos megaparsecs equivalen a una unidad espacial.
-#define solarMases 1e11 //Cuántas masas solares equivalen a una unidad de masa.
+#define solarMases 1e12 //Cuántas masas solares equivalen a una unidad de masa.
 #define fracT0 3e-3     //Qué fracción de la edad del universo equivale a una unidad de tiempo
 #define G 0.006141 //G en estas unidades. Se calcula con calculations.py
 
@@ -116,7 +115,7 @@ double dvx = (Vxmax - Vxmin)*1.0/Nvx;
 double dvy = (Vymax - Vymin)*1.0/Nvy;
 
 double dt = 0.4;
-int Nt = 25;
+int Nt = 50;
 
 double totalPerdido;
 
@@ -593,13 +592,10 @@ void printPot(char *name)
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Ny;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			//fprintf(output,"%f ", phase[i][Nv-j]);
-                    fprintf(output,"%f ", givePot(i,j));
-        //printf("Error MesagenoIgno\n");
+                    //fprintf(output,"%f ", givePot(i,j));
+                    fprintf(output, "%f ",pow(convertir(givePot(i,j), aMetros)/convertir(1.0, aSegundos),2)/givePot(i,j)); //Imprime potencial en J/kg
         }
 		fprintf(output,"\n");
-		//printf("%d\n", i);
 			}
 
 	fclose(output);
