@@ -725,7 +725,7 @@ void step()
 } 
 
 
-//Calcula un paso colisional. Guarda una copia del phase actual en phaseOld. Actualiza phase. 
+//Calcula un paso colisional. 
 void collisionStep()
 {
     for(k1=0;k1<Nx;k1+=1) {
@@ -735,7 +735,7 @@ void collisionStep()
                     for(k5=0;k5<Nvy;k5+=1) {
                         for(k6=0;k6<Nvz;k6+=1) {
                             if(newijCol(k1,k2,k3,k4,k5,k6) == 0){
-                                phaseTemp[ind(i2x,i2y,i2z,k4,k5,k6)] += collision(k1,k2,k3,k4,k5,k6,TAU) + phase[ind(k1,k2,k3,k4,k5,k6)];
+                                phaseTemp[ind(i2x,i2y,i2z,k4,k5,k6)] += collision(k1,k2,k3,k4,k5,k6,TAU*1.0) + phase[ind(k1,k2,k3,k4,k5,k6)];
                             }
                         }
                     }
