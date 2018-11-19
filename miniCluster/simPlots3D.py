@@ -19,7 +19,7 @@ fsize = 16
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 #print(constantes)
 tamano = int(constantes[14])
-Nt = int(constantes[-1])
+Nt = int(constantes[-2])
 wMin = constantes[1]
 
 figure = plt.figure(figsize=(7,5))
