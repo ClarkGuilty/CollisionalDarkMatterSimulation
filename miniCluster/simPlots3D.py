@@ -10,7 +10,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import rcParams
-import matplotlib
 rcParams.update({'figure.autolayout': True})
 rcParams.update({'font.size': 10})
 plt.rcParams['image.cmap'] = 'plasma'
@@ -50,8 +49,14 @@ def fastShow(image, title="none",clim=None, clabel=None, saveN=None):
     plt.title(title)
     plt.savefig("./images/"+saveN+".png",dpi=dpiT)
 
-
-
+def fShow(image, title="none"):
+    plt.clf()
+    plt.imshow(image,extent=[constantes[0],constantes[3],constantes[0],constantes[3]], interpolation='nearest', aspect='auto')
+    cbar = plt.colorbar()
+    plt.xticks(plt.xticks()[0], [str(np.round(t*50)) for t in plt.xticks()[0]])
+    plt.xlabel("Position [kpc]",fontsize=fsize)
+    plt.title(title)
+    plt.savefig(title+'png',dpi=dpiT)
 
 def fmt(x, pos):
     a, b = '{:.4e}'.format(x).split('e')
@@ -72,6 +77,8 @@ densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 
 
 fastShow(densidadXY0, title="Corte Z = 0 de la densidad. Nt = {:d}".format(0),clim=[1e-4,5],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY0" )
+phase = np.loadtxt("./datFiles/phaseX0.dat")
+fShow(phase, title='satan')
 #fastShow(densidadYZ0, "YZ0")
 #fastShow(densidadXZ0, "XZ0")
 

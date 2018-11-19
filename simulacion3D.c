@@ -350,8 +350,9 @@ int main()
         }
     
         //--
-		
         
+		sprintf(grid0, "./datFiles/phaseX%d.dat", suprai);
+        printPhaseX(grid0,tamano/2,tamano/2,tamano/2,tamano/2);
 		sprintf(grid0, "./datFiles/densXY%d.dat", suprai);
         //sprintf(grid1, "./datFiles/densYZ%d.dat", suprai);
         //sprintf(grid2, "./datFiles/densXZ%d.dat", suprai);
