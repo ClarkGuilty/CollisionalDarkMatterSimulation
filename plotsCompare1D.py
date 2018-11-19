@@ -73,7 +73,7 @@ for i in ran3:
 #    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
     plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]])
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
-    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xticks(plt.xticks()[0], [str(np.round(t*estUnit)) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
     #cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     #cbar = plt.colorbar(format = '%.0f%%')

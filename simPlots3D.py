@@ -20,7 +20,7 @@ fsize = 16
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 #print(constantes)
 tamano = int(constantes[14])
-Nt = int(constantes[-1])
+Nt = int(constantes[-2])
 wMin = constantes[1]
 
 figure = plt.figure(figsize=(7,5))
@@ -72,6 +72,8 @@ densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 
 
 fastShow(densidadXY0, title="Corte Z = 0 de la densidad. Nt = {:d}".format(0),clim=[1e-4,5],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY0" )
+
+fastShow()
 #fastShow(densidadYZ0, "YZ0")
 #fastShow(densidadXZ0, "XZ0")
 

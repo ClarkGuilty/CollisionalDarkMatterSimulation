@@ -71,7 +71,7 @@ for i in range(int(constantes[6])):
 #        if(TAU == 0):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,27e5) #Gauss
+        plt.clim(0,30e5) #Gauss
         plt.xlim(constantes[0]/2,constantes[1]/2)
         plt.ylim(constantes[2]/2,constantes[3]/2)
     elif(constantes[7] == BULLET):
