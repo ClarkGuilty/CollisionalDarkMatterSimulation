@@ -54,7 +54,7 @@ Javier Alejandro Acevedo Barroso
 //#define G 0.2729448134597113
 
 
-#define TAU 0
+#define TAU 11963
 
 
 //Arreglos
