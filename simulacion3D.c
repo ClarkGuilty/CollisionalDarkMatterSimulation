@@ -40,11 +40,11 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 
 
 //Constantes de unidades.
-#define aMetros 18
+#define aKpc 18
 #define aSegundos 14
 #define aByear 4
 #define aMasasSol 5
-
+#define aMetros 464
 
 
 
@@ -605,14 +605,17 @@ double convertir(double valor, int unidad )
     if(unidad == aMasasSol){
         return valor * solarMases;
     }
-    if(unidad == aMetros){
-        return valor * conx0* mParsecs;
+    if(unidad == aKpc){
+        return valor * mParsecs * 1000.0; //1000 = 1megaparsec en kiloparsec
     }
     if( unidad == aByear){
         return valor*13.772*fracT0;
     }
     if( unidad == aSegundos){
         return valor*cont0s*fracT0;
+    }
+    if(unidad == aMetros){
+        return valor * mParsecs * conx0;
     }
     return -1;
 }
