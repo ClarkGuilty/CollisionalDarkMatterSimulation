@@ -276,7 +276,7 @@ int main()
         sprintf(grid, "./datFiles/gridx%d.dat", suprai);
         printPhaseX(grid, Ny/2, Nvy/2);
         sprintf(grid, "./datFiles/gridy%d.dat", suprai);
-        printPhaseY(grid, Nx/2, Nvx/2);
+        //printPhaseY(grid, Nx/2, Nvx/2);
         //printPhase(grid);
         free(grid);
         
@@ -303,7 +303,8 @@ void printPhaseX(char *name, int corteY, int corteVy)
 
 	for(i=0;i<Nx;i+=1) {
 		for(j=1;j<Nvx+1;j+=1){ 
-            fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
+            //fprintf(output,"%f ",phase[ind(i,corteY,Nvx-j,corteVy)]);
+            fprintf(output,"%f ",convertir(phase[ind(i,corteY,Nvx-j,corteVy)], aMasasSol)/pow(convertir(1.0,aKpc)*(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos),2));
         }
 		fprintf(output,"\n");
 			}
@@ -334,7 +335,9 @@ void printDensity(char *name)
     FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Ny;j+=1){ 
-            fprintf(output,"%f ", giveDensity(i,j));  //Al parecer esta SÍ es la real.
+            //fprintf(output,"%f ", giveDensity(i,j));  //Al parecer esta SÍ es la real.
+            fprintf(output,"%f ", convertir(giveDensity(i,j),aMasasSol)/pow(convertir(1,aKpc),2));  
+            
         }
 		fprintf(output,"\n");
 			}

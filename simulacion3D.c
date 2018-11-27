@@ -879,10 +879,11 @@ void printDensityXY(char *name, int corteZ)
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Ny;j+=1){
-            fprintf(output,"%f ", giveDensity(i,j,corteZ));
+            //fprintf(output,"%f ", giveDensity(i,j,corteZ));
+            fprintf(output,"%f ", convertir(giveDensity(i,j,corteZ),aMasasSol)/pow(convertir(1,aKpc),3));
         }
 		fprintf(output,"\n");
-			}
+    }
 	fclose(output);
 }
 
@@ -892,7 +893,8 @@ void printDensityXZ(char *name, int corteY)
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nz;j+=1){ 
-            fprintf(output,"%f ", giveDensity(i,corteY,j));
+            //fprintf(output,"%f ", giveDensity(i,corteY,j));
+            fprintf(output,"%f ", convertir(giveDensity(i,corteY,j)),aMasasSol)/pow(convertir(1,aKpc),3));  //Al parecer esta SÍ es la real.
         }
 		fprintf(output,"\n");
 			}
@@ -1039,13 +1041,18 @@ void printPhaseX(char *name, int corteY, int corteVy, int corteZ ,int corteVz)
 {
    	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nvx+1;j+=1){ 
-            fprintf(output,"%f ",phase[ind(i,corteY,corteZ,Nvx-j,corteVy,corteVz)]);
+		//for(j=1;j<Nvx+1;j+=1){
+        for(j=0;j<Nvx;j+=1){             
+            //fprintf(output,"%f ",phase[ind(i,corteY,corteZ,Nvx-j,corteVy,corteVz)]);
+            //fprintf(output,"%f ",convertir(phase[ind(i,corteY,corteZ,Nvx-j,corteVy,corteVz)], aMasasSol)/pow(convertir(1.0,aKpc)*(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos),3));
+            fprintf(output,"%f ",convertir(phase[ind(i,corteY,corteZ,j,corteVy,corteVz)], aMasasSol)/pow(convertir(1.0,aKpc)*(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos),3));
         }
 		fprintf(output,"\n");
 			}
 	fclose(output);
 }
+
+
 /*
 {
 	FILE *output = fopen(name, "w+");
