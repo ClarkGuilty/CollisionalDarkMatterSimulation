@@ -897,7 +897,7 @@ void printDensityXZ(char *name, int corteY)
 	for(i=0;i<Nx;i+=1) {
 		for(j=0;j<Nz;j+=1){ 
             //fprintf(output,"%f ", giveDensity(i,corteY,j));
-            fprintf(output,"%f ", convertir(giveDensity(i,corteY,j)),aMasasSol)/pow(convertir(1,aKpc),3));  //Al parecer esta SÍ es la real.
+            fprintf(output,"%f ", convertir(giveDensity(i,corteY,j),aMasasSol)/pow(convertir(1,aKpc),3));  //Al parecer esta SÍ es la real.
         }
 		fprintf(output,"\n");
 			}
