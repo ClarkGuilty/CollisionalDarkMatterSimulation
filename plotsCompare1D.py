@@ -52,24 +52,36 @@ ran3 = ran1+ran2
 for i in ran3:
     col = np.loadtxt("./col/grid{:d}.dat".format(i)).T
     nocol = np.loadtxt("./nocol/grid{:d}.dat".format(i)).T
+    scol = sum(sum(col))
+    snocol = sum(sum(nocol))
     col = col/sum(sum(col))
     nocol = nocol/sum(sum(nocol))
     
-    dif = nocol-col
-    dif = -dif*100
-    dif[np.abs(dif) <= 0.0003] = 0
-    plt.imshow(dif, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
+    average = (col + nocol)
+#    ii = (np.abs(average) ==0)
+    dif = (nocol-col)
+    
+#    dif[~ii] = (-dif[~ii]*100)/average[~ii]
+#    dif[ii] = 0
+    
+    #dif[ii] = 0
+    #dif[~ii] = dif[~ii]/col[~ii]
+
+    dif[np.abs(dif) <= 0.0000003] = 0
+    plt.imshow(dif/np.max(dif)*100, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
 #    print(constantes)
     if(int(constantes[7]) == GAUSS):
         plt.title("Gauss percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(-0.0025,0.0025)
+        #plt.clim(-0.0025,0.0025)
+        plt.clim(-100,100)
         plt.xlim(constantes[2]/2,constantes[3]/2)
         plt.ylim(constantes[2]/2,constantes[3]/2)
     if(int(constantes[7]) == BULLET):
         plt.title("Percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
         plt.xlim(constantes[2],constantes[3])
         plt.ylim(constantes[2]/2,constantes[3]/2)
-        plt.clim(-0.0025,0.0025)
+        plt.clim(-100,100)
+     #   plt.clim(-0.0025,0.0025)
 #    plt.title("Gauss Comparison ($\\tau =$ {:d}) - ($\\tau = \\infty$)".format(TAU), fontsize=fsize)
     plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]])
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
@@ -94,7 +106,19 @@ for i in ran3:
     
     dcol = dcol/sum(dcol)
     dnocol = dnocol/sum(dnocol)
-    ddif = -(dnocol - dcol)*100
+#    ddif = -(dnocol - dcol)*100*100
+
+
+    daverage = (dcol + dnocol)
+    ii = (np.abs(daverage) < 1e-9)
+    ddif = dnocol-dcol
+    ddif[~ii] = (-ddif[~ii]*100)/daverage[~ii]
+    ddif[ii] = 0
+    
+#    ddif[ii] = 0
+#    ddif[~ii] = ddif[~ii]/dcol[~ii]
+    ddif[np.abs(ddif) <= 0.0003] = 0
+    
 #    for aq in range(2047):
 #        if(dnocol[aq]>0):
 #            ddif[aq] = (dnocol[aq]-dcol[aq]/dnocol[aq])*100
@@ -111,7 +135,7 @@ for i in ran3:
     if(int(constantes[7]) == GAUSS):
         plt.title("Gauss percentage difference in density", fontsize=fsize)
         plt.ylabel("Percentage difference",fontsize=fsize)
-        plt.ylim(-0.25, 0.25)
+        #plt.ylim(-0.25, 0.25)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     

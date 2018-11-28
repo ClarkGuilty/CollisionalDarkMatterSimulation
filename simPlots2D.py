@@ -129,7 +129,7 @@ for i in range(0,Nt,interval):
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.yticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.ylabel("Position [kpc]",fontsize=fsize)
-    plt.clim(0,1.2)
+#    plt.clim(0,1.2)
     cbar.set_label("Density [$M_{\odot}$ / kpc$^2$]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
@@ -150,6 +150,7 @@ for i in range(0,Nt,interval):
     cbar.set_label("Phase space density [$M_{\odot}$ / (kpc  $\\frac{km}{s}$)$^2$]",fontsize=fsize-2)
     plt.savefig(giveGridX(i,1),dpi=dpi)
     plt.clf()
+
 
 #
 #for i in range(0,Nt,interval):

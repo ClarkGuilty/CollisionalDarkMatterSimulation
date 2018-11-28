@@ -1048,7 +1048,7 @@ void printPhaseX(char *name, int corteY, int corteVy, int corteZ ,int corteVz)
         for(j=0;j<Nvx;j+=1){             
             //fprintf(output,"%f ",phase[ind(i,corteY,corteZ,Nvx-j,corteVy,corteVz)]);
             //fprintf(output,"%f ",convertir(phase[ind(i,corteY,corteZ,Nvx-j,corteVy,corteVz)], aMasasSol)/pow(convertir(1.0,aKpc)*(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos),3));
-            fprintf(output,"%f ",convertir(phase[ind(i,corteY,corteZ,j,corteVy,corteVz)], aMasasSol)/pow(convertir(1.0,aKpc)*(convertir(1.0,aKpc)*3.0857e+19)* convertir(1.0,aSegundos),3));
+            fprintf(output,"%f ",convertir(phase[ind(i,corteY,corteZ,j,corteVy,corteVz)], aMasasSol)/pow(convertir(1.0,aKpc)*(convertir(1.0,aKpc)*3.0857e+19)/convertir(1.0,aSegundos),3));
         }
 		fprintf(output,"\n");
 			}
