@@ -68,7 +68,7 @@ for i in ran3:
     #dif[~ii] = dif[~ii]/col[~ii]
 
     dif[np.abs(dif) <= 0.0000003] = 0
-    plt.imshow(dif/np.max(dif)*100, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
+    plt.imshow(-dif/np.max(dif)*100, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
 #    print(constantes)
     if(int(constantes[7]) == GAUSS):
         plt.title("Gauss percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
@@ -110,21 +110,21 @@ for i in ran3:
 
 
     daverage = (dcol + dnocol)
-    ii = (np.abs(daverage) < 1e-9)
+#    ii = (np.abs(daverage) < 1e-9)
     ddif = dnocol-dcol
-    ddif[~ii] = (-ddif[~ii]*100)/daverage[~ii]
-    ddif[ii] = 0
+#    ddif[~ii] = (-ddif[~ii]*100)/daverage[~ii]
+#    ddif[ii] = 0
     
 #    ddif[ii] = 0
 #    ddif[~ii] = ddif[~ii]/dcol[~ii]
-    ddif[np.abs(ddif) <= 0.0003] = 0
+    ddif[np.abs(ddif) <= 0.000003] = 0
     
 #    for aq in range(2047):
 #        if(dnocol[aq]>0):
 #            ddif[aq] = (dnocol[aq]-dcol[aq]/dnocol[aq])*100
 #        else:
 #            ddif[aq]= 0
-    plt.plot(x,ddif)
+    plt.plot(x,-ddif*10000)
     #plt.plot((0, 0), (-1, 1), 'k-')
 #    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
 
@@ -135,7 +135,7 @@ for i in ran3:
     if(int(constantes[7]) == GAUSS):
         plt.title("Gauss percentage difference in density", fontsize=fsize)
         plt.ylabel("Percentage difference",fontsize=fsize)
-        #plt.ylim(-0.25, 0.25)
+        plt.ylim(-25, 25)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     
