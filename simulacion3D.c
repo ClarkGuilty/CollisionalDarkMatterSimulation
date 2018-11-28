@@ -58,8 +58,8 @@ Simulación del espacio de fase de un fluido tridimensional de Materia Oscura co
 #define MASSo 10.0
 #define scale 1.0 //1.0 es el valor estandar, modificarlo para mejorar visualización.
 
-#define TAU 8972
-//#define TAU 0
+//#define TAU 8972
+#define TAU 0
 
 //Unidades funcionales para clusters galácticos.
 //#define mParsecs 5
