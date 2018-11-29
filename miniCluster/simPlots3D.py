@@ -77,8 +77,8 @@ densidadXZ0  = np.loadtxt('./datFiles/densXZ0.dat').T
 #densidadYZ1  = np.loadtxt('./datFiles/densYZ1.dat').T
 #densidadXZ1  = np.loadtxt('./datFiles/densXZ1.dat').T
 
-
-fastShow(densidadXY0, title="Corte Z = 0 de la densidad. Nt = {:d}".format(0),clim=[1e-4,1.6],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY0" )
+maxC = 4e7
+fastShow(densidadXY0, title="Corte Z = 0 de la densidad. Nt = {:d}".format(0),clim=[1e-4,maxC],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY0" )
 
 phase = np.loadtxt("./datFiles/phaseX0.dat").T
 fShow(phase, title='$f \ (x,y=0,z=0,vx,vy=0,vz=0,t=0)$')
@@ -111,7 +111,7 @@ imagenes = tamano//8
 dt = 0.5
 for i in range(0,Nt):
     densidadXY = np.loadtxt('./datFiles/densXY{:d}.dat'.format(i)).T
-    fastShow(densidadXY,title="$\\rho(x,y,z=0)$ at t = {:.2f} ut".format(dt*i), clim=[1e-4,1.6],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY{:d}".format(i) )
+    fastShow(densidadXY,title="$\\rho(x,y,z=0)$ at t = {:.2f} ut".format(dt*i), clim=[1e-4,maxC],clabel="Mass density [$M_{\odot}$ / kp$c^3$]",saveN="XY{:d}".format(i) )
     
     phase = np.loadtxt("./datFiles/phaseX{:d}.dat".format(i))
     #phase = phase[:, ::-1]
