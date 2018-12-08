@@ -78,7 +78,7 @@ for i in ran3:
         plt.ylim(constantes[2]/2,constantes[3]/2)
     if(int(constantes[7]) == BULLET):
         plt.title("Percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.xlim(constantes[2],constantes[3])
+        plt.xlim(consxtantes[2],constantes[3])
         plt.ylim(constantes[2]/2,constantes[3]/2)
         plt.clim(-100,100)
      #   plt.clim(-0.0025,0.0025)
@@ -135,7 +135,7 @@ for i in ran3:
     if(int(constantes[7]) == GAUSS):
         plt.title("Gauss percentage difference in density", fontsize=fsize)
         plt.ylabel("Percentage difference",fontsize=fsize)
-        plt.ylim(-25, 25)
+        plt.ylim(-35, 30)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     
