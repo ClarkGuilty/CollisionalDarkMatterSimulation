@@ -1,14 +1,15 @@
 all: images .PHONY
 
 images: simulacion.c
-	@echo Preparando y corriendo la simulación:
+	@echo Creating output folders.
 	mkdir datFiles
 	mkdir images
+	@echo Compiling and executing.
 	gcc -no-pie -o heh.a -I/usr/local/include -L/usr/local/lib/ simulacion.c -Wall -lfftw3 -lm 
 	./heh.a
 	python simPlots.py
 
 .PHONY: clean
 clean:
-	@echo eliminando archivos temporales
+	@echo Removing temporal files
 	rm heh.a

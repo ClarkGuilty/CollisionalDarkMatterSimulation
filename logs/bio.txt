@@ -1,1 +1,0 @@
-I was born and raised in Bucaramanga, Colombia. I am a physics undergraduate senior at Universidad de los Andes in Bogotá. My main interests are simulations, cosmology, computational physics and philosophy of science. I also enjoy playing guitar. Currently I am working on my thesis which consists of a lattice simulation of the phase space of a collisional dark matter fluid.

@@ -1,5 +1,5 @@
 #!/bin/bash
-total=$(grep Nt constants.dat | cut -d "." -f 1 | cut -d " " -f 2 )
+total=$(grep Nt datFiles/constants.dat | cut -d "." -f 1 | cut -d " " -f 2 )
 dens="python gif.py 0.2 "
 acce="python gif.py 0.2 "
 phase="python gif.py 0.2 "

@@ -1,7 +1,6 @@
 all: limpiar
 
 limpiar:
-	@echo Borrando los archivos de ejecuciones anteriores.
+	@echo Deleting output files from former execution.
 	rm -rf ./datFiles
 	rm -rf ./images
-	rm heh.a
