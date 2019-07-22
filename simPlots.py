@@ -64,7 +64,7 @@ for i in range(int(constantes[6])):
     if(constantes[7] == JEANS):
 #        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,1.8e5) #Jeans
+        #plt.clim(0,37e5) #Jeans
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
 #        plt.suptitle("$\\tau$ = {:d}".format(TAU),fontsize=fsize)
@@ -98,7 +98,7 @@ for i in range(int(constantes[6])):
     plt.ylabel("Linear Density [$M_{\odot}$ / kpc]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    plt.ylim(-0.75e9,26e10)#Gauss
+    #plt.ylim(-0.75e9,0.5e10)#Gauss
     #plt.ylim(-0.75e9,7e10)#Jeans
     plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)

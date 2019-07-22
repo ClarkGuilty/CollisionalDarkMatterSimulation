@@ -269,6 +269,11 @@ int main()
 
 }
 
+double gaussD1(double x, double sr, double amplitude)
+{
+        return amplitude*exp(-x*x/sr/sr);
+}
+
 double gaussD2(double x,double y, double sr, double sv, double amplitude)
 {
 	//double ex = -x*x/(sr)-y*y/(sr)-vx*vx/(sv)-vy*vy/(sv);

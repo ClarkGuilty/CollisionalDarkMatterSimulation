@@ -20,15 +20,15 @@ Written by Javier Alejandro Acevedo Barroso
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
-#define Nx 2048
+#define Nx 16584
 #define Nv 2048
 
 //Int constants for comparision.
-#define toKpc 18
-#define toSeconds 14
-#define toByear 4
-#define toSolarMasses 5
-#define toMeters 464
+#define aKpc 18
+#define aSegundos 14
+#define aByear 4
+#define aMasasSol 5
+#define aMetros 464
  
 #define GAUSS -127
 #define JEANS -137
@@ -88,6 +88,8 @@ FILE *constants;
 
 
 //Methods
+double testPot(double x, double sx, double amplitude);
+double testDens(double x, double sx, double amplitude);
 void printPhase(char *name);
 double gaussD(double x, double v, double sx, double sv, double amplitude);
 double calDensity();
@@ -96,6 +98,7 @@ void printConstant(char *name, double value);
 double giveDensity(int l);
 void potential();
 double calcK2(int j2);
+double calcK2T(int j2);
 double convert(double valor, int unidad);
 void calAcceG();
 void printAcce(char *name);
@@ -103,6 +106,7 @@ double newij(int iin, int jin);
 void step();
 int mod(int p, int q);
 void printPot(char *name);
+double einasto(double x, double v, double sx, double sv, double amplitude);
 double jeans(double x, double v, double rho, double sigma, double A, double k);
 double feq(int ipos, int jvel);
 double feq2(int ipos, int jvel);
@@ -125,193 +129,59 @@ int main()
     pot = malloc((sizeof(double)*Nx));
     
 	double x;
-	double v;
     
     //Choosing what initial conditions to simulate.
     //initCon = GAUSS;
     initCon = JEANS;
     //initCon = BULLET;
     
-    //Exporting the parameters of the simulation.
-	constants = fopen("./datFiles/constants.dat","w+");
-	printConstant("Xmin",Xmin);
-	printConstant("Xmax",Xmax);
-	printConstant("Vmin",Vmin);
-	printConstant("Vmax",Vmax);
-	printConstant("Nx",Nx);
-	printConstant("Nv",Nv);
-	printConstant("Nt", Nt);
-    printConstant("InitCon", initCon);
-    printConstant("TAU", TAU);
-    
-    
-    /* Parameters of my thesis document
-    //Gauss //
-    double vSx = 0.06;
-    double vSv = 0.06;
-    double ampl = 40.0;
-    
-    //Jeans//
-    double rho = 10;
-    double sigma = 0.1;
-    double A = 0.9999;
-    //double A = 0.001;
-    double k = 2*PI;
-    //double k = 0.5*PI;
-    
-    //Bullet //
-    double vSx1 = 0.04;
-    double vSx2 = 0.04;
-    double vSvB = 0.06;
-    double amplB1 = 30.0;
-    double amplB2 = 40.0;
-    
-    */
-    
+
     
     //Initialization parameters
-    //Gauss 
-    double vSx = 0.06;
-    double vSv = 0.06;
+    //Poisson solver test.
+    double sx = 0.1;
     double ampl = 40.0;
     
-    //Jeans2//
-    double rho = 0.25/G;
-    double A = 0.001;
-    double kkj =0.1;
-    double k = 2*(2*PI/Lx); // 2 k_0
-    double sigma = 4*PI*G*rho*kkj*kkj/k/k;
     
-    //Bullet //
-    double vSx1 = 0.04;
-    double vSx2 = 0.04;
-    double vSvB = 0.06;
-    double amplB1 = 30.0;
-    double amplB2 = 40.0;
-    
+    //Poisson test.
     
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
-                    for(j=0;j<Nv;j+=1){
-                        v = Vmin*1.0+dv*j;
-                        if(initCon == GAUSS)
-                        {
-                            phase[i][j] = gaussD(x,v,vSx,vSv,ampl);
-                        }
-                        if(initCon == JEANS)
-                        {
-                            //phase[i][j] = jeans(x, v, rho, sigma, A, k);
-                            phase[i][j] = jeans(x, v, rho, sigma, A, k);
-                        }
-                        if(initCon == BULLET)
-                        {
-                            phase[i][j] = bulletC(x,v,vSx1,vSx2,vSv,amplB1,amplB2);
-                        }
-                        phaseOld[i][j] = 0;
-                        phaseTemp[i][j] = 0;
-                    }
-			}
+                density[i] = testDens(x,sx,ampl);
+                pot[i] = testPot(x,sx,ampl);
+        }
 
 		
-	//integrates phase space to calculate density. Returns total mass.
-	double mass = calDensity();
-
-	//printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convert(Nt*dt,toByear)*1000,Nt, convert(dt,toByear)*1000);
-    
-    //Some execution messages.
-    printf("%f million of years were simulated using %d timesteps each of %f million years. \n", convert(Nt*dt,toByear)*1000,Nt,convert(dt,toByear)*1000);
-	printf("The total mass was %f times the Milky Way's mass. \n",convert(mass, toSolarMasses)/1e12);
-
-    printf("G es %lf\n", G*1.0);
-
-    //log file with the simulation parameters
-	FILE *simInfo = fopen("./images/simInfo.dat","w+");
 	
-    fprintf(simInfo,"Parameters of the simulation:\n");
-	fprintf(simInfo,"x goes from %.2f to %.2f , v goes from %.2f to %.2f\n", Xmin,Xmax,Vmin,Vmax);
-    fprintf(simInfo,"The initial conditions were:\n");
-	if(initCon == GAUSS)
-    {
     
-        fprintf(simInfo,"A Gaussian distribution with mean zero with (sx sv A)=\n");
-        fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);        
-    }
-    if(initCon == JEANS)
-    {
-    
-        fprintf(simInfo,"Jeans instability with (rho sigma A k)=\n");
-        fprintf(simInfo,"(%.3f %.3f %.3f %.3f)\n", rho, sigma, A, k);
-    }
-    if(initCon == BULLET)
-    {
-        fprintf(simInfo,"A collision of two Gaussian distributions with same velocity dispersion and mean zero.(sx1 sx2 sv A1 A2)=\n");
-        fprintf(simInfo,"(%.3f %.3f %.3f %.3f %.3f)\n", vSx1, vSx2, vSvB,amplB1,amplB2);
-    }
-    
-	fprintf(simInfo,"Nt = %d,  dt = %.3f\n", Nt,dt);
-    
-    //Export of the initial phase space and mass density.
-    printPhase("./datFiles/grid0.dat");
-	printDensity("./datFiles/density0.dat");
+	printPot("./testPotential.dat");
+	printDensity("./testDensity.dat");
     
     
-    //Solving Poisson equation.
+    //Solves Poisson equation.
     potential();
     
-    printPot("./datFiles/potential0.dat");
-    
-    //acceleration = -grad(Potential)
-    calAcceG();
-    
-    printAcce("./datFiles/acce0.dat");
+    printPot("./solvedPotential.dat");
     
     
-   
-    
-	for(int suprai = 1; suprai<Nt;suprai+=1){
-        char *grid = (char*) malloc(200* sizeof(char));
-		
-		step();
-        
-        
-        if(TAU != 0){
-        totalMass = calDensity();
-        collisionStep();
-        }
-        
-        totalMass = calDensity();
-        
-		printf("%d %f\n",suprai,totalMass*100/mass);
-        
-		sprintf(grid, "./datFiles/density%d.dat", suprai);
-		printDensity(grid);
-
-        
-		potential();
-        
-        
-        
-        sprintf(grid, "./datFiles/potential%d.dat", suprai);
-        
-		printPot(grid);
-        
-        
-		calAcceG();
-        
-		sprintf(grid, "./datFiles/acce%d.dat", suprai);
-		printAcce(grid);
-        sprintf(grid, "./datFiles/grid%d.dat", suprai);
-        printPhase(grid);
-        free(grid);
-                
-	}
-
-
-    
-	fclose(constants);
-	fclose(simInfo);
+	
 	return 0;
 
+}
+
+
+
+//gaussian potential.
+double testPot(double x, double sx, double amplitude)
+{
+    return amplitude*exp(-x*x/(sx*sx));
+    
+}
+
+//Corresponding density for a gaussian potential.
+double testDens(double x, double sx, double amplitude)
+{
+    return 2*(2*x*x-sx*sx)*amplitude*exp(-x*x/(sx*sx))/(sx*sx*sx*sx);
 }
 
 //Exports the phase space grid to text. char name is the name of the output file.
@@ -322,7 +192,7 @@ void printPhase(char *name)
 	for(i=0;i<Nx;i+=1) {
 		for(j=1;j<Nv+1;j+=1){ 
           //      printf("ignorarPrimero\n");
-			fprintf(output,"%f ", convert(phase[i][Nv-j], toSolarMasses)/convert(1.0,toKpc)/(convert(1.0,toKpc)*3.0857e+19)* convert(1.0,toSeconds)); //Imprime en Masas solares /kpc / (km/s)
+			fprintf(output,"%f ", convert(phase[i][Nv-j], aMasasSol)/convert(1.0,aKpc)/(convert(1.0,aKpc)*3.0857e+19)* convert(1.0,aSegundos)); //Imprime en Masas solares /kpc / (km/s)
             //fprintf(output,"%f ",phase[i][Nv-j]);
         //printf("Error MesagenoIgno\n");
         }
@@ -333,46 +203,15 @@ void printPhase(char *name)
 	fclose(output);
 
 }
-
 //Exports the density array to text. char name is the name of the output file.
 void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",convert(density[i],toSolarMasses)/convert(1,toKpc)); //Imprime en Masas solares / kiloparsec.
+            fprintf(output, "%f\n",convert(density[i],aMasasSol)/convert(1,aKpc)); //Imprime en Masas solares / kiloparsec.
 			}
 	fclose(output);
 }
-
-//Prints the constante name and value in the parameters file. char name is the name of the parameters, double value is its value.
-void printConstant(char *name, double value)
-{
-    fprintf(constants, "%s", name);
-    fprintf(constants, " %f\n", value);
-}
-
-//Returns the value of a Gaussian distribution given by x,v, sigma x (sx), sigma v (sv), and amplitude A.
-double gaussD(double x, double v, double sx, double sv, double amplitude)
-{
-	double ex = -x*x/(2.0*sx*sx)-v*v/(2.0*sv*sv);
-	return amplitude*exp(ex);
-}
-
-//Returns the value of a bimodal Gaussian distribution given by x,v, sigma x1 (sx1), sigma x2 (sx2), sigma v (sv), and amplitudes amplitude1 and amplitude2. The peaks are separated by 0.4 units of space.
-double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2)
-{
-	double ex1 = -(x-0.40)*(x-0.40)/(2.0*sx1*sx1)-v*v/(2.0*sv*sv);
-    double ex2 = -(x+0.40)*(x+0.40)/(2.0*sx2*sx2)-v*v/(2.0*sv*sv);
-	return amplitude1*exp(ex1)+amplitude2*exp(ex2);
-
-}
-
-//Returns the value corresponding to a Jeans instability for a pair (x,v), with parameters density (rho), sigma v (sv), an amplitude (0<A<=1) and a k.
-double jeans(double x, double v, double rho, double sigma, double A, double k)
-{
- return rho*pow(2*PI*sigma,-0.5)*exp(-v*v/(2*sigma))*(1.0+A*cos(k*x));
-}
-
 
 //Calcula la densidad, la velocidad macroscópica (u) y la energía libre (e) y los carga en los correspondientes arreglos.
 //Integrates the phase space with regards to velocity in order to obtain density, average velocity (u) and local free energy (e).
@@ -428,9 +267,9 @@ void potential()
     pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
     
     //Devuelve carga a out Î(Chi).
-    out[0] = -4*PI*G*mem[0];
+    out[0] = -mem[0];
     for(i=1;i<Nx;i+=1){
-      out[i] = -4.0*PI*G*mem[i]*calcK2(i);
+      out[i] = -mem[i]*calcK2(i);
     //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
     }
     fftw_execute(pIda);
@@ -441,7 +280,7 @@ void potential()
     }
 }
 
-//K**2 using pseudospectral approximation.
+
 double calcK2(int j2)
 {
     double rta;
@@ -457,40 +296,99 @@ double calcK2(int j2)
     return pow(1.0/rta,2);
 }
 
+double calcK2_old(int j2)
+{
+    double rta;
+    if( ( (j2 == 0)   )  ){
+        return 0;
+    }
+    if ( (j2 == Nx/2+1) ) {
+        return 0;
+    }
+    
+    if(j2<Nx/2+1){
+        rta = PI*j2;
+    }
+    if(j2>=Nx/2+1){
+        rta = -PI*(Nx-j2);
+    }    
+    return pow(1.0/rta,2);
 
-//Returns density in position l from the density array.
+}
+
+
+double calcK2_backup(int j2)
+{
+    double rta;
+    if( ( (j2 == 0)   )  ){
+        return 0;
+    }
+    if ( (j2 == Nx/2+1) ) {
+        return 0;
+    }
+    
+    if(j2<Nx/2+1){
+        rta = 2*PI*j2/(Xmax-Xmin);
+    }
+    if(j2>=Nx/2+1){
+        rta = -2*PI*(Nx-j2)/(Xmax-Xmin);
+    }    
+    return pow(1.0/rta,2);
+}
+
+double calcK2T(int j2)
+{
+    double rta;
+    if( ( (j2 == 0))){
+        return 0;
+    }
+//    if ( (j2 == Nx/2+1) ) {
+        //return 0;
+    //}    
+    if(j2<Nx/2){
+        rta = 2*sin(PI*j2/(Nx))/dx;
+    }
+    if(j2>=Nx/2){
+        //rta = -2*PI*(Nx-j2)/(Xmax-Xmin);
+        rta = 2*sin((Nx-j2)*PI/(Nx))/dx;
+        //rta = 2*sin(PI*(Nx-j2)/(Nx-1))/(Xmax-Xmin);
+    }    
+    return pow(1.0/rta,2);
+}
+
+//Método para evitar efectos misticos en la memoria.
 double giveDensity(int l)
 {
     double rta = density[l];
     return rta;
 }
 
-//Converts from simulation units  (u.m, u.s, u.t) to (solar masses, meters, billion of years or seconds)
-double convert(double value, int unit )
+//Convierte unidades de la simulación a masas solares, metros, o segundos.
+double convert(double valor, int unidad )
 {
-    double conx0 = 3.0857e+22; //a megaparsec in meters.
-    double cont0 = 13.772*1000000000; //Age of the universe in years.
-    double cont0s = cont0*365.24*24*60*60; //age of the universe in seconds
+    double conx0 = 3.0857e+22; //un megaparsec en metros
+    double cont0 = 13.772*1000000000; //Edad del universo
+    double cont0s = cont0*365.24*24*60*60;
 
-    if(unit == toSolarMasses){
-        return value * solarMases;
+    if(unidad == aMasasSol){
+        return valor * solarMases;
     }
-    if(unit == toKpc){
-        return value * mParsecs * 1000.0; 
+    if(unidad == aKpc){
+        return valor * mParsecs * 1000.0; //1000 = 1megaparsec en kiloparsec
     }
-    if(unit == toByear){
-        return value*13.772*fracT0;
+    if( unidad == aByear){
+        return valor*13.772*fracT0;
     }
-    if(unit == toSeconds){
-        return value*cont0s*fracT0;
+    if( unidad == aSegundos){
+        return valor*cont0s*fracT0;
     }
-    if(unit == toMeters){
-        return value * mParsecs * conx0;
+    if(unidad == aMetros){
+        return valor * mParsecs * conx0;
     }
     return -1;
 }
 
-//Differentiates the potential and load the acceleration on the acce array.
+//Deriva el potential y carga la aceleración gravitacional en el arreglo acce.
 void calAcceG()
 {
     for(i = 0; i<Nx ; i +=1){
@@ -498,31 +396,31 @@ void calAcceG()
     }
 }
 
-//Prints acce array on a file named "name" in kpc/(million year)^2.
+//Imprime el arreglo Acce.
 void printAcce(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",convert(acce[i], toKpc)/pow(convert(1.0, toByear)*1000,2)); 
+            fprintf(output, "%f\n",convert(acce[i], aKpc)/pow(convert(1.0, aByear)*1000,2)); //Imprime en kpc / (mAños)^2;
 			}
 	fclose(output);
 }
 
-//Prints pot array on a file named "name" in J/kg.
+//Imprime el arreglo Pot
 void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",pow(convert(pot[i], toMeters)/convert(1.0, toSeconds),2)/pot[i]); //Imprime potential en J/kg
+            fprintf(output, "%f\n",pow(convert(pot[i], aMetros)/convert(1.0, aSegundos),2)/pot[i]); //Imprime potential en J/kg
 			}
 	fclose(output);
 }
 
-
-//Calculates the new position of an element of the phase space grid due the free streaming. The new positions are loaded on (i2,j2).
+//Calcula la nueva posición de un elemento de la grilla tras el streaming. Version que discretiza los cambios y no el nuevo valor.
 double newij(int iin, int jin)
 {
         double x = Xmin*1.0+dx*iin; //Inicialización
+
         double v = acce[iin]*dt;
         double dj = v/dv;
         dj = (int)dj;
@@ -539,7 +437,7 @@ double newij(int iin, int jin)
     return 0;
 }
 
-//Performs a streaming step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+//Calcula un paso. Guarda una copia del phase actual en phaseOld. Actualiza phase. k,i son x. j,l son v.
 void step()
 {
 	for(k = 0; k<Nx; k++){
@@ -558,7 +456,6 @@ void step()
 	}
 }
 
-//Performs a collisional step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
 void collisionStep()
 {
     	for(k = 0; k<Nx; k++){
@@ -578,7 +475,6 @@ void collisionStep()
 }
 
 //Calcula el cambio en x. Ignora j.
-//Calculates the new position of an element of the phase space grid due the collisions. The new positions are loaded on (i2,j2).
 double newijCol(int iin, int jin)
 {
         double x = Xmin*1.0+dx*iin; //Inicialización
@@ -599,8 +495,7 @@ double newijCol(int iin, int jin)
     return 0;
 }
 
-
-//Calculates the collisional contribution on the phase space for a given Tau.
+//Calcula la contribución colisional en phase[icol][jcol] con un Tau dado.
 double collision(int icol, int jcol, double tau)
 {
     if(TAU==0) return 0;
@@ -608,7 +503,6 @@ double collision(int icol, int jcol, double tau)
     return df;
 }
 
-//Calculates the equilibrium distribution. Maxwell-Boltzmann equilibrium.
 double feq(int ipos, int jvel)
 {
     double ex = -1.0*pow(giveVel(jvel)-velocity[ipos],2)/(2.0*energy[ipos]);
@@ -616,7 +510,6 @@ double feq(int ipos, int jvel)
     return other * exp(ex);    
 }
 
-//Calculates the equilibrium distribution. Low Mach number approximation.
 double feq2(int ipos, int jvel)
 {
     double ex = -1.0*pow(giveVel(jvel),2)/(2.0*energy[ipos]);
@@ -625,20 +518,18 @@ double feq2(int ipos, int jvel)
     return other * exp(ex)* lowMach;
 }
 
-//Returns the coordinate for the array element ito.
+
 double givePos(int ito)
 {
     return Xmin*1.0+dx*ito;
 }
 
-//Returns the coordinate for the array element jto.
 double giveVel(int jto)
 {
     return Vmin*1.0+dv*jto;
 }
 
-
-//modulus function. The range is from 0 to q-1.
+//Observando que el m = p % q es negativo si p<0 y q>0, se define una función de módulo con rango de 0 a q-1.
 int mod(int p, int q)
 {
 	p = p%q;

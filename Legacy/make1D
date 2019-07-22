@@ -1,4 +1,4 @@
-all: images .PHONY
+all: images pyt .PHONY
 
 images: simulacion.c
 	@echo Creating output folders.
@@ -7,6 +7,8 @@ images: simulacion.c
 	@echo Compiling and executing.
 	gcc -no-pie -o heh.a -I/usr/local/include -L/usr/local/lib/ simulacion.c -Wall -lfftw3 -lm 
 	./heh.a
+	
+pyt: simPlots.py
 	python simPlots.py
 
 .PHONY: clean
