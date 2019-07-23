@@ -1,4 +1,4 @@
-all: outputGo data images gifs .PHONY
+all: outputGo data plots gifs .PHONY
 
 outputGo:
 	@echo Deleting output files from former execution.
@@ -14,17 +14,19 @@ data: simulacion.c
 	gcc -no-pie -o heh.a -I/usr/local/include -L/usr/local/lib/ simulacion.c -Wall -lfftw3 -lm 
 	./heh.a
 	
-images: simPlots.py data
+plots: 
 	python simPlots.py
 
 gifs: images
 	bash gif.sh
+
 .PHONY: clean
+
 clean:
 	@echo Removing temporal files
 	rm heh.a
 
-test: 
-	@echo Compiling and executing.
-	gcc -no-pie -o test.a -I/usr/local/include -L/usr/local/lib/ new_Poisson_Solver.c -Wall -lfftw3 -lm
-	./test.a 
+pyt: 
+	@echo drawing plots.
+	python simPlots.py
+	bash gif.sh

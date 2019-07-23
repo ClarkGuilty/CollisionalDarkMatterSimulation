@@ -144,6 +144,7 @@ int main()
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
     
+    fclose(constants);
     
     /* Parameters of my thesis document
     //Gauss //
@@ -177,8 +178,8 @@ int main()
     
     //Jeans2//
     double rho = 0.25/G;
-    double A = 0.001;
-    double kkj =0.1;
+    double A = 0.009;
+    double kkj = 0.5;
     double k = 2*(2*PI/Lx); // 2 k_0
     double sigma = 4*PI*G*rho*kkj*kkj/k/k;
     
@@ -200,7 +201,6 @@ int main()
                         }
                         if(initCon == JEANS)
                         {
-                            //phase[i][j] = jeans(x, v, rho, sigma, A, k);
                             phase[i][j] = jeans(x, v, rho, sigma, A, k);
                         }
                         if(initCon == BULLET)
@@ -308,7 +308,7 @@ int main()
 
 
     
-	fclose(constants);
+	
 	fclose(simInfo);
 	return 0;
 
