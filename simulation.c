@@ -36,7 +36,8 @@ Written by Javier Alejandro Acevedo Barroso
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 8972
-#define TAU 0
+#define TAU 150
+//#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
@@ -64,6 +65,7 @@ double *pot;
 double *acce;
 int initCon;
 double totalMass;
+double missingMass = 0;
 
 //Variables and parameters
 int i;
@@ -81,7 +83,7 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 
 //Size of a timestep and number of timesteps.
 double dt = 0.2; 
-int Nt = 100;
+int Nt = 150;
 
 //File with parameters of the simulation.
 FILE *constants;
@@ -110,6 +112,8 @@ double givePos(int ito);
 double giveVel(int jto);
 double collision(int icol, int jcol, double tau);
 void collisionStep();
+void kick();
+void drift();
 double newijCol(int iin, int jin);
 double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2);
 
@@ -128,8 +132,8 @@ int main()
 	double v;
     
     //Choosing what initial conditions to simulate.
-    //initCon = GAUSS;
-    initCon = JEANS;
+    initCon = GAUSS;
+    //initCon = JEANS;
     //initCon = BULLET;
     
     //Exporting the parameters of the simulation.
@@ -214,13 +218,25 @@ int main()
 
 		
 	//integrates phase space to calculate density. Returns total mass.
-	double mass = calDensity();
+	double original_Mass = calDensity();
 
 	//printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convert(Nt*dt,toByear)*1000,Nt, convert(dt,toByear)*1000);
     
+    //collision right after initialization.
+//     if(TAU != 0){
+//     totalMass = calDensity();
+//     collisionStep();
+//     }
+
+    printPhase("./datFiles/grid0.dat");
+	printDensity("./datFiles/density0.dat");
+    
+    totalMass = calDensity();
+    collisionStep();
+    
     //Some execution messages.
     printf("%f million of years were simulated using %d timesteps each of %f million years. \n", convert(Nt*dt,toByear)*1000,Nt,convert(dt,toByear)*1000);
-	printf("The total mass was %f times the Milky Way's mass. \n",convert(mass, toSolarMasses)/1e12);
+	printf("The total mass was %f times the Milky Way's mass. \n",convert(original_Mass, toSolarMasses)/1e12);
 
     printf("G es %lf\n", G*1.0);
 
@@ -251,9 +267,11 @@ int main()
 	fprintf(simInfo,"Nt = %d,  dt = %.3f\n", Nt,dt);
     
     //Export of the initial phase space and mass density.
-    printPhase("./datFiles/grid0.dat");
-	printDensity("./datFiles/density0.dat");
     
+
+    
+    
+
     
     //Solving Poisson equation.
     potential();
@@ -265,23 +283,28 @@ int main()
     
     printAcce("./datFiles/acce0.dat");
     
-    
+    kick();
    
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *grid = (char*) malloc(200* sizeof(char));
 		
-		step();
+//         step();
+        sprintf(grid, "./datFiles/grid%d.dat", suprai);
+        printPhase(grid);
         
-        
-        if(TAU != 0){
+//         if(TAU != 0){
+//         totalMass = calDensity();
+//         collisionStep();
+//         }
+
         totalMass = calDensity();
         collisionStep();
-        }
         
         totalMass = calDensity();
         
-		printf("%d %f\n",suprai,totalMass*100/mass);
+        
+		printf("%d %f %f\n",suprai,totalMass*100/original_Mass, (totalMass*100+missingMass*100)/original_Mass);
         
 		sprintf(grid, "./datFiles/density%d.dat", suprai);
 		printDensity(grid);
@@ -293,15 +316,17 @@ int main()
         
         sprintf(grid, "./datFiles/potential%d.dat", suprai);
         
-		printPot(grid);
+		//printPot(grid);
         
         
 		calAcceG();
         
+        kick();
+        
 		sprintf(grid, "./datFiles/acce%d.dat", suprai);
-		printAcce(grid);
-        sprintf(grid, "./datFiles/grid%d.dat", suprai);
-        printPhase(grid);
+		//    printAcce(grid);
+        
+        
         free(grid);
                 
 	}
@@ -387,11 +412,13 @@ double calDensity()
 				density[i] += phase[i][j]*dv;
                 velocity[i] += phase[i][j]*dv*giveVel(j);
         }
+        velocity[i] = velocity[i] / density[i];
         for(j=0;j<Nv;j+=1){
             energy[i] += phase[i][j]*dv*pow(giveVel(j) - velocity[i], 2)/2.0;
         }
-        velocity[i] = velocity[i] / density[i];
-        energy[i] = energy[i] / density[i];
+        if(density[i]!=0){
+            energy[i] = energy[i] / density[i];
+        }
 		mass += density[i]*dx;
 		}
 	return mass;
@@ -540,6 +567,46 @@ double newij(int iin, int jin)
 }
 
 //Performs a streaming step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+void drift()
+{
+	for(k = 0; k<Nx; k++){
+		for(l= 0; l<Nv; l++){
+			if(newijCol(k,l) ==0){
+				phaseTemp[i2][l] += phase[k][l];
+			}
+		}
+	}
+	
+	for(i = 0; i<Nx; i++){
+		for(j= 0; j<Nv; j++){
+			phase[i][j] = phaseTemp[i][j];
+			phaseTemp[i][j] = 0;
+		}
+	}
+}
+
+void kick()
+{
+	for(k = 0; k<Nx; k++){
+		for(l= 0; l<Nv; l++){
+			if(newij(k,l) ==0){
+				phaseTemp[k][j2] += phase[k][l];
+			}
+            else{
+             missingMass+=phase[k][l];   
+            }
+		}
+	}
+	
+	for(i = 0; i<Nx; i++){
+		for(j= 0; j<Nv; j++){
+			phase[i][j] = phaseTemp[i][j];
+			phaseTemp[i][j] = 0;
+		}
+	}
+}
+
+//Performs a streaming step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
 void step()
 {
 	for(k = 0; k<Nx; k++){
@@ -547,9 +614,12 @@ void step()
 			if(newij(k,l) ==0){
 				phaseTemp[i2][j2] += phase[k][l];
 			}
+            else{
+             missingMass+=phase[k][l];   
+            }
 		}
 	}
-
+	
 	for(i = 0; i<Nx; i++){
 		for(j= 0; j<Nv; j++){
 			phase[i][j] = phaseTemp[i][j];
@@ -561,10 +631,10 @@ void step()
 //Performs a collisional step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
 void collisionStep()
 {
-    	for(k = 0; k<Nx; k++){
+	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
 			if(newijCol(k,l) ==0){
-                phaseTemp[i2][l] += collision(k,l,TAU) + phase[k][l] ;//+ dt*feq2(k,l)*acce[k]*(giveVel(l)-velocity[k])/energy[k];
+				phaseTemp[i2][l] += collision(k,l,TAU)+phase[k][l] ;//+ dt*feq2(k,l)*acce[k]*(giveVel(l)-velocity[k])/energy[k];
 			}
 		}
 	}
@@ -575,7 +645,7 @@ void collisionStep()
 			phaseTemp[i][j] = 0;
 		}
 	}
-}
+ }
 
 //Calcula el cambio en x. Ignora j.
 //Calculates the new position of an element of the phase space grid due the collisions. The new positions are loaded on (i2,j2).
@@ -587,7 +657,7 @@ double newijCol(int iin, int jin)
         double v = acce[iin]*dt;
         j2 = jin; 
 
-        if(j2 < 0 || j2 >= Nv) return -1;
+        //if(j2 < 0 || j2 >= Nv) return -1;
         v = giveVel(j2);
         
         x = v*dt*scale;

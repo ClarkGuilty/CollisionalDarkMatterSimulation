@@ -56,7 +56,8 @@ for i in ran3:
     snocol = sum(sum(nocol))
     col = col/sum(sum(col))
     nocol = nocol/sum(sum(nocol))
-    
+#    col = col/np.max(col)
+#    nocol = nocol/np.max(nocol)
     average = (col + nocol)
 #    ii = (np.abs(average) ==0)
     dif = (nocol-col)
@@ -66,8 +67,8 @@ for i in ran3:
     
     #dif[ii] = 0
     #dif[~ii] = dif[~ii]/col[~ii]
-
-    dif[np.abs(dif) <= 0.0000003] = 0
+    print(np.max(np.abs(dif)))
+#    dif[np.abs(dif) <= 0.0000003] = 0
     plt.imshow(-dif/np.max(dif)*100, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto')
 #    print(constantes)
     if(int(constantes[7]) == GAUSS):
@@ -78,7 +79,7 @@ for i in ran3:
         plt.ylim(constantes[2]/2,constantes[3]/2)
     if(int(constantes[7]) == BULLET):
         plt.title("Percentage difference $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.xlim(consxtantes[2],constantes[3])
+        plt.xlim(constantes[2],constantes[3])
         plt.ylim(constantes[2]/2,constantes[3]/2)
         plt.clim(-100,100)
      #   plt.clim(-0.0025,0.0025)
@@ -117,14 +118,14 @@ for i in ran3:
     
 #    ddif[ii] = 0
 #    ddif[~ii] = ddif[~ii]/dcol[~ii]
-    ddif[np.abs(ddif) <= 0.000003] = 0
+#    ddif[np.abs(ddif) <= 0.000003] = 0
     
 #    for aq in range(2047):
 #        if(dnocol[aq]>0):
 #            ddif[aq] = (dnocol[aq]-dcol[aq]/dnocol[aq])*100
 #        else:
 #            ddif[aq]= 0
-    plt.plot(x,-ddif*10000)
+    plt.plot(x,ddif*100)
     #plt.plot((0, 0), (-1, 1), 'k-')
 #    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
 
@@ -132,10 +133,10 @@ for i in ran3:
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.xlim(-1.1,1.1)
 
-    if(int(constantes[7]) == GAUSS):
+    if(int(constantes[7]) == GAUSS):	
         plt.title("Gauss percentage difference in density", fontsize=fsize)
         plt.ylabel("Percentage difference",fontsize=fsize)
-        plt.ylim(-35, 30)
+        #plt.ylim(-35, 30)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     

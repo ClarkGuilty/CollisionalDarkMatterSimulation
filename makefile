@@ -1,32 +1,32 @@
-all: outputGo data plots gifs .PHONY
+all: clean data plots gifs .PHONY
 
-outputGo:
+clean:
 	@echo Deleting output files from former execution.
 	rm -rf ./datFiles
 	rm -rf ./images
 
 
-data: simulacion.c
+data: simulation.c
 	@echo Creating output folders.
 	mkdir datFiles
 	mkdir images
 	@echo Compiling and executing.
-	gcc -no-pie -o heh.a -I/usr/local/include -L/usr/local/lib/ simulacion.c -Wall -lfftw3 -lm 
-	./heh.a
-	
-plots: 
+	gcc -no-pie -o run.a -I/usr/local/include -L/usr/local/lib/ simulation.c -Wall -lfftw3 -lm 
+	./run.a
+	rm run.a	
+
+plots: data
 	python simPlots.py
 
-gifs: images
+gifs: plots
 	bash gif.sh
 
-.PHONY: clean
-
-clean:
-	@echo Removing temporal files
-	rm heh.a
-
-pyt: 
+pyt: datFiles
 	@echo drawing plots.
 	python simPlots.py
 	bash gif.sh
+
+compare: 
+	cp col/constants.dat constants.dat
+	bash compare.sh
+	rm constants.dat
