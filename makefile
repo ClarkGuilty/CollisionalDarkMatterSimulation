@@ -1,4 +1,4 @@
-all: clean data plots gifs .PHONY
+all: clean data plots gifs
 
 clean:
 	@echo Deleting output files from former execution.
@@ -15,7 +15,7 @@ data: simulation.c
 	./run.a
 	rm run.a	
 
-plots: data
+plots: data simPlots.py
 	python simPlots.py
 
 gifs: plots

@@ -36,8 +36,9 @@ Written by Javier Alejandro Acevedo Barroso
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 8972
-#define TAU 150
-//#define TAU 0
+//#define TAU 150
+//#define TAU 500
+#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
@@ -283,7 +284,7 @@ int main()
     
     printAcce("./datFiles/acce0.dat");
     
-    kick();
+    drift();
    
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
@@ -321,7 +322,7 @@ int main()
         
 		calAcceG();
         
-        kick();
+        drift();
         
 		sprintf(grid, "./datFiles/acce%d.dat", suprai);
 		//    printAcce(grid);
@@ -399,7 +400,7 @@ double jeans(double x, double v, double rho, double sigma, double A, double k)
 }
 
 
-//Calcula la densidad, la velocidad macroscópica (u) y la energía libre (e) y los carga en los correspondientes arreglos.
+
 //Integrates the phase space with regards to velocity in order to obtain density, average velocity (u) and local free energy (e).
 double calDensity()
 {
@@ -412,7 +413,9 @@ double calDensity()
 				density[i] += phase[i][j]*dv;
                 velocity[i] += phase[i][j]*dv*giveVel(j);
         }
-        velocity[i] = velocity[i] / density[i];
+        if(density[i]!=0){
+            velocity[i] = velocity[i] / density[i];
+        }
         for(j=0;j<Nv;j+=1){
             energy[i] += phase[i][j]*dv*pow(giveVel(j) - velocity[i], 2)/2.0;
         }
@@ -438,7 +441,7 @@ void potential()
     fftw_plan pIda;
     pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
 
-    //Cargar densidad en in y borra out:
+    //loads density on IN and fixes OUT to 0.
     for(i=0;i<Nx;i+=1){
 
         in[i] = giveDensity(i) - totalMass/(Xmax-Xmin);
@@ -447,18 +450,18 @@ void potential()
     }
     fftw_execute(pIda);
 
-    //Guarda out en mem.
+    //Saves OUT in MEM.
     for(i=0;i<Nx;i+=1){
         mem[i] = out[i];
     }
 
-    pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Se debe usar el mismo plan sí o sí al parecer.
+    pIda = fftw_plan_dft_1d(Nx, out, inR, FFTW_BACKWARD, FFTW_MEASURE); //Apparently, the same variable must be used to store the new plan.
     
-    //Devuelve carga a out Î(Chi).
+    //Solves Poisson equation in Fourier space. Loads OUT with the solution.
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
       out[i] = -4.0*PI*G*mem[i]*calcK2(i);
-    //out[i] = mem[i]; //Descomentar esta línea para obtener la distribucion original.
+    //out[i] = mem[i]; //uncomment to obtain original distribution.
     }
     fftw_execute(pIda);
 
@@ -540,7 +543,7 @@ void printPot(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",pow(convert(pot[i], toMeters)/convert(1.0, toSeconds),2)/pot[i]); //Imprime potential en J/kg
+            fprintf(output, "%f\n",pow(convert(pot[i], toMeters)/convert(1.0, toSeconds),2)/pot[i]); 
 			}
 	fclose(output);
 }
@@ -549,7 +552,7 @@ void printPot(char *name)
 //Calculates the new position of an element of the phase space grid due the free streaming. The new positions are loaded on (i2,j2).
 double newij(int iin, int jin)
 {
-        double x = Xmin*1.0+dx*iin; //Inicialización
+        double x = Xmin*1.0+dx*iin; //initialization
         double v = acce[iin]*dt;
         double dj = v/dv;
         dj = (int)dj;
@@ -566,8 +569,8 @@ double newij(int iin, int jin)
     return 0;
 }
 
-//Performs a streaming step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
-void drift()
+//Performs a kick step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+void kick()
 {
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
@@ -585,7 +588,8 @@ void drift()
 	}
 }
 
-void kick()
+//Performs a drift step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+void drift()
 {
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
@@ -606,7 +610,7 @@ void kick()
 	}
 }
 
-//Performs a streaming step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+//Performs a streaming step. Does both, kick and drift.
 void step()
 {
 	for(k = 0; k<Nx; k++){
@@ -628,7 +632,7 @@ void step()
 	}
 }
 
-//Performs a collisional step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+//Performs a collisional step. Does modified kick with collisions. Drift step is still necessary. If TAU == 0, it becomes a simple kick step.
 void collisionStep()
 {
 	for(k = 0; k<Nx; k++){
@@ -647,8 +651,7 @@ void collisionStep()
 	}
  }
 
-//Calcula el cambio en x. Ignora j.
-//Calculates the new position of an element of the phase space grid due the collisions. The new positions are loaded on (i2,j2).
+//Calculates the new position of an element of the phase space grid due kick. The new positionis loaded in i2.
 double newijCol(int iin, int jin)
 {
         double x = Xmin*1.0+dx*iin; //Inicialización
