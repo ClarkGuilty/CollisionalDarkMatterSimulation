@@ -1,4 +1,4 @@
-all: clean data plots gifs
+all: clean run.a plots gifs
 
 clean:
 	@echo Deleting output files from former execution.
@@ -6,7 +6,7 @@ clean:
 	rm -rf ./images
 
 
-data: simulation.c
+run.a: simulation.c
 	@echo Creating output folders.
 	mkdir datFiles
 	mkdir images

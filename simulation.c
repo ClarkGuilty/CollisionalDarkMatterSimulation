@@ -36,9 +36,8 @@ Written by Javier Alejandro Acevedo Barroso
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 8972
-//#define TAU 150
-//#define TAU 500
-#define TAU 0
+#define TAU 500
+//#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
@@ -133,9 +132,9 @@ int main()
 	double v;
     
     //Choosing what initial conditions to simulate.
-    initCon = GAUSS;
+    //initCon = GAUSS;
     //initCon = JEANS;
-    //initCon = BULLET;
+    initCon = BULLET;
     
     //Exporting the parameters of the simulation.
 	constants = fopen("./datFiles/constants.dat","w+");
@@ -183,7 +182,7 @@ int main()
     
     //Jeans2//
     double rho = 0.25/G;
-    double A = 0.009;
+    double A = 0.01;
     double kkj = 0.5;
     double k = 2*(2*PI/Lx); // 2 k_0
     double sigma = 4*PI*G*rho*kkj*kkj/k/k;
