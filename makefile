@@ -15,11 +15,12 @@ run.a: simulation.c
 	./run.a
 	rm run.a	
 
-plots: data simPlots.py
+plots: datFiles/constants.dat simPlots.py
 	python simPlots.py
 
 gifs: plots
 	bash gif.sh
+	rm plots
 
 pyt: datFiles
 	@echo drawing plots.

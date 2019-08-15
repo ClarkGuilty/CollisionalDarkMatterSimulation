@@ -36,15 +36,17 @@ Written by Javier Alejandro Acevedo Barroso
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 8972
-#define TAU 500
-//#define TAU 0
+//#define TAU 500
+#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
 #define solarMases 1e12 //How many solar masses are equivalent to one mass unit.
 #define fracT0 4e-3     //What fraction of the age of the universe is equivalent to one time unit.
 //#define G 0.959572 //Gravitational constant in this units. It is calculated with sPlots.py
-#define G 0.031830 
+//#define G 0.031830 
+//#define G 0.079577472 // 1/4pi
+#define G 1.0
 
 //Set of units for a galaxy cluster scale.
 //#define mParsecs 5
@@ -82,8 +84,8 @@ double dx = (Xmax-Xmin)*1.0/Nx;
 double dv = (Vmax-Vmin)*1.0/Nv;
 
 //Size of a timestep and number of timesteps.
-double dt = 0.2; 
-int Nt = 150;
+double dt = 0.1; 
+int Nt = 200;
 
 //File with parameters of the simulation.
 FILE *constants;
@@ -119,7 +121,7 @@ double bulletC(double x, double v, double sx1, double sx2, double sv, double amp
 
 int main()
 {
-    //dt = dt*dx/dv;
+    dt = dt*dx/dv;
 
     //Initialization of arrays.
     energy = malloc((sizeof(double)*Nx));
@@ -132,9 +134,9 @@ int main()
 	double v;
     
     //Choosing what initial conditions to simulate.
-    //initCon = GAUSS;
+    initCon = GAUSS;
     //initCon = JEANS;
-    initCon = BULLET;
+    //initCon = BULLET;
     
     //Exporting the parameters of the simulation.
 	constants = fopen("./datFiles/constants.dat","w+");
@@ -147,6 +149,7 @@ int main()
 	printConstant("Nt", Nt);
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
+    
     
     fclose(constants);
     
@@ -176,9 +179,9 @@ int main()
     
     //Initialization parameters
     //Gauss 
-    double vSx = 0.06;
-    double vSv = 0.06;
-    double ampl = 40.0;
+    double vSx = 0.08;
+    double vSv = 0.08;
+    double ampl = 4.0;
     
     //Jeans2//
     double rho = 0.25/G;
@@ -249,7 +252,7 @@ int main()
 	if(initCon == GAUSS)
     {
     
-        fprintf(simInfo,"A Gaussian distribution with mean zero with (sx sv A)=\n");
+        fprintf(simInfo,"A Gaussian distribution with mean zero and (sx sv A)=\n");
         fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);        
     }
     if(initCon == JEANS)
@@ -266,68 +269,54 @@ int main()
     
 	fprintf(simInfo,"Nt = %d,  dt = %.3f\n", Nt,dt);
     
-    //Export of the initial phase space and mass density.
-    
-
-    
-    
-
-    
+   
     //Solving Poisson equation.
     potential();
-    
     printPot("./datFiles/potential0.dat");
     
-    //acceleration = -grad(Potential)
+    //Calculates acceleration = -grad(Potential).
     calAcceG();
-    
     printAcce("./datFiles/acce0.dat");
     
+    //Updates velocity.
     drift();
    
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
-        char *grid = (char*) malloc(200* sizeof(char));
+        char *filename = (char*) malloc(200* sizeof(char));
 		
-//         step();
-        sprintf(grid, "./datFiles/grid%d.dat", suprai);
-        printPhase(grid);
+        //Print phase-space.
+        sprintf(filename, "./datFiles/grid%d.dat", suprai);
+        printPhase(filename);
         
-//         if(TAU != 0){
-//         totalMass = calDensity();
-//         collisionStep();
-//         }
-
-        totalMass = calDensity();
+        //Updates position taking collisions into account.
+        totalMass = calDensity(); //Recalculating density, velocity and energy.
         collisionStep();
         
-        totalMass = calDensity();
         
+        totalMass = calDensity(); ////Recalculating density, velocity and energy.
         
-		printf("%d %f %f\n",suprai,totalMass*100/original_Mass, (totalMass*100+missingMass*100)/original_Mass);
+		printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         
-		sprintf(grid, "./datFiles/density%d.dat", suprai);
-		printDensity(grid);
+		sprintf(filename, "./datFiles/density%d.dat", suprai);
+		printDensity(filename);
 
         
-		potential();
+		potential();        
+        sprintf(filename, "./datFiles/potential%d.dat", suprai);
         
-        
-        
-        sprintf(grid, "./datFiles/potential%d.dat", suprai);
-        
-		//printPot(grid);
+		//printPot(filename); Uncomment to print Potential energy.
         
         
 		calAcceG();
+        sprintf(filename, "./datFiles/acce%d.dat", suprai);
+		//    printAcce(filename); Uncomment to print Potential energy.
         
         drift();
         
-		sprintf(grid, "./datFiles/acce%d.dat", suprai);
-		//    printAcce(grid);
         
         
-        free(grid);
+        free(filename);
                 
 	}
 
@@ -346,10 +335,8 @@ void printPhase(char *name)
 
 	for(i=0;i<Nx;i+=1) {
 		for(j=1;j<Nv+1;j+=1){ 
-          //      printf("ignorarPrimero\n");
-			fprintf(output,"%f ", convert(phase[i][Nv-j], toSolarMasses)/convert(1.0,toKpc)/(convert(1.0,toKpc)*3.0857e+19)* convert(1.0,toSeconds)); //Imprime en Masas solares /kpc / (km/s)
-            //fprintf(output,"%f ",phase[i][Nv-j]);
-        //printf("Error MesagenoIgno\n");
+			//fprintf(output,"%f ", convert(phase[i][Nv-j], toSolarMasses)/convert(1.0,toKpc)/(convert(1.0,toKpc)*3.0857e+19)* convert(1.0,toSeconds)); //Imprime en Masas solares /kpc / (km/s)
+            fprintf(output,"%f ",phase[i][Nv-j]);
         }
 		fprintf(output,"\n");
 		//printf("%d\n", i);
@@ -397,8 +384,6 @@ double jeans(double x, double v, double rho, double sigma, double A, double k)
 {
  return rho*pow(2*PI*sigma,-0.5)*exp(-v*v/(2*sigma))*(1.0+A*cos(k*x));
 }
-
-
 
 //Integrates the phase space with regards to velocity in order to obtain density, average velocity (u) and local free energy (e).
 double calDensity()
@@ -500,6 +485,10 @@ double convert(double value, int unit )
     double conx0 = 3.0857e+22; //a megaparsec in meters.
     double cont0 = 13.772*1000000000; //Age of the universe in years.
     double cont0s = cont0*365.24*24*60*60; //age of the universe in seconds
+    
+    if(G  == 1.0){ //If G is 1, we are doing a dimensionless run.
+        return value;
+    }
 
     if(unit == toSolarMasses){
         return value * solarMases;
@@ -596,7 +585,7 @@ void drift()
 				phaseTemp[k][j2] += phase[k][l];
 			}
             else{
-             missingMass+=phase[k][l];   
+             missingMass+=phase[k][l]-collision(k,l,TAU);   
             }
 		}
 	}
@@ -685,7 +674,7 @@ double feq(int ipos, int jvel)
 {
     double ex = -1.0*pow(giveVel(jvel)-velocity[ipos],2)/(2.0*energy[ipos]);
     double other = density[ipos] / sqrt(2.0*PI*energy[ipos]);
-    return other * exp(ex);    
+    return other * exp(ex);
 }
 
 //Calculates the equilibrium distribution. Low Mach number approximation.
