@@ -134,8 +134,8 @@ int main()
 	double v;
     
     //Choosing what initial conditions to simulate.
-    initCon = GAUSS;
-    //initCon = JEANS;
+    //initCon = GAUSS;
+    initCon = JEANS;
     //initCon = BULLET;
     
     //Exporting the parameters of the simulation.
@@ -149,6 +149,8 @@ int main()
 	printConstant("Nt", Nt);
     printConstant("InitCon", initCon);
     printConstant("TAU", TAU);
+    printConstant("dt", dt);
+    printConstant("G", G);
     
     
     fclose(constants);
@@ -185,7 +187,7 @@ int main()
     
     //Jeans2//
     double rho = 0.25/G;
-    double A = 0.01;
+    double A = 0.02;
     double kkj = 0.5;
     double k = 2*(2*PI/Lx); // 2 k_0
     double sigma = 4*PI*G*rho*kkj*kkj/k/k;
@@ -585,7 +587,7 @@ void drift()
 				phaseTemp[k][j2] += phase[k][l];
 			}
             else{
-             missingMass+=phase[k][l]-collision(k,l,TAU);   
+             missingMass+=phase[k][l]+collision(k,l,TAU);   
             }
 		}
 	}

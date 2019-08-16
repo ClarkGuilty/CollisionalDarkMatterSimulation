@@ -24,7 +24,7 @@ fsize = 16
 BULLET = -147
 JEANS = -137
 GAUSS = -127
-dt = 0.4
+dt = constantes[9]
 
 dat = np.loadtxt("./datFiles/grid0.dat").T
 #density = np.loadtxt("density.dat")
@@ -56,7 +56,8 @@ acceUnit = 3.5737451e-13 #km/s²
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
     dat = dat#/np.max(dat)/7
-    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto') #Es mucho más rápido imshow	
+#    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto') #Es mucho más rápido imshow
+    plt.contourf(np.flip(dat, axis=1), extent=[constantes[0],constantes[1],constantes[2],constantes[3]]) #Es mucho más rápido imshow		
     plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
@@ -71,7 +72,7 @@ for i in range(int(constantes[6])):
 #        if(TAU == 0):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,30e5) #Gauss
+        #plt.clim(0,30e5) #Gauss
         plt.xlim(constantes[0]/2,constantes[1]/2)
         plt.ylim(constantes[2]/2,constantes[3]/2)
     elif(constantes[7] == BULLET):
@@ -82,7 +83,7 @@ for i in range(int(constantes[6])):
         plt.ylim(constantes[0]/2,constantes[1]/2)
         plt.xlim(constantes[2],constantes[3])
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-        plt.clim(0,27e5)
+        #plt.clim(0,27e5)
 
     cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     cbar.set_label("Mass density [$M_{\odot}$ / kpc  $\\frac{km}{s}$]",fontsize=fsize)
@@ -136,7 +137,8 @@ for i in range(int(constantes[6])):
 #    plt.savefig("./images/acce{:d}.png".format(i), dpi = dpII)
 #    plt.clf()
     
-
+f = open('plots', 'w+')
+f.close()
 
 
 
