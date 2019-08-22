@@ -59,7 +59,8 @@ for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
     dat = dat#/np.max(dat)/7
 #    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto') #Es mucho más rápido imshow
-    plt.contourf(np.flip(dat, axis=1), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow		
+#    plt.contourf(np.flip(dat, axis=1), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow
+    plt.contourf(np.flip(dat,axis=0), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow				
     plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
     plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])

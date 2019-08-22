@@ -135,8 +135,8 @@ int main()
     
     //Choosing what initial conditions to simulate.
     //initCon = GAUSS;
-    initCon = JEANS;
-    //initCon = BULLET;
+    //initCon = JEANS;
+    initCon = BULLET;
     
     //Exporting the parameters of the simulation.
 	constants = fopen("./datFiles/constants.dat","w+");
@@ -201,8 +201,8 @@ int main()
     double vSx1 = 0.04;
     double vSx2 = 0.04;
     double vSvB = 0.06;
-    double amplB1 = 30.0;
-    double amplB2 = 40.0;
+    double amplB1 = 3.0;
+    double amplB2 = 4.0;
     
     FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
 	for(i=0;i<Nx;i+=1) {
@@ -559,7 +559,7 @@ double newij(int iin, int jin)
         double v = acce[iin]*dt;
         double dj = v/dv;
         dj = (int)dj;
-        j2 = jin-dj;
+        j2 = jin+dj;
 
         if(j2 < 0 || j2 >= Nv) return -1;
         v = Vmin*1.0+dv*j2;
@@ -567,7 +567,7 @@ double newij(int iin, int jin)
         double di = x/dx*scale;
         di = (int) di;
 
-        i2 = iin - di;
+        i2 = iin + di;
         i2 = mod(i2,Nx);
     return 0;
 }
