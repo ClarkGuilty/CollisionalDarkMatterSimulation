@@ -85,7 +85,7 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 
 //Size of a timestep and number of timesteps.
 double dt = 0.1; 
-int Nt = 200;
+int Nt = 100;
 
 //File with parameters of the simulation.
 FILE *constants;
@@ -107,7 +107,7 @@ double newij(int iin, int jin);
 void step();
 int mod(int p, int q);
 void printPot(char *name);
-double jeans(double x, double v, double rho, double sigma, double A, double k);
+double jeans(double x, double v, double rho, double sigma, double A, double k, double u);
 double feq(int ipos, int jvel);
 double feq2(int ipos, int jvel);
 double givePos(int ito);
@@ -163,7 +163,7 @@ int main()
     
     //Jeans//
     double rho = 10;
-    double sigma = 0.1;
+    double sigma = sqrt(0.1);
     double A = 0.9999;
     //double A = 0.001;
     double k = 2*PI;
@@ -187,10 +187,15 @@ int main()
     
     //Jeans2//
     double rho = 0.25/G;
-    double A = 0.02;
+    double A = 0.03;
     double kkj = 0.5;
-    double k = 2*(2*PI/Lx); // 2 k_0
-    double sigma = 4*PI*G*rho*kkj*kkj/k/k;
+    double k = 2.0*(2.0*PI/Lx); // 2 k_0
+    double sigma = 4.0*PI*G*rho*kkj*kkj/k/k; //This is sigma^2
+    double u = -sqrt(sigma);
+    double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
+    printf("%f\n", deltaId);
+    int deltaI = (int) deltaId;
+    printf("%d\n",deltaI);
     
     //Bullet //
     double vSx1 = 0.04;
@@ -199,7 +204,7 @@ int main()
     double amplB1 = 30.0;
     double amplB2 = 40.0;
     
-    
+    FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
                     for(j=0;j<Nv;j+=1){
@@ -210,7 +215,7 @@ int main()
                         }
                         if(initCon == JEANS)
                         {
-                            phase[i][j] = jeans(x, v, rho, sigma, A, k);
+                            phase[i][j] = jeans(x, v, rho, sigma, A, k, u);
                         }
                         if(initCon == BULLET)
                         {
@@ -224,6 +229,9 @@ int main()
 		
 	//integrates phase space to calculate density. Returns total mass.
 	double original_Mass = calDensity();
+    double original_Perturbation = density[Nx/2];
+//    fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
+    fprintf(perturbation, "%f\n", (density[Nx/2]-rho)/rho);
 
 	//printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convert(Nt*dt,toByear)*1000,Nt, convert(dt,toByear)*1000);
     
@@ -260,8 +268,8 @@ int main()
     if(initCon == JEANS)
     {
     
-        fprintf(simInfo,"Jeans instability with (rho sigma A k)=\n");
-        fprintf(simInfo,"(%.3f %.3f %.3f %.3f)\n", rho, sigma, A, k);
+        fprintf(simInfo,"Jeans instability with (rho sigma A k u)=\n");
+        fprintf(simInfo,"(%.3f %.3f %.3f %.3f %.3f)\n", rho, sigma, A, k, u);
     }
     if(initCon == BULLET)
     {
@@ -283,6 +291,7 @@ int main()
     //Updates velocity.
     drift();
    
+    printf("%f", givePos(Nx/2));
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *filename = (char*) malloc(200* sizeof(char));
@@ -297,8 +306,10 @@ int main()
         
         
         totalMass = calDensity(); ////Recalculating density, velocity and energy.
-        
-		printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
+        //fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
+        fprintf(perturbation, "%f\n", (density[Nx/2 + deltaI]-rho)/rho);
+		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
+        printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
 		sprintf(filename, "./datFiles/density%d.dat", suprai);
 		printDensity(filename);
@@ -324,7 +335,7 @@ int main()
 
 
     
-	
+	fclose(perturbation); 
 	fclose(simInfo);
 	return 0;
 
@@ -382,10 +393,12 @@ double bulletC(double x, double v, double sx1, double sx2, double sv, double amp
 }
 
 //Returns the value corresponding to a Jeans instability for a pair (x,v), with parameters density (rho), sigma v (sv), an amplitude (0<A<=1) and a k.
-double jeans(double x, double v, double rho, double sigma, double A, double k)
+double jeans(double x, double v, double rho, double sigma, double A, double k, double u)
 {
- return rho*pow(2*PI*sigma,-0.5)*exp(-v*v/(2*sigma))*(1.0+A*cos(k*x));
+ return rho*pow(2*PI*sigma,-0.5)*exp(-pow(v-u,2)/(2.0*sigma))*(1.0+A*cos(k*x));
 }
+
+
 
 //Integrates the phase space with regards to velocity in order to obtain density, average velocity (u) and local free energy (e).
 double calDensity()
@@ -546,7 +559,7 @@ double newij(int iin, int jin)
         double v = acce[iin]*dt;
         double dj = v/dv;
         dj = (int)dj;
-        j2 = jin+dj;
+        j2 = jin-dj;
 
         if(j2 < 0 || j2 >= Nv) return -1;
         v = Vmin*1.0+dv*j2;
@@ -554,7 +567,7 @@ double newij(int iin, int jin)
         double di = x/dx*scale;
         di = (int) di;
 
-        i2 = iin + di;
+        i2 = iin - di;
         i2 = mod(i2,Nx);
     return 0;
 }
@@ -711,6 +724,7 @@ int mod(int p, int q)
 	return p;
 
 }
+
 
 
 
