@@ -63,6 +63,7 @@ double phaseTemp[Nx][Nv] = {0};
 double *energy;
 double *velocity;
 double *density;
+double *fourierPowerSeries;
 double *pot;
 double *acce;
 int initCon;
@@ -85,7 +86,7 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 
 //Size of a timestep and number of timesteps.
 double dt = 0.1; 
-int Nt = 100;
+int Nt = 200;
 
 //File with parameters of the simulation.
 FILE *constants;
@@ -118,6 +119,7 @@ void kick();
 void drift();
 double newijCol(int iin, int jin);
 double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2);
+double fourierCoef2(double rho, char *name);
 
 int main()
 {
@@ -129,14 +131,15 @@ int main()
     density = malloc((sizeof(double)*Nx));
     acce = malloc((sizeof(double)*Nx));
     pot = malloc((sizeof(double)*Nx));
+    fourierPowerSeries = malloc((sizeof(double)*Nx));
     
 	double x;
 	double v;
     
     //Choosing what initial conditions to simulate.
     //initCon = GAUSS;
-    //initCon = JEANS;
-    initCon = BULLET;
+    initCon = JEANS;
+    //initCon = BULLET;
     
     //Exporting the parameters of the simulation.
 	constants = fopen("./datFiles/constants.dat","w+");
@@ -193,9 +196,7 @@ int main()
     double sigma = 4.0*PI*G*rho*kkj*kkj/k/k; //This is sigma^2
     double u = -sqrt(sigma);
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
-    printf("%f\n", deltaId);
-    int deltaI = (int) deltaId;
-    printf("%d\n",deltaI);
+
     
     //Bullet //
     double vSx1 = 0.04;
@@ -229,7 +230,7 @@ int main()
 		
 	//integrates phase space to calculate density. Returns total mass.
 	double original_Mass = calDensity();
-    double original_Perturbation = density[Nx/2];
+    double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0d.dat");
 //    fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
     fprintf(perturbation, "%f\n", (density[Nx/2]-rho)/rho);
 
@@ -307,7 +308,9 @@ int main()
         
         totalMass = calDensity(); ////Recalculating density, velocity and energy.
         //fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
-        fprintf(perturbation, "%f\n", (density[Nx/2 + deltaI]-rho)/rho);
+        sprintf(filename, "./datFiles/powerSeries%d.dat", suprai);
+        deltaId = fourierCoef2(rho,filename);
+        fprintf(perturbation, "%f\n", deltaId);
 		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
@@ -338,6 +341,41 @@ int main()
 	fclose(perturbation); 
 	fclose(simInfo);
 	return 0;
+
+}
+
+
+//Returns the second Fourier coefficient, prints the FourierPowerSeries.
+double fourierCoef2(double rho, char *name)
+{
+    
+    fftw_complex *in, *out;
+    double ans = 0;
+    in=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    out=(fftw_complex*) fftw_malloc(sizeof(fftw_complex)*Nx);
+    
+    fftw_plan pIda;
+    pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
+
+    //loads density on IN and sets OUT to 0.
+    for(i=0;i<Nx;i+=1){
+
+        in[i] = (giveDensity(i) - rho )/rho; // $\delta$
+        out[i] = 0;
+    }
+    fftw_execute(pIda); //Execute FFT.
+
+    ans = cabs(in[2]);
+    
+    
+    FILE *output = fopen(name, "w+");
+    for(i=0;i<Nx;i+=1){
+        fourierPowerSeries[i] = out[i];
+        fprintf(output, "%f\n", fourierPowerSeries[i]); //Imprime en Masas solares / kiloparsec.
+    }
+	fclose(output);
+    
+    return ans;
 
 }
 
