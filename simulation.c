@@ -194,7 +194,8 @@ int main()
     double kkj = 0.5;
     double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = 4.0*PI*G*rho*kkj*kkj/k/k; //This is sigma^2
-    double u = -sqrt(sigma);
+    //double u = -sqrt(sigma);
+    double u = 0;
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
 
     
@@ -230,10 +231,10 @@ int main()
 		
 	//integrates phase space to calculate density. Returns total mass.
 	double original_Mass = calDensity();
-    double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0d.dat");
+    double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0.dat");
 //    fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
-    fprintf(perturbation, "%f\n", (density[Nx/2]-rho)/rho);
-
+    fprintf(perturbation, "%f\n", original_Perturbation);
+    printf("%f\n", pow(kkj/k,-1));
 	//printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convert(Nt*dt,toByear)*1000,Nt, convert(dt,toByear)*1000);
     
     //collision right after initialization.
@@ -283,11 +284,11 @@ int main()
    
     //Solving Poisson equation.
     potential();
-    printPot("./datFiles/potential0.dat");
+    //printPot("./datFiles/potential0.dat");
     
     //Calculates acceleration = -grad(Potential).
     calAcceG();
-    printAcce("./datFiles/acce0.dat");
+    //printAcce("./datFiles/acce0.dat");
     
     //Updates velocity.
     drift();
@@ -310,7 +311,7 @@ int main()
         //fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
         sprintf(filename, "./datFiles/powerSeries%d.dat", suprai);
         deltaId = fourierCoef2(rho,filename);
-        fprintf(perturbation, "%f\n", deltaId);
+        fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
 		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
@@ -365,7 +366,7 @@ double fourierCoef2(double rho, char *name)
     }
     fftw_execute(pIda); //Execute FFT.
 
-    ans = cabs(in[2]);
+    ans = cabs(out[50]);
     
     
     FILE *output = fopen(name, "w+");

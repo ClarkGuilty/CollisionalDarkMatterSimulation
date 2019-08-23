@@ -57,9 +57,8 @@ acceUnit = 3.5737451e-13 #km/s²
 
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
-    dat = dat#/np.max(dat)/7
+    #dat = dat#/np.max(dat)/7
 #    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto') #Es mucho más rápido imshow
-#    plt.contourf(np.flip(dat, axis=1), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow
     plt.contourf(np.flip(dat,axis=0), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow				
     plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
@@ -106,8 +105,7 @@ for i in range(int(constantes[6])):
     #plt.ylim(-0.75e9,7e10)#Jeans
     plt.xlim(-1.1,1.1)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
-    plt.clf()
-    
+    plt.clf()    
     
 #    potential = np.loadtxt("./datFiles/potential{:d}.dat".format(i))
 #    plt.plot(x,potential)
