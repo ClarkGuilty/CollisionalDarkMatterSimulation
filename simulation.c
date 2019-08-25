@@ -86,7 +86,7 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 
 //Size of a timestep and number of timesteps.
 double dt = 0.1; 
-int Nt = 200;
+int Nt = 100;
 
 //File with parameters of the simulation.
 FILE *constants;
@@ -234,7 +234,7 @@ int main()
     double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0.dat");
 //    fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
     fprintf(perturbation, "%f\n", original_Perturbation);
-    printf("%f\n", pow(kkj/k,-1));
+    printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
 	//printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convert(Nt*dt,toByear)*1000,Nt, convert(dt,toByear)*1000);
     
     //collision right after initialization.
@@ -366,7 +366,7 @@ double fourierCoef2(double rho, char *name)
     }
     fftw_execute(pIda); //Execute FFT.
 
-    ans = cabs(out[50]);
+    ans = cabs(out[2]);
     
     
     FILE *output = fopen(name, "w+");

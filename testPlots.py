@@ -74,12 +74,12 @@ freqs = np.fft.fftshift(np.fft.fftfreq(len(power), d = 1.0/1024)*2)
 #    plt.plot(freqs[N:Nf],power[N:Nf])
 #    ax.set_xscale('log')
 ax.set_yscale('log')
-ax.plot(freqs[power>1e-6],power[power>1e-6])
+ax.plot(freqs[power>1e-6],power[power>1e-6]**2)
 ax.axhline(y=1.0, xmin=0.0, xmax=100.0, color='b', linewidth = 2)
 ax.axvline(x=4*np.pi, color='r', linewidth = 0.5)
 #    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 ax.set_xlabel("Position [kpc]",fontsize=fsize)
-ax.set_ylabel("Linear Density [$M_{\odot}$ / kpc]",fontsize=fsize)
+ax.set_ylabel("$P(k,t)/P(k_j,0)$",fontsize=fsize)
 #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
 ax.set_title("Power spectrum $t =$ {:.2f} T".format(0*dt/2),fontsize=fsize)
 #plt.ylim(-0.75e9,0.5e10)#Gauss
@@ -89,10 +89,11 @@ ax.set_title("Power spectrum $t =$ {:.2f} T".format(0*dt/2),fontsize=fsize)
 fig.savefig("./images/powerSeries{:d}.png".format(0), dpi = dpII)
 ax.cla()
 
-minylim = 1e-7
+minylim = 1e-9
 
 N = 1
 nkj = 1037
+#power = np.loadtxt("./datFiles/powerSeries1.dat")
 power = np.fft.fftshift(np.loadtxt("./datFiles/powerSeries1.dat")) 
 #power = np.abs(power[nkj-N:nkj+N])
 #normalization = power.sum() /len(power[power!=0])
@@ -112,20 +113,20 @@ for i in range(1,int(constantes[6])):
     ax.set_yscale('log')
 #    ax.plot(freqs[power>1e-6],power[power>1e-6]/power[1049])
     ax.axhline(y=1.0, xmin=0.0, xmax=10.0, color='b', linewidth = 1)
-    ax.axvline(x=4*np.pi, color='r', linewidth = 0.5)
+    ax.axvline(x=4*np.pi*2, color='r', linewidth = 0.5)
     
 #    print(freqs.shape, (power/normalization).shape)
-    ax.scatter(freqs,power, s= 1)
+    ax.scatter(freqs,power**2, s= 2)
 #    ax.scatter(freqs[nkj-N:nkj+N],power[nkj-N:nkj+N]/normalization, s= 1)
 #    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
-    ax.set_xlabel("Position [kpc]",fontsize=fsize)
-    ax.set_ylabel("Linear Density [$M_{\odot}$ / kpc]",fontsize=fsize)
+    ax.set_xlabel("kL",fontsize=fsize)
+    ax.set_ylabel("$P(k,t)/P(k_j,0)$",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     ax.set_title("Power spectrum $t =$ {:.2f} T".format(i*dt/2),fontsize=fsize)
     #plt.ylim(-0.75e9,0.5e10)#Gauss
     #plt.ylim(-0.75e9,7e10)#Jeans
     ax.set_ylim(minylim, 1e3)
-#    ax.set_xlim(1e-1, 1e3)
+    ax.set_xlim(2, 1e3)
     fig.savefig("./images/powerSeries{:d}.png".format(i), dpi = dpII)
     ax.cla()
     
