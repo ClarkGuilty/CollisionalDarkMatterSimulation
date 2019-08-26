@@ -60,13 +60,15 @@ for i in range(int(constantes[6])):
     #dat = dat#/np.max(dat)/7
 #    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto') #Es mucho más rápido imshow
     plt.contourf(np.flip(dat,axis=0), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow				
-    plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
+    #plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
-    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    #plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
     if(constantes[7] == JEANS):
 #        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
-        plt.title("Phase Space Density $t =$ {:.2f} T".format(i*dt/2),fontsize=fsize) #Divido por 2 pues T = 2.
+        plt.title("Phase Space Density $t =$ {:.2f} T".format(i*dt),fontsize=fsize) #Divido por 2 pues T = 2.
+#        plt.ylim(constantes[0],constantes[1])
+#        plt.xlim(constantes[2],constantes[3])
         #plt.clim(0,37e5) #Jeans
     elif(constantes[7] == GAUSS):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)

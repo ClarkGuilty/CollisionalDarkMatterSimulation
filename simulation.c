@@ -13,8 +13,8 @@ Written by Javier Alejandro Acevedo Barroso
 #define PI 3.14159265359
 
 //Extreme values for velocity and position.
-#define Xmin -1.0
-#define Xmax 1.0
+#define Xmin -0.5
+#define Xmax 0.5
 #define Vmin -1.0
 #define Vmax 1.0
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
@@ -69,6 +69,7 @@ double *acce;
 int initCon;
 double totalMass;
 double missingMass = 0;
+double average = 0;
 
 //Variables and parameters
 int i;
@@ -120,11 +121,12 @@ void drift();
 double newijCol(int iin, int jin);
 double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2);
 double fourierCoef2(double rho, char *name);
+double jeansRandom(double x, double v, double rho, double sigma, double u, double dm);
 
 int main()
 {
     dt = dt*dx/dv;
-
+    srand((unsigned int)3); //Seed for randum numbers in Jeans instability test.
     //Initialization of arrays.
     energy = malloc((sizeof(double)*Nx));
     velocity = malloc((sizeof(double)*Nx));
@@ -194,9 +196,21 @@ int main()
     double kkj = 0.5;
     double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = 4.0*PI*G*rho*kkj*kkj/k/k; //This is sigma^2
+    
     //double u = -sqrt(sigma);
     double u = 0;
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
+    //printf("sigma = %f", sigma);
+    //printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
+    
+    //Jeans3//
+     rho = 0.25/G;
+     double k_j = 2.0*PI/Lx;
+     sigma = 4.0*PI*G*rho/(k_j*k_j); //This is sigma^2
+     //sigma = 9*dv;
+    //double u = -sqrt(sigma);
+     u = 0;
+     deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
 
     
     //Bullet //
@@ -206,6 +220,8 @@ int main()
     double amplB1 = 3.0;
     double amplB2 = 4.0;
     
+
+    printf("sigma = %f , %f\n", sigma, pow(sigma,-1));
     FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
@@ -217,7 +233,9 @@ int main()
                         }
                         if(initCon == JEANS)
                         {
-                            phase[i][j] = jeans(x, v, rho, sigma, A, k, u);
+                            //phase[i][j] = jeans(x, v, rho, sigma, A, k, u);
+                            phase[i][j] = jeansRandom(x, v, rho, sigma, u, 0.1);
+                            
                         }
                         if(initCon == BULLET)
                         {
@@ -234,7 +252,7 @@ int main()
     double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0.dat");
 //    fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
     fprintf(perturbation, "%f\n", original_Perturbation);
-    printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
+    
 	//printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convert(Nt*dt,toByear)*1000,Nt, convert(dt,toByear)*1000);
     
     //collision right after initialization.
@@ -262,8 +280,7 @@ int main()
 	fprintf(simInfo,"x goes from %.2f to %.2f , v goes from %.2f to %.2f\n", Xmin,Xmax,Vmin,Vmax);
     fprintf(simInfo,"The initial conditions were:\n");
 	if(initCon == GAUSS)
-    {
-    
+    {    
         fprintf(simInfo,"A Gaussian distribution with mean zero and (sx sv A)=\n");
         fprintf(simInfo,"(%.3f %.3f %.3f)\n", vSx, vSv, ampl);        
     }
@@ -278,7 +295,6 @@ int main()
         fprintf(simInfo,"A collision of two Gaussian distributions with same velocity dispersion and mean zero.(sx1 sx2 sv A1 A2)=\n");
         fprintf(simInfo,"(%.3f %.3f %.3f %.3f %.3f)\n", vSx1, vSx2, vSvB,amplB1,amplB2);
     }
-    
 	fprintf(simInfo,"Nt = %d,  dt = %.3f\n", Nt,dt);
     
    
@@ -293,7 +309,6 @@ int main()
     //Updates velocity.
     drift();
    
-    printf("%f", givePos(Nx/2));
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *filename = (char*) malloc(200* sizeof(char));
@@ -337,7 +352,7 @@ int main()
                 
 	}
 
-
+    printf("The average was %f\n", average/Nx/Nv);
     
 	fclose(perturbation); 
 	fclose(simInfo);
@@ -345,6 +360,15 @@ int main()
 
 }
 
+double jeansRandom(double x, double v, double rho, double sigma, double u, double dm)
+{
+ 
+    double delta = (double)rand()/(double)(RAND_MAX);
+    delta = (delta-0.5) * dm;
+    average += delta;
+    return rho*pow(2*PI*sigma,-0.5)*exp(-pow(v-u,2)/(2.0*sigma))*(1.0+delta);
+    
+}
 
 //Returns the second Fourier coefficient, prints the FourierPowerSeries.
 double fourierCoef2(double rho, char *name)
@@ -403,7 +427,8 @@ void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",convert(density[i],toSolarMasses)/convert(1,toKpc)); //Imprime en Masas solares / kiloparsec.
+            //fprintf(output, "%f\n",convert(density[i],toSolarMasses)/convert(1,toKpc)); //Imprime en Masas solares / kiloparsec.
+        fprintf(output, "%f\n",density[i]);
 			}
 	fclose(output);
 }
@@ -436,7 +461,6 @@ double jeans(double x, double v, double rho, double sigma, double A, double k, d
 {
  return rho*pow(2*PI*sigma,-0.5)*exp(-pow(v-u,2)/(2.0*sigma))*(1.0+A*cos(k*x));
 }
-
 
 
 //Integrates the phase space with regards to velocity in order to obtain density, average velocity (u) and local free energy (e).

@@ -31,12 +31,7 @@ dat = np.loadtxt("./datFiles/grid0.dat").T
 constantes = np.loadtxt("./datFiles/constants.dat", usecols = 1)
 dt = constantes[9]
 TAU = int(constantes[8])
-#inF = np.loadtxt("inF.dat")
-#outF = np.loadtxt("outF0.dat")
-#outF1 = np.loadtxt("outF1.dat")
-#oI = np.loadtxt("oI.dat")
-#oR = np.loadtxt("oR.dat")
-#acce = np.loadtxt("acce.dat")
+L = constantes[1] - constantes[0]
 
 def fmt(x, pos):
     a, b = '{:.1e}'.format(x).split('e')
@@ -58,82 +53,80 @@ acceUnit = 3.5737451e-13 #km/s²
 kj0=1
 
 power = np.abs(np.loadtxt("./datFiles/powerSeries0.dat"))
-freqs = np.fft.fftfreq(len(power), d = 1.0/1024)
-heh = np.arange(len(power))
-heh[freqs == 4*np.pi*2]
-heh[np.logical_and(freqs > 4*np.pi*2 - 0.3, freqs < 4*np.pi*2 + 0.3 )]
+freqs = np.fft.fftfreq(len(power), d = x[1]-x[0])
+
+
+def findArg(array, value = 4*np.pi*2, epsilon = 0.1):
+      heh = np.arange(len(power))
+      while (len(heh[np.logical_and(array > value - epsilon, array < value + epsilon )]) == 0):
+            epsilon += 0.1
+      rta = heh[np.logical_and(freqs > value - epsilon, freqs < value + epsilon )]
+      #print(rta[0])
+      return rta[0]
+
 fig, ax = plt.subplots()
 
 
 #    ax.hlines(y=0.6, xmin=0.0, xmax=1.0, color='b')
 power = np.abs(np.fft.fftshift(np.loadtxt("./datFiles/powerSeries0.dat")))
-freqs = np.fft.fftshift(np.fft.fftfreq(len(power), d = 1.0/1024)*2)
-#    Ncentral = 1024
-#    N = Ncentral-10
-#    Nf = Ncentral+10
-#    plt.plot(freqs[N:Nf],power[N:Nf])
-#    ax.set_xscale('log')
+freqs = np.fft.fftshift(np.fft.fftfreq(len(power), d = x[1]- x[0])*L)
+
 ax.set_yscale('log')
-ax.plot(freqs[power>1e-6],power[power>1e-6]**2)
+#ax.plot(freqs[power>1e-6],power[power>1e-6]**2)
 ax.axhline(y=1.0, xmin=0.0, xmax=100.0, color='b', linewidth = 2)
 ax.axvline(x=4*np.pi, color='r', linewidth = 0.5)
 #    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
 ax.set_xlabel("Position [kpc]",fontsize=fsize)
 ax.set_ylabel("$P(k,t)/P(k_j,0)$",fontsize=fsize)
-#plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
 ax.set_title("Power spectrum $t =$ {:.2f} T".format(0*dt/2),fontsize=fsize)
-#plt.ylim(-0.75e9,0.5e10)#Gauss
-#plt.ylim(-0.75e9,7e10)#Jeans
-#    ax.set_ylim(1e-7, 1e3)
-#ax.set_xlim(1e-1, 1e3)
+
 fig.savefig("./images/powerSeries{:d}.png".format(0), dpi = dpII)
 ax.cla()
 
+kj = 2*np.pi/L
 minylim = 1e-9
-
+maxylim = 1e3
 N = 1
-nkj = 1037
+nkj = findArg(freqs, value = kj)
 #power = np.loadtxt("./datFiles/powerSeries1.dat")
-power = np.fft.fftshift(np.loadtxt("./datFiles/powerSeries1.dat")) 
+power = np.fft.fftshift(np.loadtxt("./datFiles/powerSeries0.dat")) 
 #power = np.abs(power[nkj-N:nkj+N])
 #normalization = power.sum() /len(power[power!=0])
+normalization = power[nkj]**2
 
-for i in range(1,int(constantes[6])): 
-    
-#    ax.axhline(y=0.5, xmin=0.0, xmax=1.0, color='r')
-#    ax.hlines(y=0.6, xmin=0.0, xmax=1.0, color='b')
-    freqs = np.fft.fftshift(np.fft.fftfreq(2048, d = 1.0/1024)*2)
+for i in range(0,int(constantes[6])): 
+      
+    ax.cla()
+    freqs = np.fft.fftshift(np.fft.fftfreq(len(power), d = x[1]- x[0])*L)
     power = np.abs(np.fft.fftshift(np.loadtxt("./datFiles/powerSeries{:d}.dat".format(i))))
-    
+    power[findArg(freqs,value = 0)] = 0
 #    Ncentral = 1024
 #    N = Ncentral-10
 #    Nf = Ncentral+10
 #    plt.plot(freqs[N:Nf],power[N:Nf])
-    ax.set_xscale('log')
+#    ax.set_xscale('log')
     ax.set_yscale('log')
 #    ax.plot(freqs[power>1e-6],power[power>1e-6]/power[1049])
     ax.axhline(y=1.0, xmin=0.0, xmax=10.0, color='b', linewidth = 1)
-    ax.axvline(x=4*np.pi*2, color='r', linewidth = 0.5)
+    ax.axvline(x=kj, color='r', linewidth = 0.5)
     
 #    print(freqs.shape, (power/normalization).shape)
-    ax.scatter(freqs,power**2, s= 2)
+    ax.scatter(freqs[freqs != 0],power[freqs != 0]**2/normalization, s= 5)
 #    ax.scatter(freqs[nkj-N:nkj+N],power[nkj-N:nkj+N]/normalization, s= 1)
 #    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
     ax.set_xlabel("kL",fontsize=fsize)
-    ax.set_ylabel("$P(k,t)/P(k_j,0)$",fontsize=fsize)
+    ax.set_ylabel("$|P(k,t)/P(k_j,0)|^2$",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     ax.set_title("Power spectrum $t =$ {:.2f} T".format(i*dt/2),fontsize=fsize)
     #plt.ylim(-0.75e9,0.5e10)#Gauss
     #plt.ylim(-0.75e9,7e10)#Jeans
-    ax.set_ylim(minylim, 1e3)
-    ax.set_xlim(2, 1e3)
+    ax.set_ylim(minylim, maxylim)
+    ax.set_xlim(0, np.max(freqs))#
     fig.savefig("./images/powerSeries{:d}.png".format(i), dpi = dpII)
-    ax.cla()
+
     
 
 
-f = open('plots', 'w+')
-f.close()
 
 
 
