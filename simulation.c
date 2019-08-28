@@ -191,26 +191,29 @@ int main()
     double ampl = 4.0;
     
     //Jeans2//
-    double rho = 0.25/G;
+    double rho = pow(Vmax/Lx,2)/G;
+    printf("puto rho %f \n", rho);
     double A = 0.03;
     double kkj = 0.5;
     double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = 4.0*PI*G*rho*kkj*kkj/k/k; //This is sigma^2
     
-    //double u = -sqrt(sigma);
-    double u = 0;
+    double u = -2*sqrt(sigma);
+    //double u = 0;
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
     //printf("sigma = %f", sigma);
     //printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
     
+    
+    
     //Jeans3//
-     rho = 0.25/G;
-     double k_j = 2.0*PI/Lx;
-     sigma = 4.0*PI*G*rho/(k_j*k_j); //This is sigma^2
+     //rho = 0.25/G;
+     //double k_j = 2.0*PI/Lx;
+     //sigma = 4.0*PI*G*rho/(k_j*k_j); //This is sigma^2
      //sigma = 9*dv;
-    //double u = -sqrt(sigma);
-     u = 0;
-     deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
+    
+     //u = 0;
+     //deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
 
     
     //Bullet //
@@ -233,8 +236,8 @@ int main()
                         }
                         if(initCon == JEANS)
                         {
-                            //phase[i][j] = jeans(x, v, rho, sigma, A, k, u);
-                            phase[i][j] = jeansRandom(x, v, rho, sigma, u, 0.1);
+                            phase[i][j] = jeans(x, v, rho, sigma, A, k, u);
+                            //phase[i][j] = jeansRandom(x, v, rho, sigma, u, 0.1);
                             
                         }
                         if(initCon == BULLET)
