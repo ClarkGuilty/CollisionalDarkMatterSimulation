@@ -1,4 +1,4 @@
-all: clean run.a tests plots gifs
+all: clean run.a plots gifs
 
 clean:
 	@echo Deleting output files from former execution.

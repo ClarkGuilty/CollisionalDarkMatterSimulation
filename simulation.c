@@ -15,8 +15,8 @@ Written by Javier Alejandro Acevedo Barroso
 //Extreme values for velocity and position.
 #define Xmin -0.5
 #define Xmax 0.5
-#define Vmin -1.0
-#define Vmax 1.0
+#define Vmin -1.5
+#define Vmax 0.5
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
@@ -36,17 +36,17 @@ Written by Javier Alejandro Acevedo Barroso
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 8972
-//#define TAU 500
-#define TAU 0
+#define TAU 500
+//#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
 #define solarMases 1e12 //How many solar masses are equivalent to one mass unit.
 #define fracT0 4e-3     //What fraction of the age of the universe is equivalent to one time unit.
-//#define G 0.959572 //Gravitational constant in this units. It is calculated with sPlots.py
+#define G 0.959572 //Gravitational constant in this units. It is calculated with sPlots.py
 //#define G 0.031830 
 //#define G 0.079577472 // 1/4pi
-#define G 1.0
+//#define G 1.0
 
 //Set of units for a galaxy cluster scale.
 //#define mParsecs 5
@@ -191,15 +191,15 @@ int main()
     double ampl = 4.0;
     
     //Jeans2//
-    double rho = pow(Vmax/Lx,2)/G;
-    printf("puto rho %f \n", rho);
+    double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
+//printf("puto rho %f \n", rho);
     double A = 0.03;
     double kkj = 0.5;
     double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = 4.0*PI*G*rho*kkj*kkj/k/k; //This is sigma^2
     
-    double u = -2*sqrt(sigma);
-    //double u = 0;
+    //double u = -2*sqrt(sigma);
+    double u = 0;
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
     //printf("sigma = %f", sigma);
     //printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
@@ -414,8 +414,8 @@ void printPhase(char *name)
 
 	for(i=0;i<Nx;i+=1) {
 		for(j=1;j<Nv+1;j+=1){ 
-			//fprintf(output,"%f ", convert(phase[i][Nv-j], toSolarMasses)/convert(1.0,toKpc)/(convert(1.0,toKpc)*3.0857e+19)* convert(1.0,toSeconds)); //Imprime en Masas solares /kpc / (km/s)
-            fprintf(output,"%f ",phase[i][Nv-j]);
+			fprintf(output,"%f ", convert(phase[i][Nv-j], toSolarMasses)/convert(1.0,toKpc)/(convert(1.0,toKpc)*3.0857e+19)* convert(1.0,toSeconds)); //Imprime en Masas solares /kpc / (km/s)
+    //fprintf(output,"%f ",phase[i][Nv-j]);
         }
 		fprintf(output,"\n");
 		//printf("%d\n", i);
@@ -430,8 +430,8 @@ void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            //fprintf(output, "%f\n",convert(density[i],toSolarMasses)/convert(1,toKpc)); //Imprime en Masas solares / kiloparsec.
-        fprintf(output, "%f\n",density[i]);
+            fprintf(output, "%f\n",convert(density[i],toSolarMasses)/convert(1,toKpc)); //Imprime en Masas solares / kiloparsec.
+        //fprintf(output, "%f\n",density[i]);
 			}
 	fclose(output);
 }

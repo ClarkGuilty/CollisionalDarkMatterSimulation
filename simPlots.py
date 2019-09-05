@@ -58,11 +58,12 @@ acceUnit = 3.5737451e-13 #km/s²
 for i in range(int(constantes[6])):
     dat = np.loadtxt("./datFiles/grid{:d}.dat".format(i)).T
     #dat = dat#/np.max(dat)/7
-#    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto') #Es mucho más rápido imshow
-    plt.contourf(np.flip(dat,axis=0), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow				
-    #plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
+    plt.imshow(dat, extent=[constantes[0],constantes[1],constantes[2],constantes[3]], aspect='auto') #Es mucho más rápido imshow
+#    plt.contourf(np.flip(dat,axis=0), extent=[constantes[0],constantes[1],constantes[2],constantes[3]], levels = 8) #Es mucho más rápido imshow				
+    plt.yticks(plt.yticks()[0], [str(np.round(t*velUnit)) for t in plt.yticks()[0]]) 
     plt.ylabel("Velocity [km/s]",fontsize=fsize)
-    #plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+#    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xticks(plt.xticks()[0], ["{:.2f}".format(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
     if(constantes[7] == JEANS):
 #        plt.title("Jeans Instability $\\tau =$ {:d}".format(TAU),fontsize=fsize)
@@ -75,17 +76,17 @@ for i in range(int(constantes[6])):
 #        plt.suptitle("$\\tau$ = {:d}".format(TAU),fontsize=fsize)
 #        if(TAU == 0):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
-        plt.title("Phase Space Density $t =$ {:.2f} T".format(i*dt),fontsize=fsize)
+        plt.title("Phase Space Density $t =$ {:.2f}".format(i*dt),fontsize=fsize)
         #plt.clim(0,30e5) #Gauss
-        plt.xlim(constantes[0]/2,constantes[1]/2)
-        plt.ylim(constantes[2]/2,constantes[3]/2)
+        plt.xlim(constantes[2]/2,constantes[3]/2)
+        plt.ylim(constantes[0]/1.5,constantes[1]/1.5)
     elif(constantes[7] == BULLET):
         #plt.title("Gaussian Initialization $\\tau =$ {:d}".format(TAU),fontsize=fsize)
 #        plt.suptitle("$\\tau$ = {:d}".format(TAU),fontsize=fsize)
 #        if(TAU == 0):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
-        plt.ylim(constantes[0]/2,constantes[1]/2)
-        plt.xlim(constantes[2],constantes[3])
+        plt.ylim(constantes[2]/2,constantes[3]/2)
+        plt.xlim(constantes[0],constantes[1])
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
         #plt.clim(0,27e5)
 
@@ -98,14 +99,16 @@ for i in range(int(constantes[6])):
     
     dens = np.loadtxt("./datFiles/density{:d}.dat".format(i))    
     plt.plot(x,dens)
-    plt.xticks(plt.xticks()[0], [str(t*estUnit) for t in plt.xticks()[0]])
+    plt.xticks(plt.xticks()[0], ["{:.2f}".format(t*estUnit) for t in plt.xticks()[0]])
     plt.xlabel("Position [kpc]",fontsize=fsize)
     plt.ylabel("Linear Density [$M_{\odot}$ / kpc]",fontsize=fsize)
     #plt.title("Density $\\tau =$ {:d}".format(TAU),fontsize=fsize)
     #plt.title("Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
-    #plt.ylim(-0.75e9,0.5e10)#Gauss
-    #plt.ylim(-0.75e9,7e10)#Jeans
-    plt.xlim(-1.1,1.1)
+    if(TAU == 0):
+        plt.title("Density at {:.2f}, $\\tau \\rightarrow \\infty$".format(i*dt),fontsize=fsize)
+    #plt.ylim(-0.75e9,6.85e10)#Gauss
+    plt.ylim(6e10,7e10)#Jeans
+    plt.xlim(constantes[0]/2,constantes[1]/2)
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
     plt.clf()    
     
