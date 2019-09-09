@@ -15,8 +15,8 @@ Written by Javier Alejandro Acevedo Barroso
 //Extreme values for velocity and position.
 #define Xmin -0.5
 #define Xmax 0.5
-#define Vmin -1.5
-#define Vmax 0.5
+#define Vmin -1.0
+#define Vmax 1.0
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
@@ -36,7 +36,7 @@ Written by Javier Alejandro Acevedo Barroso
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 8972
-#define TAU 500
+#define TAU 0
 //#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
@@ -68,6 +68,8 @@ double *pot;
 double *acce;
 int initCon;
 double totalMass;
+double totalK = 0;
+double totalU = 0;
 double missingMass = 0;
 double average = 0;
 
@@ -120,7 +122,7 @@ void kick();
 void drift();
 double newijCol(int iin, int jin);
 double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2);
-double fourierCoef2(double rho, char *name);
+double fourierCoef2(double rho, char *name, int print);
 double jeansRandom(double x, double v, double rho, double sigma, double u, double dm);
 
 int main()
@@ -191,15 +193,16 @@ int main()
     double ampl = 4.0;
     
     //Jeans2//
-    double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
-//printf("puto rho %f \n", rho);
-    double A = 0.03;
+  double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
+//    double rho = 1.0;
+printf("puto rho %f \n", rho);
+    double A = 0.01;
     double kkj = 0.5;
     double k = 2.0*(2.0*PI/Lx); // 2 k_0
-    double sigma = 4.0*PI*G*rho*kkj*kkj/k/k; //This is sigma^2
+    double sigma = sqrt(4.0*PI*G*rho*kkj*kkj/k/k); //
     
-    //double u = -2*sqrt(sigma);
     double u = 0;
+    //double u = 0;
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
     //printf("sigma = %f", sigma);
     //printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
@@ -225,7 +228,6 @@ int main()
     
 
     printf("sigma = %f , %f\n", sigma, pow(sigma,-1));
-    FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
                     for(j=0;j<Nv;j+=1){
@@ -250,9 +252,12 @@ int main()
 			}
 
 		
-	//integrates phase space to calculate density. Returns total mass.
+	
+	FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
+    FILE *fileMass = fopen("./massEvolution.dat","w+");
+    FILE *fileEnergy = fopen("./energyEvolution.dat","w+");
 	double original_Mass = calDensity();
-    double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0.dat");
+    double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0.dat", 0);
 //    fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
     fprintf(perturbation, "%f\n", original_Perturbation);
     
@@ -268,7 +273,7 @@ int main()
 	printDensity("./datFiles/density0.dat");
     
     totalMass = calDensity();
-    collisionStep();
+
     
     //Some execution messages.
     printf("%f million of years were simulated using %d timesteps each of %f million years. \n", convert(Nt*dt,toByear)*1000,Nt,convert(dt,toByear)*1000);
@@ -300,7 +305,8 @@ int main()
     }
 	fprintf(simInfo,"Nt = %d,  dt = %.3f\n", Nt,dt);
     
-   
+    //collisionStep();  
+    //totalMass = calDensity();
     //Solving Poisson equation.
     potential();
     //printPot("./datFiles/potential0.dat");
@@ -308,9 +314,13 @@ int main()
     //Calculates acceleration = -grad(Potential).
     calAcceG();
     //printAcce("./datFiles/acce0.dat");
-    
+
+    double totalE0 = totalK+totalU;
+    //Updates position 
+      
     //Updates velocity.
-    drift();
+//    drift();
+    step();
    
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
@@ -321,17 +331,13 @@ int main()
         printPhase(filename);
         
         //Updates position taking collisions into account.
-        totalMass = calDensity(); //Recalculating density, velocity and energy.
-        collisionStep();
-        
+        //totalMass = calDensity(); //Recalculating density, velocity and energy.
+        //collisionStep();
+
         
         totalMass = calDensity(); ////Recalculating density, velocity and energy.
         //fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
-        sprintf(filename, "./datFiles/powerSeries%d.dat", suprai);
-        deltaId = fourierCoef2(rho,filename);
-        fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
-		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
-        printf("%d %f\n",suprai,totalMass*100/original_Mass);
+
         
 		sprintf(filename, "./datFiles/density%d.dat", suprai);
 		printDensity(filename);
@@ -340,6 +346,15 @@ int main()
 		potential();        
         sprintf(filename, "./datFiles/potential%d.dat", suprai);
         
+        
+        sprintf(filename, "./datFiles/powerSeries%d.dat", suprai);
+        deltaId = fourierCoef2(rho,filename, 0);
+        //fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
+        fprintf(fileMass, "%f\n", (totalMass-original_Mass)/original_Mass);
+        fprintf(fileEnergy, "%f %f  %f\n", totalK/totalE0, totalU/totalE0, (totalK+totalU)/totalE0);
+		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
+        printf("%d %f\n",suprai,totalMass*100/original_Mass);
+        
 		//printPot(filename); Uncomment to print Potential energy.
         
         
@@ -347,7 +362,8 @@ int main()
         sprintf(filename, "./datFiles/acce%d.dat", suprai);
 		//    printAcce(filename); Uncomment to print Potential energy.
         
-        drift();
+        //drift();
+        step();
         
         
         
@@ -355,13 +371,17 @@ int main()
                 
 	}
 
-    printf("The average was %f\n", average/Nx/Nv);
     
-	fclose(perturbation); 
+    
+	fclose(perturbation);
+    fclose(fileMass); 
+    fclose(fileEnergy); 
 	fclose(simInfo);
 	return 0;
 
 }
+
+
 
 double jeansRandom(double x, double v, double rho, double sigma, double u, double dm)
 {
@@ -374,7 +394,7 @@ double jeansRandom(double x, double v, double rho, double sigma, double u, doubl
 }
 
 //Returns the second Fourier coefficient, prints the FourierPowerSeries.
-double fourierCoef2(double rho, char *name)
+double fourierCoef2(double rho, char *name, int print)
 {
     
     fftw_complex *in, *out;
@@ -386,6 +406,7 @@ double fourierCoef2(double rho, char *name)
     pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
 
     //loads density on IN and sets OUT to 0.
+    
     for(i=0;i<Nx;i+=1){
 
         in[i] = (giveDensity(i) - rho )/rho; // $\delta$
@@ -393,15 +414,16 @@ double fourierCoef2(double rho, char *name)
     }
     fftw_execute(pIda); //Execute FFT.
 
-    ans = cabs(out[2]);
+    ans = cabs(out[4]);
     
-    
-    FILE *output = fopen(name, "w+");
-    for(i=0;i<Nx;i+=1){
-        fourierPowerSeries[i] = out[i];
-        fprintf(output, "%f\n", fourierPowerSeries[i]); //Imprime en Masas solares / kiloparsec.
+    if(print==1){
+        FILE *output = fopen(name, "w+");
+        for(i=0;i<Nx;i+=1){
+            fourierPowerSeries[i] = out[i];
+            fprintf(output, "%f\n", fourierPowerSeries[i]); //Imprime en Masas solares / kiloparsec.
+        }
+        fclose(output);
     }
-	fclose(output);
     
     return ans;
 
@@ -462,7 +484,7 @@ double bulletC(double x, double v, double sx1, double sx2, double sv, double amp
 //Returns the value corresponding to a Jeans instability for a pair (x,v), with parameters density (rho), sigma v (sv), an amplitude (0<A<=1) and a k.
 double jeans(double x, double v, double rho, double sigma, double A, double k, double u)
 {
- return rho*pow(2*PI*sigma,-0.5)*exp(-pow(v-u,2)/(2.0*sigma))*(1.0+A*cos(k*x));
+ return rho*pow(2*PI*sigma*sigma,-0.5)*exp(-pow(v-u,2)/(2.0*sigma*sigma))*(1.0+A*cos(k*x));
 }
 
 
@@ -470,6 +492,7 @@ double jeans(double x, double v, double rho, double sigma, double A, double k, d
 double calDensity()
 {
 	double mass = 0;
+    totalK = 0;
 	for(i = 0;i<Nx;i+=1){
 		density[i]=0;
         velocity[i] = 0;
@@ -488,6 +511,7 @@ double calDensity()
             energy[i] = energy[i] / density[i];
         }
 		mass += density[i]*dx;
+        totalK += energy[i]*dx;
 		}
 	return mass;
 }
@@ -506,6 +530,7 @@ void potential()
     fftw_plan pIda;
     pIda = fftw_plan_dft_1d(Nx, in, out,FFTW_FORWARD, FFTW_MEASURE);
 
+    totalU = 0;
     //loads density on IN and fixes OUT to 0.
     for(i=0;i<Nx;i+=1){
 
@@ -532,7 +557,8 @@ void potential()
 
     
     for(i=0;i<Nx;i+=1){
-        pot[i] = creal(inR[i]/Nx);
+        pot[i] = cabs(inR[i]/Nx);
+        totalU += 0.5*giveDensity(i)*pot[i]*dx;
     }
 }
 
