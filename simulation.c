@@ -160,8 +160,6 @@ int main()
     printConstant("G", G);
     
     
-    fclose(constants);
-    
     /* Parameters of my thesis document
     //Gauss //
     double vSx = 0.06;
@@ -381,6 +379,8 @@ printf("puto rho %f \n", rho);
     fclose(fileMass); 
     fclose(fileEnergy); 
 	fclose(simInfo);
+    fclose(constants);
+    
 	return 0;
 
 }
