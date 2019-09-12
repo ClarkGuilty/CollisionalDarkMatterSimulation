@@ -16,7 +16,7 @@ run.a: simulation.c
 	rm run.a	
 
 tests: datFiles/constants.dat testPlots.py
-	cp datFiles/JeansMagnitude.dat ~/Paper-CollDM/plots
+	cp fourierEvolution.dat ~/Paper-CollDM/plots
 	cp datFiles/constants.dat ~/Paper-CollDM/plots
 	python ~/Paper-CollDM/plots/plots.py
 	python testPlots.py

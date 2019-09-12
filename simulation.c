@@ -15,8 +15,8 @@ Written by Javier Alejandro Acevedo Barroso
 //Extreme values for velocity and position.
 #define Xmin -0.5
 #define Xmax 0.5
-#define Vmin -1.0
-#define Vmax 1.0
+#define Vmin -2.0
+#define Vmax 2.0
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
@@ -43,10 +43,10 @@ Written by Javier Alejandro Acevedo Barroso
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
 #define solarMases 1e12 //How many solar masses are equivalent to one mass unit.
 #define fracT0 4e-3     //What fraction of the age of the universe is equivalent to one time unit.
-#define G 0.959572 //Gravitational constant in this units. It is calculated with sPlots.py
+//#define G 0.959572 //Gravitational constant in this units. It is calculated with sPlots.py
 //#define G 0.031830 
 //#define G 0.079577472 // 1/4pi
-//#define G 1.0
+#define G 1.0
 
 //Set of units for a galaxy cluster scale.
 //#define mParsecs 5
@@ -194,11 +194,11 @@ int main()
     
     //Jeans2//
   double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
-//    double rho = 1.0;
+   //double rho = 1.0;
 printf("puto rho %f \n", rho);
-    double A = 0.01;
+    double A = 0.03;
     double kkj = 0.5;
-    double k = 2.0*(2.0*PI/Lx); // 2 k_0
+    double k = 4.0*(2.0*PI/Lx); // 2 k_0
     double sigma = sqrt(4.0*PI*G*rho*kkj*kkj/k/k); //
     
     double u = 0;
@@ -207,7 +207,7 @@ printf("puto rho %f \n", rho);
     //printf("sigma = %f", sigma);
     //printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
     
-    
+    printConstant("rho", rho);
     
     //Jeans3//
      //rho = 0.25/G;
@@ -253,7 +253,8 @@ printf("puto rho %f \n", rho);
 
 		
 	
-	FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
+	//FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
+	FILE *perturbation = fopen("./fourierEvolution.dat","w+");
     FILE *fileMass = fopen("./massEvolution.dat","w+");
     FILE *fileEnergy = fopen("./energyEvolution.dat","w+");
 	double original_Mass = calDensity();
@@ -263,7 +264,7 @@ printf("puto rho %f \n", rho);
     
 	//printf("Se simuló %f millones de años con %d pasos de %f millones de años cada uno\n", convert(Nt*dt,toByear)*1000,Nt, convert(dt,toByear)*1000);
     
-    //collision right after initialization.
+    //  collision right after initialization.
 //     if(TAU != 0){
 //     totalMass = calDensity();
 //     collisionStep();
@@ -319,8 +320,9 @@ printf("puto rho %f \n", rho);
     //Updates position 
       
     //Updates velocity.
-//    drift();
-    step();
+    collisionStep();
+    drift();
+//    step();
    
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
@@ -349,9 +351,9 @@ printf("puto rho %f \n", rho);
         
         sprintf(filename, "./datFiles/powerSeries%d.dat", suprai);
         deltaId = fourierCoef2(rho,filename, 0);
-        //fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
-        fprintf(fileMass, "%f\n", (totalMass-original_Mass)/original_Mass);
-        fprintf(fileEnergy, "%f %f  %f\n", totalK/totalE0, totalU/totalE0, (totalK+totalU)/totalE0);
+        fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
+        fprintf(fileMass, "%f %f\n", (totalMass-original_Mass)/original_Mass,(missingMass-original_Mass)/original_Mass);
+        fprintf(fileEnergy, "%f %f  %f %f\n", totalK/totalE0, totalU/totalE0, (totalK+totalU)/totalE0,(totalK-totalU)/totalE0);
 		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
@@ -362,8 +364,10 @@ printf("puto rho %f \n", rho);
         sprintf(filename, "./datFiles/acce%d.dat", suprai);
 		//    printAcce(filename); Uncomment to print Potential energy.
         
-        //drift();
-        step();
+        collisionStep();
+        drift();
+        
+        //step();
         
         
         
@@ -435,9 +439,14 @@ void printPhase(char *name)
 	FILE *output = fopen(name, "w+");
 
 	for(i=0;i<Nx;i+=1) {
-		for(j=1;j<Nv+1;j+=1){ 
-			fprintf(output,"%f ", convert(phase[i][Nv-j], toSolarMasses)/convert(1.0,toKpc)/(convert(1.0,toKpc)*3.0857e+19)* convert(1.0,toSeconds)); //Imprime en Masas solares /kpc / (km/s)
-    //fprintf(output,"%f ",phase[i][Nv-j]);
+		for(j=1;j<Nv+1;j+=1){ 			
+            if(G == 1.0){
+            fprintf(output,"%f ",phase[i][Nv-j]);
+            }
+            else{
+          fprintf(output,"%f ", convert(phase[i][Nv-j], toSolarMasses)/convert(1.0,toKpc)/(convert(1.0,toKpc)*3.0857e+19)* convert(1.0,toSeconds)); //Imprime en Masas solares /kpc / (km/s)
+            }
+    
         }
 		fprintf(output,"\n");
 		//printf("%d\n", i);
@@ -452,9 +461,13 @@ void printDensity(char *name)
 {
 	FILE *output = fopen(name, "w+");
 	for(i=0;i<Nx;i+=1) {
-            fprintf(output, "%f\n",convert(density[i],toSolarMasses)/convert(1,toKpc)); //Imprime en Masas solares / kiloparsec.
-        //fprintf(output, "%f\n",density[i]);
-			}
+        if(G == 1.0){
+            fprintf(output, "%f\n",density[i]);
+                }
+        else{
+          fprintf(output, "%f\n",convert(density[i],toSolarMasses)/convert(1,toKpc)); //Imprime en Masas solares / kiloparsec.  
+            }
+        }
 	fclose(output);
 }
 
@@ -557,7 +570,7 @@ void potential()
 
     
     for(i=0;i<Nx;i+=1){
-        pot[i] = cabs(inR[i]/Nx);
+        pot[i] = creal(inR[i]/Nx);
         totalU += 0.5*giveDensity(i)*pot[i]*dx;
     }
 }
@@ -691,7 +704,7 @@ void drift()
 			if(newij(k,l) ==0){
 				phaseTemp[k][j2] += phase[k][l];
 			}
-            else{
+            if(newij(k,l) ==-1){
              missingMass+=phase[k][l]+collision(k,l,TAU);   
             }
 		}
