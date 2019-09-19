@@ -20,8 +20,8 @@
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
-#define Nx 4096
-#define Nv 4096
+#define Nx 2048
+#define Nv 2048
 
 //Int constants for comparision.
 #define toKpc 18
@@ -196,7 +196,7 @@ int main()
 printf("puto rho %f \n", rho);
     double A = 0.03;
     double kkj = 0.5;
-    double k = 8.0*(2.0*PI/Lx); // 2 k_0
+    double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = sqrt(4.0*PI*G*rho*kkj*kkj/k/k); //
     
     double u = 0;
@@ -252,9 +252,9 @@ printf("puto rho %f \n", rho);
 		
 	
 	//FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
-	FILE *perturbation = fopen("./fourierEvolution.dat","w+");
-    FILE *fileMass = fopen("./massEvolution.dat","w+");
-    FILE *fileEnergy = fopen("./energyEvolution.dat","w+");
+	FILE *perturbation = fopen("./evolution/fourierEvolution.dat","w+");
+    FILE *fileMass = fopen("./evolution/massEvolution.dat","w+");
+    FILE *fileEnergy = fopen("./evolution/energyEvolution.dat","w+");
 	double original_Mass = calDensity();
     double original_Perturbation = fourierCoef2(rho,"./datFiles/powerSeries0.dat", 0);
 //    fprintf(perturbation, "%f\n", density[Nx/2]/original_Perturbation);
@@ -323,7 +323,9 @@ printf("puto rho %f \n", rho);
 //    step();
     
     double U0 = totalU;
-    fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0));
+    U0 = 0;
+    totalE0 = totalE0 - U0;
+    fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), (totalK+totalU-U0-totalE0)/totalE0);
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *filename = (char*) malloc(200* sizeof(char));
@@ -354,7 +356,7 @@ printf("puto rho %f \n", rho);
         fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
         fprintf(fileMass, "%f %f\n", (totalMass-original_Mass)/original_Mass,(missingMass-original_Mass)/original_Mass);
         //fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK/totalE0, totalU/totalE0, (totalK+totalU)/totalE0,(totalK-totalU)/totalE0);
-        fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0));
+        fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), (totalK+totalU-U0-totalE0)/totalE0);
 		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
@@ -516,6 +518,7 @@ double calDensity()
 		for(j=0;j<Nv;j+=1){
 				density[i] += phase[i][j]*dv;
                 velocity[i] += phase[i][j]*dv*giveVel(j);
+                totalK += 0.5*phase[i][j]*pow(giveVel(j),2);
         }
         if(density[i]!=0){
             velocity[i] = velocity[i] / density[i];
@@ -530,8 +533,8 @@ double calDensity()
             energy[i] = energy[i] / density[i];
         }
 		mass += density[i]*dx;
-        totalK += energy[i]*dx;
 		}
+		totalK = totalK * dx*dv;
 	return mass;
 }
 
