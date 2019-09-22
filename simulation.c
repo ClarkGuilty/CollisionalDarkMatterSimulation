@@ -15,8 +15,8 @@
 //Extreme values for velocity and position.
 #define Xmin -0.5
 #define Xmax 0.5
-#define Vmin -2.0
-#define Vmax 2.0
+#define Vmin -1.0
+#define Vmax 1.0
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
@@ -36,8 +36,8 @@
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 8972
+//#define TAU 500
 #define TAU 0
-//#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
@@ -124,10 +124,11 @@ double newijCol(int iin, int jin);
 double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2);
 double fourierCoef2(double rho, char *name, int print);
 double jeansRandom(double x, double v, double rho, double sigma, double u, double dm);
+double calcK2T(int j2);
 
 int main()
 {
-    dt = dt*dx/dv;
+    //dt = dt*dx/dv;
     srand((unsigned int)3); //Seed for randum numbers in Jeans instability test.
     //Initialization of arrays.
     energy = malloc((sizeof(double)*Nx));
@@ -192,13 +193,14 @@ int main()
     
     //Jeans2//
   double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
-   //double rho = 1.0;
-printf("puto rho %f \n", rho);
+ //rho = 1.0;
+printf("rho %f \n", rho);
     double A = 0.03;
     double kkj = 0.5;
     double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = sqrt(4.0*PI*G*rho*kkj*kkj/k/k); //
-    
+    printf("sigma2 %f %f\n", sigma*sigma, pow(sigma,-2));
+    printf("alpha %f\n",pow(2*PI*sigma*sigma, -0.5));
     double u = 0;
     //double u = 0;
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
@@ -225,7 +227,6 @@ printf("puto rho %f \n", rho);
     double amplB2 = 4.0;
     
 
-    printf("sigma = %f , %f\n", sigma, pow(sigma,-1));
 	for(i=0;i<Nx;i+=1) {
                 x = Xmin*1.0+dx*i;
                     for(j=0;j<Nv;j+=1){
@@ -325,7 +326,7 @@ printf("puto rho %f \n", rho);
     double U0 = totalU;
     U0 = 0;
     totalE0 = totalE0 - U0;
-    fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), (totalK+totalU-U0-totalE0)/totalE0);
+    fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), abs((totalK+totalU-U0/totalE0)) - 1.0);
     
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *filename = (char*) malloc(200* sizeof(char));
@@ -356,7 +357,7 @@ printf("puto rho %f \n", rho);
         fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
         fprintf(fileMass, "%f %f\n", (totalMass-original_Mass)/original_Mass,(missingMass-original_Mass)/original_Mass);
         //fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK/totalE0, totalU/totalE0, (totalK+totalU)/totalE0,(totalK-totalU)/totalE0);
-        fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), (totalK+totalU-U0-totalE0)/totalE0);
+        fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), abs((totalK+totalU-U0/totalE0)) - 1.0);
 		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
@@ -524,9 +525,6 @@ double calDensity()
             velocity[i] = velocity[i] / density[i];
         }
         for(j=0;j<Nv;j+=1){
-            if(pow(giveVel(j) - velocity[i], 2) <0){
-                printf("fuck\n");
-            }
             energy[i] += phase[i][j]*dv*pow(giveVel(j) - velocity[i], 2)/2.0;
         }
         if(density[i]!=0){
@@ -572,7 +570,7 @@ void potential()
     //Solves Poisson equation in Fourier space. Loads OUT with the solution.
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
-      out[i] = -4.0*PI*G*mem[i]*calcK2(i);
+      out[i] = -4.0*PI*G*mem[i]*calcK2T(i);
     //out[i] = mem[i]; //uncomment to obtain original distribution.
     }
     fftw_execute(pIda);
@@ -596,6 +594,21 @@ double calcK2(int j2)
     }
     if(j2>=Nx/2){
         rta = -2*PI*(Nx-j2)/(Xmax-Xmin);
+    }    
+    return pow(1.0/rta,2);
+}
+
+double calcK2T(int j2)
+{
+    double rta;
+    if( ( (j2 == 0)   )  ){
+        return 0;
+    }
+    if(j2<Nx/2){
+        rta = 2.0*sin(j2*PI/Nx)/dx;
+    }
+    if(j2>=Nx/2){
+        rta = 2.0*sin((Nx-j2) *PI / Nx) /dx;
     }    
     return pow(1.0/rta,2);
 }
