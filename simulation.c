@@ -570,7 +570,7 @@ void potential()
     //Solves Poisson equation in Fourier space. Loads OUT with the solution.
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
-      out[i] = -4.0*PI*G*mem[i]*calcK2T(i);
+      out[i] = -4.0*PI*G*mem[i]*calcK2(i);
     //out[i] = mem[i]; //uncomment to obtain original distribution.
     }
     fftw_execute(pIda);
