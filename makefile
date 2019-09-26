@@ -34,7 +34,7 @@ gifs: plots
 	bash gif.sh
 	rm plots
 
-poissonTest: clean
+poisFFT: clean
 	@echo Creating output folders.
 	mkdir datFiles
 	mkdir images

@@ -23,8 +23,8 @@
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
-#define Nx 2048
-#define Nv 2048
+#define Nx 512
+#define Nv 515
 
 //Int constants for comparision.
 #define toKpc 18
