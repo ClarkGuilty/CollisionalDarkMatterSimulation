@@ -1,4 +1,4 @@
-all: clean run.a  plots gifs
+all: run plots gifs
 
 clean:
 	@echo Deleting output files from former execution.
@@ -6,13 +6,14 @@ clean:
 	rm -rf ./images
 	rm -rf ./evolution
 
-run.a: simulation.c
+run: simulation.c clean
 	@echo Creating output folders.
 	mkdir datFiles
 	mkdir images
 	mkdir evolution
 	@echo Compiling and executing.
-	gcc -no-pie -o run.a -I/usr/local/include -L/usr/local/lib/ simulation.c -Wall -lfftw3 -lm 
+	gcc -no-pie -o run.a -I/usr/local/include -I${HOME}/gitStuff/PoisFFT/src -L/usr/local/lib/ -L${HOME}/gitStuff/PoisFFT/lib/gcc  simulation.c -Wall -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp -fopenmp
+	touch run
 	./run.a
 	rm run.a	
 
@@ -29,22 +30,11 @@ tests: datFiles/constants.dat testPlots.py
 
 plots: datFiles/constants.dat simPlots.py
 	python simPlots.py
+	rm run
 
 gifs: plots
 	bash gif.sh
 	rm plots
-
-poisFFT: clean
-	@echo Creating output folders.
-	mkdir datFiles
-	mkdir images
-	mkdir evolution
-	@echo Compiling and executing.
-	gcc -no-pie -o run.a -I/usr/local/include -I/home/hiparco/gitStuff/PoisFFT/src -L/usr/local/lib/ -L/home/hiparco/gitStuff/PoisFFT/lib/gcc  simulationPoiss.c -Wall -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp -fopenmp
-	./run.a
-	rm run.a
-
-
 
 pyt: datFiles
 	@echo drawing plots.

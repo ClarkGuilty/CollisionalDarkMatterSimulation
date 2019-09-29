@@ -8,6 +8,9 @@
 #include <complex.h>
 #include <fftw3.h>
 #include <time.h>
+#include "poisfft.h"
+
+
 
 //Constants of the simulation.
 #define PI 3.14159265359
@@ -125,6 +128,7 @@ double bulletC(double x, double v, double sx1, double sx2, double sv, double amp
 double fourierCoef2(double rho, char *name, int print);
 double jeansRandom(double x, double v, double rho, double sigma, double u, double dm);
 double calcK2T(int j2);
+void poisson1D(double **rho, double **acc, double *total_U) ;
 
 int main()
 {
@@ -181,7 +185,6 @@ int main()
     double vSvB = 0.06;
     double amplB1 = 30.0;
     double amplB2 = 40.0;
-    
     */
     
     
@@ -193,13 +196,13 @@ int main()
     
     //Jeans2//
   double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
- //rho = 1.0;
+ rho = 0.1;
 printf("rho %f \n", rho);
     double A = 0.03;
-    double kkj = 0.5;
-    double k = 2.0*(2.0*PI/Lx); // 2 k_0
+    double kkj = 1.1;
+    double k = 4.0*(2.0*PI/Lx); // 2 k_0
     double sigma = sqrt(4.0*PI*G*rho*kkj*kkj/k/k); //
-    printf("sigma2 %f %f\n", sigma*sigma, pow(sigma,-2));
+    printf("sigma %f %f\n", sigma, pow(sigma,-2));
     printf("alpha %f\n",pow(2*PI*sigma*sigma, -0.5));
     double u = 0;
     //double u = 0;
@@ -216,9 +219,7 @@ printf("rho %f \n", rho);
      //sigma = 9*dv;
     
      //u = 0;
-     //deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
 
-    
     //Bullet //
     double vSx1 = 0.04;
     double vSx2 = 0.04;
@@ -252,7 +253,6 @@ printf("rho %f \n", rho);
 
 		
 	
-	//FILE *perturbation = fopen("./datFiles/JeansMagnitude.dat","w+");
 	FILE *perturbation = fopen("./evolution/fourierEvolution.dat","w+");
     FILE *fileMass = fopen("./evolution/massEvolution.dat","w+");
     FILE *fileEnergy = fopen("./evolution/energyEvolution.dat","w+");
@@ -278,12 +278,10 @@ printf("rho %f \n", rho);
     //Some execution messages.
     printf("%f million of years were simulated using %d timesteps each of %f million years. \n", convert(Nt*dt,toByear)*1000,Nt,convert(dt,toByear)*1000);
 	printf("The total mass was %f times the Milky Way's mass. \n",convert(original_Mass, toSolarMasses)/1e12);
-
     printf("G es %lf\n", G*1.0);
 
     //log file with the simulation parameters
 	FILE *simInfo = fopen("./images/simInfo.dat","w+");
-	
     fprintf(simInfo,"Parameters of the simulation:\n");
 	fprintf(simInfo,"x goes from %.2f to %.2f , v goes from %.2f to %.2f\n", Xmin,Xmax,Vmin,Vmax);
     fprintf(simInfo,"The initial conditions were:\n");
@@ -294,7 +292,6 @@ printf("rho %f \n", rho);
     }
     if(initCon == JEANS)
     {
-    
         fprintf(simInfo,"Jeans instability with (rho sigma A k u)=\n");
         fprintf(simInfo,"(%.3f %.3f %.3f %.3f %.3f)\n", rho, sigma, A, k, u);
     }
@@ -305,19 +302,16 @@ printf("rho %f \n", rho);
     }
 	fprintf(simInfo,"Nt = %d,  dt = %.3f\n", Nt,dt);
     
-    //collisionStep();  
+    //collisionStep();      
     //totalMass = calDensity();
     //Solving Poisson equation.
-    potential();
-    //printPot("./datFiles/potential0.dat");
-    
-    //Calculates acceleration = -grad(Potential).
-    calAcceG();
+    poisson1D(&density, &acce, &totalU);
+
     //printAcce("./datFiles/acce0.dat");
 
     double totalE0 = totalK+totalU;
     //Updates position 
-      
+    printf("totalMass %f\n",totalMass/Lx);
     //Updates velocity.
     collisionStep();
     drift();
@@ -328,6 +322,8 @@ printf("rho %f \n", rho);
     totalE0 = totalE0 - U0;
     fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), abs((totalK+totalU-U0/totalE0)) - 1.0);
     
+    
+    fclose(constants);
 	for(int suprai = 1; suprai<Nt;suprai+=1){
         char *filename = (char*) malloc(200* sizeof(char));
 		
@@ -345,27 +341,22 @@ printf("rho %f \n", rho);
 
         
 		sprintf(filename, "./datFiles/density%d.dat", suprai);
-		printDensity(filename);
+//		printDensity(filename);
 
         
-		potential();        
-        sprintf(filename, "./datFiles/potential%d.dat", suprai);
-        
+
+        poisson1D(&density, &acce, &totalU);
         
         sprintf(filename, "./datFiles/powerSeries%d.dat", suprai);
         deltaId = fourierCoef2(rho,filename, 0);
-        fprintf(perturbation, "%f\n", deltaId/original_Perturbation);
+        fprintf(perturbation, "%f\n", deltaId);
         fprintf(fileMass, "%f %f\n", (totalMass-original_Mass)/original_Mass,(missingMass-original_Mass)/original_Mass);
         //fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK/totalE0, totalU/totalE0, (totalK+totalU)/totalE0,(totalK-totalU)/totalE0);
         fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), abs((totalK+totalU-U0/totalE0)) - 1.0);
 		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
-		//printPot(filename); Uncomment to print Potential energy.
-        
-        
-		calAcceG();
-        sprintf(filename, "./datFiles/acce%d.dat", suprai);
+
 		//    printAcce(filename); Uncomment to print Potential energy.
         
         collisionStep();
@@ -385,12 +376,60 @@ printf("rho %f \n", rho);
     fclose(fileMass); 
     fclose(fileEnergy); 
 	fclose(simInfo);
-    fclose(constants);
+    
     
 	return 0;
 
 }
 
+void poisson1D(double **rho, double **acc, double *total_U) 
+{
+
+  // allocate the arrays contiguously, you can use any other class
+  // from which you can get a pointer to contiguous buffer
+  double *phi;
+  phi = malloc(sizeof(double)*Nx);  
+  double *RHS;
+  RHS= malloc(sizeof(double)*Nx);
+  
+  const double Ls[1] = {Lx};
+
+  // gridpoint numbers
+  const int ns[1] = {Nx};
+  
+  //boundary conditions
+  const int BCs[2] = {POISFFT_PERIODIC, POISFFT_PERIODIC};
+  
+  // set the right-hand side
+  for(int x = 0; x < Nx; x++) RHS[x] = 4.0*M_PI*(giveDensity(x) - totalMass/Lx);
+
+  
+  
+  poisfft_solver S = poisfft_solver_new(1, ns,  Ls, BCs, POISFFT_SPECTRAL,
+                                        NULL, NULL, NULL, 0);
+  
+  //run the solver, can be run many times for different right-hand sides
+    poisfft_solver_execute(S, phi, RHS, NULL, NULL);  
+  
+  //Updates potential energy.
+  *total_U = 0;
+  
+  for(int x = 0; x < Nx; x++)
+  	*total_U = 0.5*giveDensity(x)*phi[x]*dx;
+  	
+  
+  
+  // calculate acceleration (2nd-order central difference), taken from Integer Lattice
+  (*acc)[0] = -( -3.0*phi[0] + 4.0*phi[1] - phi[2] ) / (2.0*dx);
+  (*acc)[Nx-1] = -( 3.0*phi[Nx-1] - 4.0*phi[Nx-2] + phi[Nx-3] ) / (2.0*dx);
+  
+  for(int x = 1; x < Nx-1; x++)
+    (*acc)[x] = -( phi[x + 1] - phi[x - 1] ) / (2.0*dx);
+  
+  // free memory
+  free(RHS);
+  free(phi);
+}	
 
 
 double jeansRandom(double x, double v, double rho, double sigma, double u, double dm)
@@ -570,7 +609,7 @@ void potential()
     //Solves Poisson equation in Fourier space. Loads OUT with the solution.
     out[0] = -4*PI*G*mem[0];
     for(i=1;i<Nx;i+=1){
-      out[i] = -4.0*PI*G*mem[i]*calcK2(i);
+      out[i] = -4.0*PI*G*mem[i]*calcK2T(i);
     //out[i] = mem[i]; //uncomment to obtain original distribution.
     }
     fftw_execute(pIda);
