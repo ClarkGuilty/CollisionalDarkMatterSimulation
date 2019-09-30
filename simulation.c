@@ -16,8 +16,8 @@
 #define PI 3.14159265359
 
 //Extreme values for velocity and position.
-#define Xmin -0.5
-#define Xmax 0.5
+#define Xmin -1.0
+#define Xmax 1.0
 #define Vmin -1.0
 #define Vmax 1.0
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
@@ -147,8 +147,8 @@ int main()
     
     //Choosing what initial conditions to simulate.
     //initCon = GAUSS;
-    initCon = JEANS;
-    //initCon = BULLET;
+    //initCon = JEANS;
+    initCon = BULLET;
     
     //Exporting the parameters of the simulation.
 	constants = fopen("./datFiles/constants.dat","w+");
@@ -200,9 +200,9 @@ int main()
 printf("rho %f \n", rho);
     double A = 0.03;
     double kkj = 1.1;
-    double k = 4.0*(2.0*PI/Lx); // 2 k_0
+    double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = sqrt(4.0*PI*G*rho*kkj*kkj/k/k); //
-    printf("sigma %f %f\n", sigma, pow(sigma,-2));
+    printf("sigma %f %f\n", sigma,  2*pow(sigma,-2));
     printf("alpha %f\n",pow(2*PI*sigma*sigma, -0.5));
     double u = 0;
     //double u = 0;
@@ -224,14 +224,14 @@ printf("rho %f \n", rho);
     double vSx1 = 0.04;
     double vSx2 = 0.04;
     double vSvB = 0.06;
-    double amplB1 = 3.0;
-    double amplB2 = 4.0;
+    double amplB1 = 20.0;
+    double amplB2 = 20.0;
     
 
 	for(i=0;i<Nx;i+=1) {
-                x = Xmin*1.0+dx*i;
+                x = givePos(i);
                     for(j=0;j<Nv;j+=1){
-                        v = Vmin*1.0+dv*j;
+                        v = giveVel(j);
                         if(initCon == GAUSS)
                         {
                             phase[i][j] = gaussD(x,v,vSx,vSv,ampl);
@@ -341,7 +341,7 @@ printf("rho %f \n", rho);
 
         
 		sprintf(filename, "./datFiles/density%d.dat", suprai);
-//		printDensity(filename);
+		printDensity(filename);
 
         
 
@@ -463,7 +463,7 @@ double fourierCoef2(double rho, char *name, int print)
     }
     fftw_execute(pIda); //Execute FFT.
 
-    ans = cabs(out[4]);
+    ans = cabs(out[2]);
     
     if(print==1){
         FILE *output = fopen(name, "w+");
@@ -533,8 +533,8 @@ double gaussD(double x, double v, double sx, double sv, double amplitude)
 //Returns the value of a bimodal Gaussian distribution given by x,v, sigma x1 (sx1), sigma x2 (sx2), sigma v (sv), and amplitudes amplitude1 and amplitude2. The peaks are separated by 0.4 units of space.
 double bulletC(double x, double v, double sx1, double sx2, double sv, double amplitude1,double amplitude2)
 {
-	double ex1 = -(x-0.40)*(x-0.40)/(2.0*sx1*sx1)-v*v/(2.0*sv*sv);
-    double ex2 = -(x+0.40)*(x+0.40)/(2.0*sx2*sx2)-v*v/(2.0*sv*sv);
+	double ex1 = -(x-0.45)*(x-0.45)/(2.0*sx1*sx1)-v*v/(2.0*sv*sv);
+    double ex2 = -(x+0.45)*(x+0.45)/(2.0*sx2*sx2)-v*v/(2.0*sv*sv);
 	return amplitude1*exp(ex1)+amplitude2*exp(ex2);
 
 }
@@ -721,14 +721,14 @@ void printPot(char *name)
 //Calculates the new position of an element of the phase space grid due the free streaming. The new positions are loaded on (i2,j2).
 double newij(int iin, int jin)
 {
-        double x = Xmin*1.0+dx*iin; //initialization
+        double x = givePos(iin); //initialization
         double v = acce[iin]*dt;
         double dj = v/dv;
         dj = (int)dj;
         j2 = jin+dj;
 
         if(j2 < 0 || j2 >= Nv) return -1;
-        v = Vmin*1.0+dv*j2;
+        v = giveVel(j2);
         x = v*dt;
         double di = x/dx*scale;
         di = (int) di;
@@ -823,7 +823,7 @@ void collisionStep()
 //Calculates the new position of an element of the phase space grid due kick. The new positionis loaded in i2.
 double newijCol(int iin, int jin)
 {
-        double x = Xmin*1.0+dx*iin; //Inicialización
+        double x = givePos(iin); //Inicialización
 
 
         double v = acce[iin]*dt;
@@ -870,13 +870,13 @@ double feq2(int ipos, int jvel)
 //Returns the coordinate for the array element ito.
 double givePos(int ito)
 {
-    return Xmin*1.0+dx*ito;
+    return Xmin*1.0+dx*(ito+0.5);
 }
 
 //Returns the coordinate for the array element jto.
 double giveVel(int jto)
 {
-    return Vmin*1.0+dv*jto;
+    return Vmin*1.0+dv*(jto+0.5);
 }
 
 

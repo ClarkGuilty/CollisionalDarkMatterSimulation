@@ -90,10 +90,10 @@ for i in ran3:
     plt.xlabel("Position [kpc]",fontsize=fsize)
     #cbar = plt.colorbar(format=ticker.FuncFormatter(fmt))
     #cbar = plt.colorbar(format = '%.0f%%')
-    cbar=plt.colorbar()
+#    cbar=plt.colorbar()
     #cbar.set_ticks([0, .2, .4, .6, .8, 1])
     #cbar.set_ticklabels(['0', '20%','40%','60%', '80%', '100%'])
-    cbar.set_label("Percentage difference",fontsize=fsize)
+#    cbar.set_label("Percentage difference",fontsize=fsize)
     plt.savefig("./dif/phase{:d}.png".format(i), dpi=dpII)
     plt.clf()
 
@@ -125,7 +125,14 @@ for i in ran3:
 #            ddif[aq] = (dnocol[aq]-dcol[aq]/dnocol[aq])*100
 #        else:
 #            ddif[aq]= 0
-    plt.plot(x,ddif*100)
+    
+#    plt.plot(x,ddif*100)
+    plt.plot(x,dnocol, label = 'Collisionless', color = 'blue')
+    plt.plot(x,dcol, label = r'$\tau$ = '+str(constantes[8]), color = 'red')
+    plt.legend()
+    
+    
+    
     #plt.plot((0, 0), (-1, 1), 'k-')
 #    plt.title("Density Comparison $(\\tau = 0$) - ($\\tau =$ {:d})".format(TAU), fontsize=fsize)
 
@@ -137,6 +144,7 @@ for i in ran3:
         plt.title("Gauss percentage difference in density", fontsize=fsize)
         plt.ylabel("Percentage difference",fontsize=fsize)
         #plt.ylim(-35, 30)
+    plt.ylim(0,0.01)
     plt.savefig("./dif/density{:d}.png".format(i), dpi=dpII)
     plt.clf()
     
