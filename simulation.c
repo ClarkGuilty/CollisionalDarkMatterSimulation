@@ -16,8 +16,8 @@
 #define PI 3.14159265359
 
 //Extreme values for velocity and position.
-#define Xmin -1.0
-#define Xmax 1.0
+#define Xmin -0.5
+#define Xmax 0.5
 #define Vmin -1.0
 #define Vmax 1.0
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
@@ -38,17 +38,15 @@
 #define BULLET -147
 
 //Relaxation time. 0 means solving the Vlasov equation.
-//#define TAU 8972
-//#define TAU 500
-#define TAU 0
+//#define TAU 10000
+#define TAU 500
+//#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
 #define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
 #define solarMases 1e12 //How many solar masses are equivalent to one mass unit.
 #define fracT0 4e-3     //What fraction of the age of the universe is equivalent to one time unit.
 //#define G 0.959572 //Gravitational constant in this units. It is calculated with sPlots.py
-//#define G 0.031830 
-//#define G 0.079577472 // 1/4pi
 #define G 1.0
 
 //Set of units for a galaxy cluster scale.
@@ -92,7 +90,7 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 
 //Size of a timestep and number of timesteps.
 double dt = 0.1; 
-int Nt = 100;
+int Nt = 200;
 
 //File with parameters of the simulation.
 FILE *constants;
@@ -128,11 +126,11 @@ double bulletC(double x, double v, double sx1, double sx2, double sv, double amp
 double fourierCoef2(double rho, char *name, int print);
 double jeansRandom(double x, double v, double rho, double sigma, double u, double dm);
 double calcK2T(int j2);
-void poisson1D(double **rho, double **acc, double *total_U) ;
+void poisson1D() ;
 
 int main()
 {
-    //dt = dt*dx/dv;
+    dt = dt*dx/dv;
     srand((unsigned int)3); //Seed for randum numbers in Jeans instability test.
     //Initialization of arrays.
     energy = malloc((sizeof(double)*Nx));
@@ -147,8 +145,8 @@ int main()
     
     //Choosing what initial conditions to simulate.
     //initCon = GAUSS;
-    //initCon = JEANS;
-    initCon = BULLET;
+    initCon = JEANS;
+    //initCon = BULLET;
     
     //Exporting the parameters of the simulation.
 	constants = fopen("./datFiles/constants.dat","w+");
@@ -195,17 +193,15 @@ int main()
     double ampl = 4.0;
     
     //Jeans2//
-  double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
- rho = 0.1;
-printf("rho %f \n", rho);
+    double rho = pow((Vmax-Vmin)/2/Lx,2)/G;
+    rho = 0.1;
+    //printf("rho %f \n", rho);
     double A = 0.03;
     double kkj = 1.1;
     double k = 2.0*(2.0*PI/Lx); // 2 k_0
     double sigma = sqrt(4.0*PI*G*rho*kkj*kkj/k/k); //
-    printf("sigma %f %f\n", sigma,  2*pow(sigma,-2));
-    printf("alpha %f\n",pow(2*PI*sigma*sigma, -0.5));
+//printf("alpha %f\n",pow(2*PI*sigma*sigma, -0.5));
     double u = 0;
-    //double u = 0;
     double deltaId = (u * dt / dv); //Calculates the new position of the perturbation as time goes by.
     //printf("sigma = %f", sigma);
     //printf("k_j = %f pi\n", pow(kkj/k,-1)/PI);
@@ -305,7 +301,8 @@ printf("rho %f \n", rho);
     //collisionStep();      
     //totalMass = calDensity();
     //Solving Poisson equation.
-    poisson1D(&density, &acce, &totalU);
+    poisson1D(&density, &pot);
+    calAcceG();
 
     //printAcce("./datFiles/acce0.dat");
 
@@ -314,13 +311,13 @@ printf("rho %f \n", rho);
     printf("totalMass %f\n",totalMass/Lx);
     //Updates velocity.
     collisionStep();
-    drift();
+    kick();
 //    step();
     
     double U0 = totalU;
-    U0 = 0;
+    //U0 = 0;
     totalE0 = totalE0 - U0;
-    fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), abs((totalK+totalU-U0/totalE0)) - 1.0);
+    fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK, totalU,(totalK+totalU-U0) / totalE0,  (totalMass-original_Mass)/original_Mass);
     
     
     fclose(constants);
@@ -345,22 +342,23 @@ printf("rho %f \n", rho);
 
         
 
-        poisson1D(&density, &acce, &totalU);
+        poisson1D(&density, &pot);
+        calAcceG();
         
         sprintf(filename, "./datFiles/powerSeries%d.dat", suprai);
         deltaId = fourierCoef2(rho,filename, 0);
         fprintf(perturbation, "%f\n", deltaId);
         fprintf(fileMass, "%f %f\n", (totalMass-original_Mass)/original_Mass,(missingMass-original_Mass)/original_Mass);
         //fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK/totalE0, totalU/totalE0, (totalK+totalU)/totalE0,(totalK-totalU)/totalE0);
-        fprintf(fileEnergy, "%f;%f;%f;%f;%f\n", totalK, totalU-U0, (totalK+totalU-U0),(totalK-totalU+U0), abs((totalK+totalU-U0/totalE0)) - 1.0);
+        fprintf(fileEnergy, "%f;%f;%f;%f\n", totalK, totalU-U0,(totalK+totalU-U0) / totalE0,  (totalMass-original_Mass)/original_Mass);
 		//printf("%d %f %f\n",suprai,totalMass*100/original_Mass, 100*(totalMass+missingMass)/original_Mass);
         printf("%d %f\n",suprai,totalMass*100/original_Mass);
         
 
-		//    printAcce(filename); Uncomment to print Potential energy.
+		//    printAcce(filename); Uncomment to print acceleration.
         
         collisionStep();
-        drift();
+        kick();
         
         //step();
         
@@ -382,13 +380,11 @@ printf("rho %f \n", rho);
 
 }
 
-void poisson1D(double **rho, double **acc, double *total_U) 
+void poisson1D() 
 {
 
   // allocate the arrays contiguously, you can use any other class
   // from which you can get a pointer to contiguous buffer
-  double *phi;
-  phi = malloc(sizeof(double)*Nx);  
   double *RHS;
   RHS= malloc(sizeof(double)*Nx);
   
@@ -409,26 +405,11 @@ void poisson1D(double **rho, double **acc, double *total_U)
                                         NULL, NULL, NULL, 0);
   
   //run the solver, can be run many times for different right-hand sides
-    poisfft_solver_execute(S, phi, RHS, NULL, NULL);  
-  
-  //Updates potential energy.
-  *total_U = 0;
-  
-  for(int x = 0; x < Nx; x++)
-  	*total_U = 0.5*giveDensity(x)*phi[x]*dx;
-  	
-  
-  
-  // calculate acceleration (2nd-order central difference), taken from Integer Lattice
-  (*acc)[0] = -( -3.0*phi[0] + 4.0*phi[1] - phi[2] ) / (2.0*dx);
-  (*acc)[Nx-1] = -( 3.0*phi[Nx-1] - 4.0*phi[Nx-2] + phi[Nx-3] ) / (2.0*dx);
-  
-  for(int x = 1; x < Nx-1; x++)
-    (*acc)[x] = -( phi[x + 1] - phi[x - 1] ) / (2.0*dx);
-  
+    poisfft_solver_execute(S, pot, RHS, NULL, NULL);  
+    
+
   // free memory
   free(RHS);
-  free(phi);
 }	
 
 
@@ -692,7 +673,9 @@ double convert(double value, int unit )
 //Differentiates the potential and load the acceleration on the acce array.
 void calAcceG()
 {
+    totalU=0;
     for(i = 0; i<Nx ; i +=1){
+        totalU += 0.5*giveDensity(i)*pot[i]*dx;
     acce[i] =  (-pot[mod(i-2,Nx)] + 8*pot[mod(i-1,Nx)]-8*pot[mod(i+1,Nx)]+pot[mod(i+2,Nx)])/(12*dx);
     }
 }
@@ -738,8 +721,8 @@ double newij(int iin, int jin)
     return 0;
 }
 
-//Performs a kick step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
-void kick()
+//Performs a drift step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+void drift()
 {
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
@@ -757,17 +740,17 @@ void kick()
 	}
 }
 
-//Performs a drift step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
-void drift()
+//Performs a kick step. Updates the phase space (phase). (k,i) corresponds to x, (j,l) corresponds to v.
+void kick()
 {
 	for(k = 0; k<Nx; k++){
 		for(l= 0; l<Nv; l++){
 			if(newij(k,l) ==0){
 				phaseTemp[k][j2] += phase[k][l];
 			}
-            if(newij(k,l) ==-1){
-             missingMass+=phase[k][l]+collision(k,l,TAU);   
-            }
+//            if(newij(k,l) ==-1){
+//             missingMass+=phase[k][l]+collision(k,l,TAU);   
+//            }
 		}
 	}
 	
@@ -801,7 +784,7 @@ void step()
 	}
 }
 
-//Performs a collisional step. Does modified kick with collisions. Drift step is still necessary. If TAU == 0, it becomes a simple kick step.
+//Performs a collisional step. Does modified drift with collisions. Kick step is still necessary. If TAU == 0, it becomes a simple drift step.
 void collisionStep()
 {
 	for(k = 0; k<Nx; k++){
@@ -820,7 +803,7 @@ void collisionStep()
 	}
  }
 
-//Calculates the new position of an element of the phase space grid due kick. The new positionis loaded in i2.
+//Calculates the new position of an element of the phase space grid due drift. The new positionis loaded in i2.
 double newijCol(int iin, int jin)
 {
         double x = givePos(iin); //Inicialización
