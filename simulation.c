@@ -16,10 +16,10 @@
 #define PI 3.14159265359
 
 //Extreme values for velocity and position.
-#define Xmin -0.5
-#define Xmax 0.5
-#define Vmin -1.0
-#define Vmax 1.0
+#define Xmin -1.0
+#define Xmax 1.0
+#define Vmin -3.0
+#define Vmax 3.0
 #define scale 1 //scale in order to get better graphics. Better left at 1 after all.
 
 //Grid size.
@@ -39,21 +39,21 @@
 
 //Relaxation time. 0 means solving the Vlasov equation.
 //#define TAU 10000
-#define TAU 500
-//#define TAU 0
+//#define TAU 500
+#define TAU 0
 
 //Units of the simulation. This particular set corresponds to a galactic scale.
-#define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
-#define solarMases 1e12 //How many solar masses are equivalent to one mass unit.
-#define fracT0 4e-3     //What fraction of the age of the universe is equivalent to one time unit.
+//#define mParsecs 35e-3  //How many mpc are equivalent to one spatial unit.
+//#define solarMases 1e12 //How many solar masses are equivalent to one mass unit.
+//#define fracT0 4e-3     //What fraction of the age of the universe is equivalent to one time unit.
 //#define G 0.959572 //Gravitational constant in this units. It is calculated with sPlots.py
-#define G 1.0
+//#define G 1.0
 
 //Set of units for a galaxy cluster scale.
-//#define mParsecs 5
-//#define solarMases 1e15
-//#define fracT0 2e-1
-//#define G 0.2729448134597113
+#define mParsecs 5
+#define solarMases 1e15
+#define fracT0 2e-1
+#define G 0.2729448134597113
 
 
 //Arrays
@@ -90,7 +90,7 @@ double dv = (Vmax-Vmin)*1.0/Nv;
 
 //Size of a timestep and number of timesteps.
 double dt = 0.1; 
-int Nt = 200;
+int Nt = 100;
 
 //File with parameters of the simulation.
 FILE *constants;
@@ -145,8 +145,8 @@ int main()
     
     //Choosing what initial conditions to simulate.
     //initCon = GAUSS;
-    initCon = JEANS;
-    //initCon = BULLET;
+//    initCon = JEANS;
+    initCon = BULLET;
     
     //Exporting the parameters of the simulation.
 	constants = fopen("./datFiles/constants.dat","w+");

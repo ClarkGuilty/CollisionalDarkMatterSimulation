@@ -12,7 +12,7 @@ run: simulation.c clean
 	mkdir images
 	mkdir evolution
 	@echo Compiling and executing.
-	gcc -no-pie -o run.a -I/usr/local/include -I${HOME}/gitStuff/PoisFFT/src -L/usr/local/lib/ -L${HOME}/gitStuff/PoisFFT/lib/gcc  simulation.c -Wall -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp -fopenmp
+	gcc -no-pie -o run.a -I/usr/local/include -I${HOME}/gitStuff/PoisFFT/src -L/usr/local/lib/ simulation.c -L${HOME}/gitStuff/PoisFFT/lib/gcc -Wall -lpoisfft -lm  -lfftw3 -lfftw3f -lfftw3_omp -fopenmp -O3 
 	touch run
 	./run.a
 	rm run.a	

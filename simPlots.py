@@ -85,8 +85,9 @@ for i in range(int(constantes[6])):
 #        plt.suptitle("$\\tau$ = {:d}".format(TAU),fontsize=fsize)
 #        if(TAU == 0):
 #            plt.suptitle("$\\tau$ = $\\infty$",fontsize=fsize)
+##        plt.ylim(constantes[2]/2,constantes[3]/2)
         plt.ylim(constantes[2]/2,constantes[3]/2)
-        plt.xlim(constantes[0],constantes[1])
+        plt.xlim(constantes[0]/2,constantes[1]/2)
         plt.title("Phase Space Density $t =$ {:.2f} ut".format(i*dt),fontsize=fsize)
         #plt.clim(0,27e5)
 
@@ -108,7 +109,7 @@ for i in range(int(constantes[6])):
         plt.title("Density at {:.2f}, $\\tau \\rightarrow \\infty$".format(i*dt),fontsize=fsize)
     #plt.ylim(-0.75e9,6.85e10)#Gauss
 #    plt.ylim(6e10,7e10)#Jeans
-    plt.ylim(constantes[10]-0.05,constantes[10]+0.05)#Jeans
+#    plt.ylim(constantes[10]-0.05,constantes[10]+0.05)#Jeans
     #plt.xlim(constantes[0]/2,constantes[1]/2)
     plt.xlim(constantes[0],constantes[1])
     plt.savefig("./images/density{:d}.png".format(i), dpi = dpII)
